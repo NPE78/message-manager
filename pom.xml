@@ -25,7 +25,7 @@
 
         <antlr4.version>4.5.1-1</antlr4.version>
 
-        <synaptixlibs.version>4.2.11</synaptixlibs.version>
+        <synaptixlibs.version>4.2.12-SNAPSHOT</synaptixlibs.version>
 
         <jacoco-maven-plugin.version>0.7.5.201505241946</jacoco-maven-plugin.version>
         <jacoco.it.execution.data.file>${project.build.directory}/coverage-reports/jacoco-it.exec</jacoco.it.execution.data.file>
@@ -40,6 +40,8 @@
         <sonar.jacoco.reportPath>target/coverage-reports/jacoco-ut.exec</sonar.jacoco.reportPath>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <sonar.exclusions>**/taskmanager/example/**/*</sonar.exclusions>
+
+        <jetty.version>6.1.26</jetty.version>
     </properties>
     <scm>
         <url>https://gitlab.synaptix-labs.com/nicolas-poste/message-manager</url>
@@ -278,13 +280,14 @@
             </dependency>
             <dependency>
                 <groupId>com.synaptix</groupId>
-                <artifactId>SynaptixEntity</artifactId>
+                <artifactId>SynaptixProcessManagerPlugin</artifactId>
                 <version>${synaptixlibs.version}</version>
             </dependency>
+
             <dependency>
-                <groupId>com.synaptix</groupId>
-                <artifactId>try</artifactId>
-                <version>${try.version}</version>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty</artifactId>
+                <version>${jetty.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
