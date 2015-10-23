@@ -85,8 +85,7 @@ public final class MMDictionary {
 			if (!first.isPresent()) {
 				throw new UnknownErrorException("Error code " + s.getErrorCode() + " not found in Message Type " + messageTypeName);
 			}
-			updateWorst(worst
-					, first.get());
+			updateWorst(worst, first.get());
 		});
 
 		switch (worst.errorRecyclingKind) {
