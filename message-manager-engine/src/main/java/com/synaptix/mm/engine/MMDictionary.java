@@ -85,9 +85,8 @@ public final class MMDictionary {
 			if (!first.isPresent()) {
 				throw new UnknownErrorException("Error code " + s.getErrorCode() + " not found in Message Type " + messageTypeName);
 			}
-			IErrorType errorType = first.get();
-			worst.errorRecyclingKind = ErrorRecyclingKind.getWorst(errorType.getRecyclingKind(), worst.errorRecyclingKind);
-			worst.delay = Math.max(errorType.getNextRecyclingDuration() != null ? errorType.getNextRecyclingDuration() : 0, worst.delay != null ? worst.delay : 0);
+			updateWorst(worst
+					, first.get());
 		});
 
 		switch (worst.errorRecyclingKind) {
@@ -103,6 +102,11 @@ public final class MMDictionary {
 				// this is also the case of the WARNING enum value
 				return ProcessingResultBuilder.accept();
 		}
+	}
+
+	private void updateWorst(Worst worst, IErrorType errorType) {
+		worst.errorRecyclingKind = ErrorRecyclingKind.getWorst(errorType.getRecyclingKind(), worst.errorRecyclingKind);
+		worst.delay = Math.max(errorType.getNextRecyclingDuration() != null ? errorType.getNextRecyclingDuration() : 0, worst.delay != null ? worst.delay : 0);
 	}
 
 	private class Worst {
