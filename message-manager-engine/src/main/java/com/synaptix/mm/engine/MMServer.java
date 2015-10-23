@@ -65,6 +65,10 @@ public class MMServer {
 		ComponentFactory.getInstance().setComputedFactory(new DefaultComputedFactory());
 	}
 
+	/**
+	 * Change the timeout, meaning the duration to wait for the agents to finish properly before killing the process manager
+	 * @param timeoutSeconds timeout in seconds, default is 2min
+	 */
 	public void setTimeoutSeconds(int timeoutSeconds) {
 		this.timeoutSeconds = timeoutSeconds;
 	}
@@ -77,6 +81,9 @@ public class MMServer {
 		return version;
 	}
 
+	/**
+	 * Launch the process manager
+	 */
 	public void start() {
 		LOG.info("START MMServer");
 
@@ -93,6 +100,11 @@ public class MMServer {
 		this.started = true;
 	}
 
+	/**
+	 * Stop the process manager and wait for all agents to finish.
+	 * Use #setTimeoutSeconds to change the timeout (default is 2min)
+	 *
+	 */
 	public void stop() {
 		if (!started) {
 			LOG.error("MMServer is not launched");
@@ -123,6 +135,12 @@ public class MMServer {
 
 		LOG.info("Stop called: stopped, waiting for processes to finish");
 
+		waitForStop();
+
+		LOG.info("MMServer finished");
+	}
+
+	private void waitForStop() {
 		final CountDownLatch cdl = new CountDownLatch(1);
 		Thread thread = new Thread(() -> {
 			while (isRunning()) {
@@ -147,8 +165,6 @@ public class MMServer {
 		} catch (InterruptedException e) {
 			LOG.error("Stop called", e);
 		}
-
-		LOG.info("MMServer finished");
 	}
 
 	private boolean isRunning() {
