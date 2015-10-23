@@ -1,6 +1,6 @@
 package com.synaptix.mm.engine.model;
 
-import java.util.Date;
+import java.time.Instant;
 
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
@@ -29,6 +29,6 @@ public interface IProcessingResult {
 
 	public ErrorRecyclingKind getErrorRecyclingKind();
 
-	public Date getNextProcessingDate();
+	public Instant getNextProcessingDate();
 
 }

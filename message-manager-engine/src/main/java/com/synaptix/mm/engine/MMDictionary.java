@@ -1,5 +1,6 @@
 package com.synaptix.mm.engine;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -93,7 +94,7 @@ public final class MMDictionary {
 			case AUTOMATIC:
 				Calendar cal = Calendar.getInstance();
 				cal.add(Calendar.MINUTE, worst.delay);
-				return ProcessingResultBuilder.reject(ErrorRecyclingKind.AUTOMATIC, cal.getTime());
+				return ProcessingResultBuilder.reject(ErrorRecyclingKind.AUTOMATIC, Instant.now());
 			case MANUAL:
 				return ProcessingResultBuilder.reject(ErrorRecyclingKind.MANUAL, null);
 			case NOT_RECYCLABLE:

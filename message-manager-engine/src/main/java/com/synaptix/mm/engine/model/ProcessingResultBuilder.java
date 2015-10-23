@@ -1,6 +1,7 @@
 package com.synaptix.mm.engine.model;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.OffsetDateTime;
 
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
@@ -25,7 +26,7 @@ public final class ProcessingResultBuilder {
 		return new ProcessingResultBuilder().acceptResult();
 	}
 
-	private IProcessingResult rejectResult(ErrorRecyclingKind errorRecyclingKind, Date nextProcessingDate) {
+	private IProcessingResult rejectResult(ErrorRecyclingKind errorRecyclingKind, Instant nextProcessingDate) {
 		ProcessingResult recyclingResult = new ProcessingResult();
 		recyclingResult.setState(IProcessingResult.State.INVALID);
 		recyclingResult.setErrorRecyclingKind(errorRecyclingKind);
@@ -36,7 +37,7 @@ public final class ProcessingResultBuilder {
 	/**
 	 * Mark the processing result as being rejected with given error recycling kind and if "AUTOMATIC", given next processing date
 	 */
-	public static IProcessingResult reject(ErrorRecyclingKind errorRecyclingKind, Date nextProcessingDate) {
+	public static IProcessingResult reject(ErrorRecyclingKind errorRecyclingKind, Instant nextProcessingDate) {
 		return new ProcessingResultBuilder().rejectResult(errorRecyclingKind, nextProcessingDate);
 	}
 }

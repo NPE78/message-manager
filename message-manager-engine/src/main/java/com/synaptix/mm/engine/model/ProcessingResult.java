@@ -1,6 +1,6 @@
 package com.synaptix.mm.engine.model;
 
-import java.util.Date;
+import java.time.Instant;
 
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
@@ -13,7 +13,7 @@ class ProcessingResult implements IProcessingResult {
 
 	private ErrorRecyclingKind errorRecyclingKind;
 
-	private Date nextProcessingDate;
+	private Instant nextProcessingDate;
 
 	ProcessingResult() {
 	}
@@ -37,11 +37,11 @@ class ProcessingResult implements IProcessingResult {
 	}
 
 	@Override
-	public Date getNextProcessingDate() {
+	public Instant getNextProcessingDate() {
 		return nextProcessingDate;
 	}
 
-	public void setNextProcessingDate(Date nextProcessingDate) {
+	public void setNextProcessingDate(Instant nextProcessingDate) {
 		this.nextProcessingDate = nextProcessingDate;
 	}
 }
