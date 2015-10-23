@@ -42,7 +42,7 @@
         <sonar.jacoco.itReportPath>target/coverage-reports/jacoco-it.exec</sonar.jacoco.itReportPath>
         <sonar.jacoco.reportPath>target/coverage-reports/jacoco-ut.exec</sonar.jacoco.reportPath>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
-        <sonar.exclusions>**/taskmanager/example/**/*</sonar.exclusions>
+        <sonar.exclusions>**/message-manager-example/**/*</sonar.exclusions>
 
         <jetty.version>6.1.26</jetty.version>
     </properties>
@@ -52,7 +52,7 @@
     </scm>
     <ciManagement>
         <system>gitlab-ci</system>
-        <url>https://gitlab.synaptix-labs.com/ci/projects/4</url>
+        <url>https://gitlab.synaptix-labs.com/ci/projects/7</url>
     </ciManagement>
     <issueManagement>
         <system>gitlab</system>
