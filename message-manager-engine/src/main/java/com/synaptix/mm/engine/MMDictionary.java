@@ -28,8 +28,11 @@ public final class MMDictionary {
 
 	private final Map<String, List<IErrorType>> errorTypeMap;
 
+	/**
+	 * Use Guice to create this class
+	 */
 	@Inject
-	private MMDictionary() {
+	public MMDictionary() {
 		super();
 
 		this.messageTypeMap = new HashMap<>();

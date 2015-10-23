@@ -43,8 +43,12 @@ public class MMServer {
 
 	private boolean started;
 
+	/**
+	 * Use Guice to create this class.
+	 * @param trmt This is the id of the process manager to create
+	 */
 	@Inject
-	private MMServer(@Named("trmt") String trmt) {
+	public MMServer(@Named("trmt") String trmt) {
 		super();
 
 		this.trmt = trmt;
