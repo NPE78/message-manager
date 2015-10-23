@@ -1,21 +1,37 @@
 package com.synaptix.mm.engine;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.*;
-import org.joda.time.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTimeZone;
 
-import com.google.inject.*;
-import com.google.inject.name.*;
-import com.synaptix.component.factory.*;
-import com.synaptix.entity.extension.*;
-import com.synaptix.pmgr.core.apis.*;
-import com.synaptix.pmgr.core.lib.*;
-import com.synaptix.pmgr.core.lib.ProcessingChannel.*;
-import com.synaptix.pmgr.core.lib.probe.*;
-import com.synaptix.pmgr.plugin.*;
-import com.synaptix.toolkits.properties.*;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import com.synaptix.component.factory.ComponentFactory;
+import com.synaptix.component.factory.DefaultComputedFactory;
+import com.synaptix.entity.extension.BusinessComponentExtensionProcessor;
+import com.synaptix.entity.extension.CacheComponentExtensionProcessor;
+import com.synaptix.entity.extension.DatabaseComponentExtensionProcessor;
+import com.synaptix.entity.extension.IBusinessComponentExtension;
+import com.synaptix.entity.extension.ICacheComponentExtension;
+import com.synaptix.entity.extension.IDatabaseComponentExtension;
+import com.synaptix.pmgr.core.apis.ChannelSlot;
+import com.synaptix.pmgr.core.apis.PluggableChannel;
+import com.synaptix.pmgr.core.lib.ProcessEngine;
+import com.synaptix.pmgr.core.lib.ProcessingChannel;
+import com.synaptix.pmgr.core.lib.ProcessingChannel.Agent;
+import com.synaptix.pmgr.core.lib.probe.CronAgent;
+import com.synaptix.pmgr.core.lib.probe.HeartbeatAgent;
+import com.synaptix.pmgr.plugin.GuicePluginManager;
+import com.synaptix.toolkits.properties.PropertiesKit;
 
 public class MMServer {
 
@@ -23,17 +39,14 @@ public class MMServer {
 
 	private final String trmt;
 
-	private final Injector injector;
-
 	private int timeoutSeconds;
 
 	private boolean started;
 
 	@Inject
-	public MMServer(Injector injector, @Named("trmt") String trmt) {
+	public MMServer(@Named("trmt") String trmt) {
 		super();
 
-		this.injector = injector;
 		this.trmt = trmt;
 
 		this.timeoutSeconds = 2 * 60;
@@ -76,7 +89,7 @@ public class MMServer {
 		launchEngine();
 	}
 
-	public final void launchEngine() {
+	private void launchEngine() {
 		Properties properties = PropertiesKit.load("process_engine.properties", ProcessEngine.class, true);
 //		if (config != null) {
 //			String ip = integratorConfig.getEngineAddress();
@@ -120,19 +133,15 @@ public class MMServer {
 		LOG.info("Stop called: stopped, waiting for processes to finish");
 
 		final CountDownLatch cdl = new CountDownLatch(1);
-		Thread thread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				while (isRunning()) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						LOG.error("Stop waiter interrupted", e);
-					}
+		Thread thread = new Thread(() -> {
+			while (isRunning()) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					LOG.error("Stop waiter interrupted", e);
 				}
-				cdl.countDown();
 			}
+			cdl.countDown();
 		});
 		thread.setDaemon(false);
 		thread.start();
@@ -151,7 +160,7 @@ public class MMServer {
 		LOG.info("MMServer finished");
 	}
 
-	public boolean isRunning() {
+	private boolean isRunning() {
 		Collection<ChannelSlot> channels = ProcessEngine.getInstance().getChannels();
 		for (ChannelSlot channelSlot : channels) {
 			PluggableChannel pluggedChannel = channelSlot.getPluggedChannel();

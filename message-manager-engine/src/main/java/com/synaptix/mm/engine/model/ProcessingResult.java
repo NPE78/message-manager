@@ -18,6 +18,7 @@ class ProcessingResult implements IProcessingResult {
 	ProcessingResult() {
 	}
 
+	@Override
 	public IProcessingResult.State getState() {
 		return state;
 	}
@@ -26,6 +27,7 @@ class ProcessingResult implements IProcessingResult {
 		this.state = state;
 	}
 
+	@Override
 	public ErrorRecyclingKind getErrorRecyclingKind() {
 		return errorRecyclingKind;
 	}
@@ -34,6 +36,7 @@ class ProcessingResult implements IProcessingResult {
 		this.errorRecyclingKind = errorRecyclingKind;
 	}
 
+	@Override
 	public Date getNextProcessingDate() {
 		return nextProcessingDate;
 	}

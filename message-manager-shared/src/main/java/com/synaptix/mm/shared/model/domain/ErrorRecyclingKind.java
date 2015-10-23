@@ -24,7 +24,7 @@ public enum ErrorRecyclingKind {
 
 	private final int criticity;
 
-	private ErrorRecyclingKind(int criticity) {
+	ErrorRecyclingKind(int criticity) {
 		this.criticity = criticity;
 	}
 

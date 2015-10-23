@@ -20,15 +20,15 @@ class AbstractMMTest {
 		injector = MainIntegratorBoot.createServer(buildIntegratorTestModule());
 	}
 
-	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
+	AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
 		return new DefaultTestMMModule();
 	}
 
-	protected final MMServer getServer() {
+	final MMServer getServer() {
 		return injector.getInstance(MMServer.class);
 	}
 
-	public <I> I getInstance(Class<I> clazz) {
+	<I> I getInstance(Class<I> clazz) {
 		return injector.getInstance(clazz);
 	}
 

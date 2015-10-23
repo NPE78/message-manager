@@ -23,7 +23,7 @@ import com.synaptix.mm.engine.guice.MMEngineModule;
  */
 public class MainIntegratorBoot {
 
-	public static final int INTEGRATOR_JETTY_PORT = 8000;
+	private static final int INTEGRATOR_JETTY_PORT = 8000;
 	private static final Log LOG = LogFactory.getLog(MainIntegratorBoot.class);
 
 	public static void main(String[] args) {
@@ -43,7 +43,6 @@ public class MainIntegratorBoot {
 	 */
 	public static Injector createServer(AbstractModule integratorTestModule) {
 		Injector injector = null;
-		MMServer server = null;
 		Properties p = new Properties();
 		try {
 			URL resource = MainIntegratorBoot.class.getClassLoader().getResource("integrator.properties");
@@ -57,7 +56,7 @@ public class MainIntegratorBoot {
 			} else {
 				injector = Guice.createInjector(new MMEngineModule(trmt));
 			}
-			server = injector.getInstance(MMServer.class);
+			MMServer server = injector.getInstance(MMServer.class);
 
 			server.start();
 

@@ -37,6 +37,6 @@ public enum MessageStatus {
 	/**
 	 * The message has definitely been rejected
 	 */
-	REJECTED;
+	REJECTED
 
 }

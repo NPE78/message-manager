@@ -16,6 +16,6 @@ public enum ErrorStatus {
 	/**
 	 * The error has been marked as such by an user, which indicates the error won't block any integration of the message
 	 */
-	IGNORED;
+	IGNORED
 
 }

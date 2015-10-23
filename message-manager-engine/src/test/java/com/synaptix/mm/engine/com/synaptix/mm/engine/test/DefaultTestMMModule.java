@@ -7,7 +7,7 @@ import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
 /**
  * Created by NicolasP on 22/10/2015.
  */
-public class DefaultTestMMModule extends AbstractSynaptixIntegratorServletModule {
+class DefaultTestMMModule extends AbstractSynaptixIntegratorServletModule {
 
 	@Override
 	protected final void configure() {

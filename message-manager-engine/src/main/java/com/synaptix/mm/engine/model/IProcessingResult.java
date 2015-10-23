@@ -21,7 +21,7 @@ public interface IProcessingResult {
 		/**
 		 * The message is invalid (a recycling kind should be provided)
 		 */
-		INVALID;
+		INVALID
 
 	}
 

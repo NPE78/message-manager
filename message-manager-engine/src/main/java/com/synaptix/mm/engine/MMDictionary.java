@@ -10,7 +10,6 @@ import java.util.Optional;
 import com.google.inject.Inject;
 import com.synaptix.mm.engine.exception.MessageTypeAlreadyDefinedException;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
-import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.engine.model.ProcessingResultBuilder;
 import com.synaptix.mm.shared.model.IErrorType;
@@ -27,9 +26,6 @@ public final class MMDictionary {
 	private final Map<String, IMessageType> messageTypeMap;
 
 	private final Map<String, List<IErrorType>> errorTypeMap;
-
-	@Inject(optional = true)
-	private IProcessErrorFactory errorFactory;
 
 	@Inject
 	public MMDictionary() {

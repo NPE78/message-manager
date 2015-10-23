@@ -21,6 +21,7 @@ public class SimpleProcessError implements IProcessError {
 		this.value = value;
 	}
 
+	@Override
 	public String getErrorCode() {
 		return errorCode;
 	}

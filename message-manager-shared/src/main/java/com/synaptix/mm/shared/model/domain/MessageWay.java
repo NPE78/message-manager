@@ -12,6 +12,6 @@ public enum MessageWay {
 	/**
 	 * The message has to be sent
 	 */
-	OUT;
+	OUT
 
 }
