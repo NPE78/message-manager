@@ -25,3 +25,6 @@ build/
 
 # Log
 *.log
+
+# Integrator
+*/${config.engine.errorpath}

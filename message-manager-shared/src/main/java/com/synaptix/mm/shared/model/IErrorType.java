@@ -1,9 +1,6 @@
 package com.synaptix.mm.shared.model;
 
-import java.util.Date;
-
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
-import com.synaptix.mm.shared.model.domain.ErrorStatus;
 
 /**
  * Created by NicolasP on 22/10/2015.
@@ -21,13 +18,8 @@ public interface IErrorType {
 	public ErrorRecyclingKind getRecyclingKind();
 
 	/**
-	 * The status of the error
+	 * The error will ask the message to be recycled after this duration (in minutes) if the message has to be recycled automatically
 	 */
-	public ErrorStatus getErrorStatus();
-
-	/**
-	 * The error will ask the message to be recycled starting the given date (or after if another error has a superior next processing date) if the message has to be recycled automatically
-	 */
-	public Date getNextProcessingDate();
+	public Integer getNextRecyclingDuration();
 
 }

@@ -25,6 +25,8 @@ public class MMServer {
 
 	private final Injector injector;
 
+	private int timeoutSeconds;
+
 	private boolean started;
 
 	@Inject
@@ -34,6 +36,8 @@ public class MMServer {
 		this.injector = injector;
 		this.trmt = trmt;
 
+		this.timeoutSeconds = 2 * 60;
+
 		Locale.setDefault(Locale.FRANCE);
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		DateTimeZone.setDefault(DateTimeZone.forID("UTC"));
@@ -42,6 +46,10 @@ public class MMServer {
 		ComponentFactory.getInstance().addExtension(IBusinessComponentExtension.class, new BusinessComponentExtensionProcessor());
 		ComponentFactory.getInstance().addExtension(ICacheComponentExtension.class, new CacheComponentExtensionProcessor());
 		ComponentFactory.getInstance().setComputedFactory(new DefaultComputedFactory());
+	}
+
+	public void setTimeoutSeconds(int timeoutSeconds) {
+		this.timeoutSeconds = timeoutSeconds;
 	}
 
 	private String getVersion() {
@@ -130,7 +138,7 @@ public class MMServer {
 		thread.start();
 
 		try {
-			if (cdl.await(2, TimeUnit.MINUTES)) {
+			if (cdl.await(timeoutSeconds, TimeUnit.SECONDS)) {
 				LOG.info("Stop called: stopped in time");
 			} else {
 				LOG.info("Stop called: timeout");

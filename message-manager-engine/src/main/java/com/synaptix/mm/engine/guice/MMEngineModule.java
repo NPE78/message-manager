@@ -25,5 +25,6 @@ public class MMEngineModule extends AbstractModule {
 		bind(String.class).annotatedWith(Names.named("trmt")).toInstance(trmt);
 
 		bind(MMServer.class).in(Singleton.class);
+		bind(MMDictionary.class).in(Singleton.class);
 	}
 }

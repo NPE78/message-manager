@@ -7,6 +7,9 @@ import com.synaptix.mm.shared.model.domain.MessageWay;
  */
 public interface IMessageType {
 
+	/**
+	 * The name of the message type, should be unique
+	 */
 	public String getName();
 
 	public MessageWay getMessageWay();

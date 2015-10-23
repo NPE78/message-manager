@@ -1,6 +1,8 @@
 package com.synaptix.mm.engine.com.synaptix.mm.engine.test;
 
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
@@ -25,20 +27,18 @@ public class ITLaunchIntegrator extends AbstractMMTest {
 
 		randomInt = new Random().nextInt();
 		getInstance(AgentTest.class).work(randomInt, ProcessEngine.getInstance());
-//		ProcessEngine.handle(AgentTest.class.getSimpleName(), "message");
+
+
+		//test timeout
+		getServer().setTimeoutSeconds(2);
+		ProcessEngine.handle(SlowAgentTest.class.getSimpleName(), "message");
+
+		getServer().stop();
 	}
 
 	@Override
 	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
 		return new TestIntegratorServletModule();
-	}
-
-	private class TestIntegratorServletModule extends AbstractSynaptixIntegratorServletModule {
-
-		@Override
-		protected void configure() {
-			bindAgent(AgentTest.class, 5, 10);
-		}
 	}
 
 	private static class AgentTest implements ProcessingChannel.Agent {
@@ -47,6 +47,34 @@ public class ITLaunchIntegrator extends AbstractMMTest {
 		public void work(Object o, Engine engine) {
 			Assert.assertEquals(randomInt, o);
 			System.out.println(o);
+		}
+	}
+
+	private static class SlowAgentTest implements ProcessingChannel.Agent {
+
+		@Override
+		public void work(Object o, Engine engine) {
+			boolean hasBeenStopped = false;
+			try {
+				CountDownLatch cdl = new CountDownLatch(1);
+				cdl.await(3000, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				hasBeenStopped = true; // never called if the integrator really stopped
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				Assert.assertTrue(hasBeenStopped);
+			}
+//			Assert.assertEquals(randomInt, o);
+		}
+	}
+
+	private class TestIntegratorServletModule extends AbstractSynaptixIntegratorServletModule {
+
+		@Override
+		protected void configure() {
+			bindAgent(AgentTest.class, 5, 10);
+			bindAgent(SlowAgentTest.class, 5, 10);
 		}
 	}
 }

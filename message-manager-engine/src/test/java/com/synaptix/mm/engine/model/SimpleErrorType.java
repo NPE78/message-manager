@@ -8,17 +8,27 @@ import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
  */
 public class SimpleErrorType implements IErrorType {
 
-	private ErrorRecyclingKind errorRecyclingKind;
+	private final String code;
 
-	public SimpleErrorType(ErrorRecyclingKind errorRecyclingKind) {
+	private final ErrorRecyclingKind errorRecyclingKind;
+
+	private final Integer nextRecyclingDuration;
+
+	public SimpleErrorType(String code, ErrorRecyclingKind errorRecyclingKind) {
+		this(code, errorRecyclingKind, 60);
+	}
+
+	public SimpleErrorType(String code, ErrorRecyclingKind errorRecyclingKind, Integer nextRecyclingDuration) {
 		super();
 
+		this.code = code;
 		this.errorRecyclingKind = errorRecyclingKind;
+		this.nextRecyclingDuration = nextRecyclingDuration;
 	}
 
 	@Override
 	public String getCode() {
-		return "SimpleErrorType";
+		return code;
 	}
 
 	@Override
@@ -28,6 +38,6 @@ public class SimpleErrorType implements IErrorType {
 
 	@Override
 	public Integer getNextRecyclingDuration() {
-		return 60;
+		return nextRecyclingDuration;
 	}
 }

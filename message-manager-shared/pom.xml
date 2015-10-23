@@ -9,5 +9,6 @@
     <artifactId>message-manager-shared</artifactId>
     <name>Message Manager Shared</name>
     <dependencies>
+
     </dependencies>
 </project>

@@ -10,6 +10,8 @@
         <url>http://www.synaptix-labs.com</url>
     </organization>
     <properties>
+        <root-directory>${project.basedir}</root-directory>
+
         <target.jdk>1.8</target.jdk>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -33,6 +35,7 @@
 
         <sonar-maven-plugin.version>2.6</sonar-maven-plugin.version>
 
+        <logback.configurationFile>${root-directory}/etc/maven-annotation-logback.xml</logback.configurationFile>
         <generated.sources.dir>${project.build.directory}/generated-sources/apt</generated.sources.dir>
         <generated.antlr.sources.dir>${project.build.directory}/generated-sources/apt</generated.antlr.sources.dir>
 
@@ -160,6 +163,31 @@
                     <deployAtEnd>true</deployAtEnd>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>synaptixComponent</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <processors>
+                                <processor>com.synaptix.component.annotation.processor.SynaptixComponentProcessor</processor>
+                            </processors>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.synaptix</groupId>
+                        <artifactId>SynaptixComponent</artifactId>
+                        <version>${synaptixlibs.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -217,6 +245,18 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
                     <version>${sonar-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.bsc.maven</groupId>
+                    <artifactId>maven-processor-plugin</artifactId>
+                    <version>${maven-processor-plugin.version}</version>
+                    <configuration>
+                        <outputDirectory>${generated.sources.dir}</outputDirectory>
+
+                        <systemProperties>
+                            <logback.configurationFile>${logback.configurationFile}</logback.configurationFile>
+                        </systemProperties>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -312,6 +352,11 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.synaptix</groupId>
+            <artifactId>SynaptixComponent</artifactId>
+            <version>${synaptixlibs.version}</version>
         </dependency>
     </dependencies>
     <distributionManagement>

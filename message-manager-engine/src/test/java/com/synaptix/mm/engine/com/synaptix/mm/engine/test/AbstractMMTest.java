@@ -11,7 +11,7 @@ import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
 /**
  * Created by NicolasP on 21/10/2015.
  */
-public class AbstractMMTest {
+class AbstractMMTest {
 
 	private Injector injector;
 
@@ -21,7 +21,7 @@ public class AbstractMMTest {
 	}
 
 	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
-		return null;
+		return new DefaultTestMMModule();
 	}
 
 	protected final MMServer getServer() {

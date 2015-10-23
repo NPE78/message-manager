@@ -28,4 +28,9 @@ public interface IMessage {
 	 */
 	public Date getCreatedDate();
 
+//	/**
+//	 * The list of associated errors
+//	 */
+//	public List<IError> getErrorList();
+
 }

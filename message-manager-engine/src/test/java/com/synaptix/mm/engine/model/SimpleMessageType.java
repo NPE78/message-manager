@@ -8,9 +8,17 @@ import com.synaptix.mm.shared.model.domain.MessageWay;
  */
 public class SimpleMessageType implements IMessageType {
 
+	private final String name;
+
+	public SimpleMessageType(String name) {
+		super();
+
+		this.name = name;
+	}
+
 	@Override
 	public String getName() {
-		return "SimpleMessageType";
+		return name;
 	}
 
 	@Override
