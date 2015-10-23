@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.synaptix.mm.engine.MMDictionary;
+import com.synaptix.mm.engine.exception.UnknownErrorException;
 import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.engine.model.SimpleErrorType;
@@ -85,6 +86,16 @@ public class ITProcessingResult extends AbstractMMTest {
 			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.NOT_RECYCLABLE, r1.getErrorRecyclingKind());
 			Assert.assertNull(r1.getNextProcessingDate());
+		}
+		{
+			boolean exceptionRaised = false;
+			try {
+				IProcessingResult r1 = dictionary.getProcessingResult("MT1", errorList);
+			} catch (UnknownErrorException e) {
+				exceptionRaised = true;
+			} finally {
+				Assert.assertTrue(exceptionRaised);
+			}
 		}
 	}
 }

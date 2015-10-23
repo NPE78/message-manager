@@ -70,13 +70,6 @@ public class MMServer {
 		if (version == null) {
 			version = "local";
 		}
-		// try {
-		// Properties p = new Properties();
-		// p.load(PscXmppServer.class.getResourceAsStream("/version.properties"));
-		// res = p.getProperty("version", res);
-		// } catch (IOException e) {
-		// LOG.error(e.getMessage(), e);
-		// }
 		return version;
 	}
 
@@ -91,12 +84,6 @@ public class MMServer {
 
 	private void launchEngine() {
 		Properties properties = PropertiesKit.load("process_engine.properties", ProcessEngine.class, true);
-//		if (config != null) {
-//			String ip = integratorConfig.getEngineAddress();
-//			if ((ip != null) && (!ip.isEmpty())) {
-//				properties.setProperty("engine" + trmt + ".bindaddress", ip);
-//			}
-//		}
 		GuicePluginManager.initProcessManager(LOG, trmt, properties);
 
 		this.started = true;
@@ -175,7 +162,7 @@ public class MMServer {
 	}
 
 	private Set<String> runningSet() {
-		Set<String> set = new HashSet<String>();
+		Set<String> set = new HashSet<>();
 		Collection<ChannelSlot> channels = ProcessEngine.getInstance().getChannels();
 		for (ChannelSlot channelSlot : channels) {
 			PluggableChannel pluggedChannel = channelSlot.getPluggedChannel();

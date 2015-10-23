@@ -83,7 +83,7 @@ public final class MMDictionary {
 		errorList.forEach(s -> {
 			Optional<IErrorType> first = errorTypeList.stream().filter(errorType -> errorType.getCode().equals(s.getErrorCode())).findFirst();
 			if (!first.isPresent()) {
-				throw new UnknownErrorException("Error code " + s + " not found in Message Type " + messageTypeName);
+				throw new UnknownErrorException("Error code " + s.getErrorCode() + " not found in Message Type " + messageTypeName);
 			}
 			IErrorType errorType = first.get();
 			worst.errorRecyclingKind = ErrorRecyclingKind.getWorst(errorType.getRecyclingKind(), worst.errorRecyclingKind);

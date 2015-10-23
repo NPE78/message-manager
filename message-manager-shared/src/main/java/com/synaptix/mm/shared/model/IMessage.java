@@ -1,6 +1,6 @@
 package com.synaptix.mm.shared.model;
 
-import java.util.Date;
+import java.time.Instant;
 
 import com.synaptix.mm.shared.model.domain.MessageStatus;
 
@@ -9,28 +9,29 @@ import com.synaptix.mm.shared.model.domain.MessageStatus;
  */
 public interface IMessage {
 
+	/**
+	 * The type of the message
+	 */
 	public IMessageType getMessageType();
 
+	/**
+	 * The status of the message. Uses a kind of workflow to know what to do next
+	 */
 	public MessageStatus getMessageStatus();
 
 	/**
 	 * In case of a message which needs to be recycled, this is the date the message can be recycled again
 	 */
-	public Date getNextProcessingDate();
+	public Instant getNextProcessingDate();
 
 	/**
 	 * If the message still hasn't been integrated or sent at the deadline date, it will be definitely rejected
 	 */
-	public Date getDeadlineDate();
+	public Instant getDeadlineDate();
 
 	/**
 	 * This date is used to compute the deadline date
 	 */
-	public Date getCreatedDate();
-
-//	/**
-//	 * The list of associated errors
-//	 */
-//	public List<IError> getErrorList();
+	public Instant getCreatedDate();
 
 }
