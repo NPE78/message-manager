@@ -7,9 +7,9 @@ import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 /**
  * Created by NicolasP on 22/10/2015.
  */
-public final class RecyclingResultBuilder {
+public final class ProcessingResultBuilder {
 
-	private RecyclingResultBuilder() {
+	private ProcessingResultBuilder() {
 	}
 
 	private IProcessingResult acceptResult() {
@@ -18,8 +18,11 @@ public final class RecyclingResultBuilder {
 		return recyclingResult;
 	}
 
+	/**
+	 * Mark the processing result as being accepted
+	 */
 	public static IProcessingResult accept() {
-		return new RecyclingResultBuilder().acceptResult();
+		return new ProcessingResultBuilder().acceptResult();
 	}
 
 	private IProcessingResult rejectResult(ErrorRecyclingKind errorRecyclingKind, Date nextProcessingDate) {
@@ -30,7 +33,10 @@ public final class RecyclingResultBuilder {
 		return recyclingResult;
 	}
 
+	/**
+	 * Mark the processing result as being rejected with given error recycling kind and if "AUTOMATIC", given next processing date
+	 */
 	public static IProcessingResult reject(ErrorRecyclingKind errorRecyclingKind, Date nextProcessingDate) {
-		return new RecyclingResultBuilder().rejectResult(errorRecyclingKind, nextProcessingDate);
+		return new ProcessingResultBuilder().rejectResult(errorRecyclingKind, nextProcessingDate);
 	}
 }

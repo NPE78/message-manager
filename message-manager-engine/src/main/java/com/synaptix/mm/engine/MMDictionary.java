@@ -9,14 +9,16 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.google.inject.Inject;
-import com.synaptix.mm.engine.factory.IErrorFactory;
+import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.model.IProcessingResult;
-import com.synaptix.mm.engine.model.RecyclingResultBuilder;
+import com.synaptix.mm.engine.model.ProcessingResultBuilder;
 import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IMessageType;
+import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
 /**
+ * This object contains the configuration of each message type.
  * Created by NicolasP on 22/10/2015.
  */
 public final class MMDictionary {
@@ -26,7 +28,7 @@ public final class MMDictionary {
 	private final Map<String, List<IErrorType>> errorTypeMap;
 
 	@Inject(optional = true)
-	private IErrorFactory errorFactory;
+	private IProcessErrorFactory errorFactory;
 
 	@Inject
 	public MMDictionary() {
@@ -73,14 +75,18 @@ public final class MMDictionary {
 
 //	public IError createError(String messageTypeName, String errorCode) {
 //		if (errorFactory == null) {
-//			throw new NullPointerException("IErrorFactory has no implementation or implementation has not be binded correctly.");
+//			throw new NullPointerException("IProcessErrorFactory has no implementation or implementation has not be binded correctly.");
 //		}
 //		return errorFactory.createError(messageTypeName, errorCode);
 //	}
 
-	public IProcessingResult getProcessingResult(String messageTypeName, List<String> errorList) {
+	/**
+	 * Get the processing result given a message type and a list of errors raised during the process.
+	 * It uses the dictionnary to determine whether the process is valid or invalid, computes the recycling kind according to the configuration and if needed a next processing date
+	 */
+	public IProcessingResult getProcessingResult(String messageTypeName, List<IProcessError> errorList) {
 		if (errorList == null || errorList.isEmpty()) {
-			return RecyclingResultBuilder.accept();
+			return ProcessingResultBuilder.accept();
 		}
 
 		List<IErrorType> errorTypeList = errorTypeMap.get(messageTypeName);
@@ -90,7 +96,7 @@ public final class MMDictionary {
 		Date nextProcessingDate = null;
 
 		errorList.forEach(s -> {
-			Optional<IErrorType> first = errorTypeList.stream().filter(errorType -> errorType.getCode().equals(s)).findFirst();
+			Optional<IErrorType> first = errorTypeList.stream().filter(errorType -> errorType.getCode().equals(s.getErrorCode())).findFirst();
 			if (!first.isPresent()) {
 				throw new RuntimeException("Error code " + s + " not found in Message Type " + messageTypeName);
 			}
@@ -101,17 +107,17 @@ public final class MMDictionary {
 
 		switch (worst.errorRecyclingKind) {
 //			case WARNING:
-//				return RecyclingResultBuilder.accept();
+//				return ProcessingResultBuilder.accept();
 			case AUTOMATIC:
 				Calendar cal = Calendar.getInstance();
 				cal.add(Calendar.MINUTE, worst.delay);
-				return RecyclingResultBuilder.reject(ErrorRecyclingKind.AUTOMATIC, cal.getTime());
+				return ProcessingResultBuilder.reject(ErrorRecyclingKind.AUTOMATIC, cal.getTime());
 			case MANUAL:
-				return RecyclingResultBuilder.reject(ErrorRecyclingKind.MANUAL, null);
+				return ProcessingResultBuilder.reject(ErrorRecyclingKind.MANUAL, null);
 			case NOT_RECYCLABLE:
-				return RecyclingResultBuilder.reject(ErrorRecyclingKind.NOT_RECYCLABLE, null);
+				return ProcessingResultBuilder.reject(ErrorRecyclingKind.NOT_RECYCLABLE, null);
 			default:
-				return RecyclingResultBuilder.accept();
+				return ProcessingResultBuilder.accept();
 		}
 	}
 

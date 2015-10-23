@@ -6,7 +6,7 @@ import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
 /**
  * Interface which represents the result of a process (integration or export).
- * Use ProcessingResult to build
+ * Use ProcessingResultBuilder to build
  *
  * Created by NicolasP on 22/10/2015.
  */

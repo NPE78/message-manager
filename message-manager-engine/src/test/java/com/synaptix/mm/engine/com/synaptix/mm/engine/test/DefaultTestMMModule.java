@@ -1,5 +1,7 @@
 package com.synaptix.mm.engine.com.synaptix.mm.engine.test;
 
+import com.google.inject.Singleton;
+import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
 
 /**
@@ -9,7 +11,7 @@ public class DefaultTestMMModule extends AbstractSynaptixIntegratorServletModule
 
 	@Override
 	protected final void configure() {
-//		bind(IErrorFactory.class).to(SimpleErrorFactory.class).in(Singleton.class);
+		bind(IProcessErrorFactory.class).to(SimpleProcessErrorFactory.class).in(Singleton.class);
 	}
 
 	protected void configureTestModule() {

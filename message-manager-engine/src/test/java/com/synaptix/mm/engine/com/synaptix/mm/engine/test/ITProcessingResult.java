@@ -6,10 +6,12 @@ import java.util.List;
 import org.junit.Test;
 
 import com.synaptix.mm.engine.MMDictionary;
+import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.engine.model.SimpleErrorType;
 import com.synaptix.mm.engine.model.SimpleMessageType;
 import com.synaptix.mm.shared.model.IErrorType;
+import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
 import junit.framework.Assert;
@@ -49,14 +51,16 @@ public class ITProcessingResult extends AbstractMMTest {
 			Assert.assertTrue(raised); // test unique
 		}
 
-		List<String> errorList = new ArrayList<>();
+		IProcessErrorFactory processErrorFactory = getInstance(IProcessErrorFactory.class);
+
+		List<IProcessError> errorList = new ArrayList<>();
 
 		{
 			IProcessingResult r1 = dictionary.getProcessingResult("MT1", errorList);
 			Assert.assertEquals(IProcessingResult.State.VALID, r1.getState());
 		}
 		{
-			errorList.add("ET1");
+			errorList.add(processErrorFactory.createProcessError("ET1", "", ""));
 			IProcessingResult r1 = dictionary.getProcessingResult("MT1", errorList);
 			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.AUTOMATIC, r1.getErrorRecyclingKind());
@@ -69,41 +73,18 @@ public class ITProcessingResult extends AbstractMMTest {
 			Assert.assertNull(r1.getNextProcessingDate());
 		}
 		{
-			errorList.add("ET2");
+			errorList.add(processErrorFactory.createProcessError("ET2", "", ""));
 			IProcessingResult r1 = dictionary.getProcessingResult("MT3", errorList);
 			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.MANUAL, r1.getErrorRecyclingKind());
 			Assert.assertNull(r1.getNextProcessingDate());
 		}
 		{
-			errorList.add("ET3");
+			errorList.add(processErrorFactory.createProcessError("ET3", "", ""));
 			IProcessingResult r1 = dictionary.getProcessingResult("MT3", errorList);
 			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.NOT_RECYCLABLE, r1.getErrorRecyclingKind());
 			Assert.assertNull(r1.getNextProcessingDate());
 		}
 	}
-
-//	@Override
-//	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
-//		return new RecyclingModule();
-//
-//	}
-//
-//	private static class AgentTest implements ProcessingChannel.Agent {
-//
-//		@Override
-//		public void work(Object o, Engine engine) {
-//			Assert.assertEquals(randomInt, o);
-//			System.out.println(o);
-//		}
-//	}
-//
-//	private class RecyclingModule extends AbstractSynaptixIntegratorServletModule {
-//
-//		@Override
-//		protected void configure() {
-//			bindAgent(AgentTest.class, 5, 10);
-//		}
-//	}
 }
