@@ -218,6 +218,11 @@
                     <configuration>
                         <outputDirectory>${generated.sources.dir}</outputDirectory>
                         <failOnError>false</failOnError>
+                        <outputDirectory>${generated.sources.dir}</outputDirectory>
+
+                        <systemProperties>
+                            <logback.configurationFile>${logback.configurationFile}</logback.configurationFile>
+                        </systemProperties>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -245,18 +250,6 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
                     <version>${sonar-maven-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.bsc.maven</groupId>
-                    <artifactId>maven-processor-plugin</artifactId>
-                    <version>${maven-processor-plugin.version}</version>
-                    <configuration>
-                        <outputDirectory>${generated.sources.dir}</outputDirectory>
-
-                        <systemProperties>
-                            <logback.configurationFile>${logback.configurationFile}</logback.configurationFile>
-                        </systemProperties>
-                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
