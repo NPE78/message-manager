@@ -44,7 +44,7 @@ public class MMServer {
 	private boolean started;
 
 	@Inject
-	public MMServer(@Named("trmt") String trmt) {
+	private MMServer(@Named("trmt") String trmt) {
 		super();
 
 		this.trmt = trmt;

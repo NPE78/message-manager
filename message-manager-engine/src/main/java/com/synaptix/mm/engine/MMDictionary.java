@@ -29,7 +29,7 @@ public final class MMDictionary {
 	private final Map<String, List<IErrorType>> errorTypeMap;
 
 	@Inject
-	public MMDictionary() {
+	private MMDictionary() {
 		super();
 
 		this.messageTypeMap = new HashMap<>();
@@ -88,6 +88,15 @@ public final class MMDictionary {
 			updateWorst(worst, first.get());
 		});
 
+		return buildProcessingResult(worst);
+	}
+
+	private void updateWorst(Worst worst, IErrorType errorType) {
+		worst.errorRecyclingKind = ErrorRecyclingKind.getWorst(errorType.getRecyclingKind(), worst.errorRecyclingKind);
+		worst.delay = Math.max(errorType.getNextRecyclingDuration() != null ? errorType.getNextRecyclingDuration() : 0, worst.delay != null ? worst.delay : 0);
+	}
+
+	private IProcessingResult buildProcessingResult(Worst worst) {
 		switch (worst.errorRecyclingKind) {
 			case AUTOMATIC:
 				Calendar cal = Calendar.getInstance();
@@ -101,11 +110,6 @@ public final class MMDictionary {
 				// this is also the case of the WARNING enum value
 				return ProcessingResultBuilder.accept();
 		}
-	}
-
-	private void updateWorst(Worst worst, IErrorType errorType) {
-		worst.errorRecyclingKind = ErrorRecyclingKind.getWorst(errorType.getRecyclingKind(), worst.errorRecyclingKind);
-		worst.delay = Math.max(errorType.getNextRecyclingDuration() != null ? errorType.getNextRecyclingDuration() : 0, worst.delay != null ? worst.delay : 0);
 	}
 
 	private class Worst {
