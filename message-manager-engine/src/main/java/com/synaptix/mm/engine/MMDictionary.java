@@ -2,13 +2,14 @@ package com.synaptix.mm.engine;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import com.google.inject.Inject;
+import com.synaptix.mm.engine.exception.MessageTypeAlreadyDefinedException;
+import com.synaptix.mm.engine.exception.UnknownErrorException;
 import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.engine.model.ProcessingResultBuilder;
@@ -59,26 +60,15 @@ public final class MMDictionary {
 		String messageTypeName = messageType.getName();
 		checkConflict(messageTypeName);
 
-		if (errorTypeList == null) {
-			errorTypeList = new ArrayList<>();
-		}
-
 		messageTypeMap.put(messageTypeName, messageType);
-		errorTypeMap.put(messageTypeName, errorTypeList);
+		errorTypeMap.put(messageTypeName, errorTypeList != null ? errorTypeList : new ArrayList<>());
 	}
 
 	private void checkConflict(String messageTypeName) {
 		if (messageTypeMap.containsKey(messageTypeName)) {
-			throw new RuntimeException("The message type " + messageTypeName + " already exists!");
+			throw new MessageTypeAlreadyDefinedException("The message type " + messageTypeName + " already exists!");
 		}
 	}
-
-//	public IError createError(String messageTypeName, String errorCode) {
-//		if (errorFactory == null) {
-//			throw new NullPointerException("IProcessErrorFactory has no implementation or implementation has not be binded correctly.");
-//		}
-//		return errorFactory.createError(messageTypeName, errorCode);
-//	}
 
 	/**
 	 * Get the processing result given a message type and a list of errors raised during the process.
@@ -92,13 +82,11 @@ public final class MMDictionary {
 		List<IErrorType> errorTypeList = errorTypeMap.get(messageTypeName);
 
 		Worst worst = new Worst();
-		ErrorRecyclingKind errorRecyclingKind = null;
-		Date nextProcessingDate = null;
 
 		errorList.forEach(s -> {
 			Optional<IErrorType> first = errorTypeList.stream().filter(errorType -> errorType.getCode().equals(s.getErrorCode())).findFirst();
 			if (!first.isPresent()) {
-				throw new RuntimeException("Error code " + s + " not found in Message Type " + messageTypeName);
+				throw new UnknownErrorException("Error code " + s + " not found in Message Type " + messageTypeName);
 			}
 			IErrorType errorType = first.get();
 			worst.errorRecyclingKind = ErrorRecyclingKind.getWorst(errorType.getRecyclingKind(), worst.errorRecyclingKind);
@@ -106,8 +94,6 @@ public final class MMDictionary {
 		});
 
 		switch (worst.errorRecyclingKind) {
-//			case WARNING:
-//				return ProcessingResultBuilder.accept();
 			case AUTOMATIC:
 				Calendar cal = Calendar.getInstance();
 				cal.add(Calendar.MINUTE, worst.delay);
@@ -117,6 +103,7 @@ public final class MMDictionary {
 			case NOT_RECYCLABLE:
 				return ProcessingResultBuilder.reject(ErrorRecyclingKind.NOT_RECYCLABLE, null);
 			default:
+				// this is also the case of the WARNING enum value
 				return ProcessingResultBuilder.accept();
 		}
 	}
@@ -128,21 +115,4 @@ public final class MMDictionary {
 		Integer delay;
 
 	}
-
-//	public IMessageType findMessageType(String messageTypeName) {
-//		IMessageType messageType = messageTypeMap.get(messageTypeName);
-//		if (messageType == null) {
-//			throw new RuntimeException("Message Type not found: " + messageTypeName);
-//		}
-//		return messageType;
-//	}
-//
-//	public IErrorType findErrorType(String messageTypeName, String errorCode) {
-//		List<IErrorType> errorTypeList = errorTypeMap.get(messageTypeName);
-//		Optional<IErrorType> first = errorTypeList.stream().filter(errorType -> errorType.getCode().equals(errorCode)).findFirst();
-//		if (!first.isPresent()) {
-//			throw new RuntimeException("Error code " + errorCode + " not found in Message Type " + messageTypeName);
-//		}
-//		return first.get();
-//	}
 }

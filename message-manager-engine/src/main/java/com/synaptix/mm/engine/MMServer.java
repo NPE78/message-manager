@@ -128,7 +128,7 @@ public class MMServer {
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						LOG.error("Stop waiter interrupted", e);
 					}
 				}
 				cdl.countDown();
