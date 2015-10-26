@@ -70,7 +70,7 @@ public class ITProcessingResult extends AbstractMMTest {
 		{
 			IProcessingResult r1 = dictionary.getProcessingResult("MT2", errorList);
 			Assert.assertEquals(IProcessingResult.State.VALID, r1.getState());
-			Assert.assertNull(r1.getErrorRecyclingKind());
+			Assert.assertEquals(ErrorRecyclingKind.WARNING, r1.getErrorRecyclingKind());
 			Assert.assertNull(r1.getNextProcessingDate());
 		}
 		{
