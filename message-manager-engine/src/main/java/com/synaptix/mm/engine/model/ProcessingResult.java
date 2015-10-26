@@ -5,6 +5,9 @@ import java.time.Instant;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
 /**
+ * Default implementation of {@link IProcessingResult}.
+ * Processing result built by {@link ProcessingResultBuilder}
+ *
  * Created by NicolasP on 22/10/2015.
  */
 class ProcessingResult implements IProcessingResult {

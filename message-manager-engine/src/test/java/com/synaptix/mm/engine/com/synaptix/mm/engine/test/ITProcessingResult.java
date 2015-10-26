@@ -9,7 +9,7 @@ import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
 import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.model.DefaultErrorType;
-import com.synaptix.mm.engine.model.DefaultMessageInType;
+import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
@@ -27,17 +27,17 @@ public class ITProcessingResult extends AbstractMMTest {
 		MMDictionary dictionary = getInstance(MMDictionary.class);
 
 		{
-			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageInType("MT1"));
+			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("MT1"));
 			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.AUTOMATIC));
 			errorTypeList.add(new DefaultErrorType("ET2", ErrorRecyclingKind.MANUAL));
 		}
 		{
 			List<IErrorType> errorTypeList = new ArrayList<>();
 			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.WARNING));
-			dictionary.addMessageType(new DefaultMessageInType("MT2"), errorTypeList);
+			dictionary.addMessageType(new DefaultMessageType("MT2"), errorTypeList);
 		}
 		{
-			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageInType("MT3"));
+			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("MT3"));
 			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.MANUAL));
 			errorTypeList.add(new DefaultErrorType("ET2", ErrorRecyclingKind.WARNING));
 			errorTypeList.add(new DefaultErrorType("ET3", ErrorRecyclingKind.NOT_RECYCLABLE));
@@ -45,7 +45,7 @@ public class ITProcessingResult extends AbstractMMTest {
 		{
 			boolean raised = false;
 			try {
-				dictionary.addMessageType(new DefaultMessageInType("MT1"), new ArrayList<>());
+				dictionary.addMessageType(new DefaultMessageType("MT1"), new ArrayList<>());
 			} catch (Exception e) {
 				raised = true;
 			}

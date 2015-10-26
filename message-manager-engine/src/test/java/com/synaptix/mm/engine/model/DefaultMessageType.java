@@ -6,14 +6,21 @@ import com.synaptix.mm.shared.model.domain.MessageWay;
 /**
  * Created by NicolasP on 22/10/2015.
  */
-public class DefaultMessageInType implements IMessageType {
+public class DefaultMessageType implements IMessageType {
 
 	private final String name;
 
-	public DefaultMessageInType(String name) {
+	private final MessageWay messageWay;
+
+	public DefaultMessageType(String name) {
+		this(name, MessageWay.IN);
+	}
+
+	public DefaultMessageType(String name, MessageWay messageWay) {
 		super();
 
 		this.name = name;
+		this.messageWay = messageWay;
 	}
 
 	@Override
@@ -23,7 +30,7 @@ public class DefaultMessageInType implements IMessageType {
 
 	@Override
 	public MessageWay getMessageWay() {
-		return MessageWay.IN;
+		return messageWay;
 	}
 
 	@Override

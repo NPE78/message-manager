@@ -12,16 +12,16 @@ import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
 import com.synaptix.mm.engine.implem.DefaultMMAgent;
 import com.synaptix.mm.engine.model.DefaultErrorType;
-import com.synaptix.mm.engine.model.DefaultMessageInType;
+import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.engine.model.DefaultProcessError;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
+import com.synaptix.mm.shared.model.domain.MessageWay;
 import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 
 /**
  * Created by NicolasP on 26/10/2015.
@@ -53,29 +53,47 @@ public class ITMMAgent extends AbstractMMTest {
 		}
 
 
-		List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageInType("TEST_AGENT"));
-		errorTypeList.add(new DefaultErrorType("AUTO", ErrorRecyclingKind.AUTOMATIC));
-		errorTypeList.add(new DefaultErrorType("MAN", ErrorRecyclingKind.MANUAL));
-		errorTypeList.add(new DefaultErrorType("WARN", ErrorRecyclingKind.WARNING));
-		errorTypeList.add(new DefaultErrorType("REJ", ErrorRecyclingKind.NOT_RECYCLABLE));
+		{
+			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("TEST_AGENT_IMPORT"));
+			errorTypeList.add(new DefaultErrorType("AUTO", ErrorRecyclingKind.AUTOMATIC));
+			errorTypeList.add(new DefaultErrorType("MAN", ErrorRecyclingKind.MANUAL));
+			errorTypeList.add(new DefaultErrorType("WARN", ErrorRecyclingKind.WARNING));
+			errorTypeList.add(new DefaultErrorType("REJ", ErrorRecyclingKind.NOT_RECYCLABLE));
+		}
+		{
+			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("TEST_AGENT_EXPORT", MessageWay.OUT));
+			errorTypeList.add(new DefaultErrorType("AUTO", ErrorRecyclingKind.AUTOMATIC));
+			errorTypeList.add(new DefaultErrorType("MAN", ErrorRecyclingKind.MANUAL));
+			errorTypeList.add(new DefaultErrorType("WARN", ErrorRecyclingKind.WARNING));
+			errorTypeList.add(new DefaultErrorType("REJ", ErrorRecyclingKind.NOT_RECYCLABLE));
+		}
 
 		testCaseList.forEach(testCase -> {
-					IProcessingResult processingResult = getInstance(MyAgent.class).doWork(testCase);
+					IProcessingResult processingResult = getInstance(MyImportAgent.class).doWork(testCase);
 					Assert.assertTrue(testCase.name + ", got " + processingResult.getState() + ", " + processingResult.getErrorRecyclingKind(), testCase.isTestValid(processingResult));
 				}
 		);
 
-		{
-			processErrorList.add(new DefaultProcessError("UKNOWN", "Unknown error", "Test"));
+		{ // test unknown exception
+			processErrorList.add(new DefaultProcessError("UNKNOWN", "Unknown error", "Test"));
 			TestCase testCase = new TestCase("Unknown error case", processErrorList, IProcessingResult.State.INVALID, ErrorRecyclingKind.MANUAL);
 			boolean raised = false;
 			try {
-				IProcessingResult processingResult = getInstance(MyAgent.class).doWork(testCase);
+				IProcessingResult processingResult = getInstance(MyImportAgent.class).doWork(testCase);
 			} catch (UnknownErrorException e) {
 				raised = true;
 			}
 			Assert.assertTrue(raised);
 		}
+
+		{ // test export
+			processErrorList.clear();
+			TestCase testCase = new TestCase("Export error case", processErrorList, IProcessingResult.State.VALID, null);
+			IProcessingResult processingResult = getInstance(MyExportAgent.class).doWork(testCase);
+			Assert.assertTrue(testCase.name + ", got " + processingResult.getState() + ", " + processingResult.getErrorRecyclingKind(), testCase.isTestValid(processingResult));
+
+		}
+
 	}
 
 	@Override
@@ -84,16 +102,38 @@ public class ITMMAgent extends AbstractMMTest {
 
 			@Override
 			protected void configureTestModule() {
-				bindAgent(MyAgent.class, 5, 10);
+				bindAgent(MyImportAgent.class, 5, 10);
+				bindAgent(MyExportAgent.class, 5, 10);
 			}
 		};
 	}
 
-	private static class MyAgent extends DefaultMMAgent {
+	private static class MyImportAgent extends DefaultMMAgent {
 
 		@Inject
-		public MyAgent() {
-			super("TEST_AGENT");
+		public MyImportAgent() {
+			super("TEST_AGENT_IMPORT");
+		}
+
+		@Override
+		protected void process(Object messageObject) {
+			TestCase testCase = (TestCase) messageObject;
+			List<IProcessError> processErrorList = testCase.getErrors();
+
+			processErrorList.forEach(processError -> addError(processError.getErrorCode(), processError.getAttribute(), processError.getValue()));
+		}
+
+		@Override
+		protected boolean isConcerned(Object messageObject) {
+			return messageObject instanceof TestCase ? true : false;
+		}
+	}
+
+	private static class MyExportAgent extends DefaultMMAgent {
+
+		@Inject
+		public MyExportAgent() {
+			super("TEST_AGENT_EXPORT");
 		}
 
 		@Override

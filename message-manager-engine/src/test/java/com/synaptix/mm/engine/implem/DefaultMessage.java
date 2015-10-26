@@ -2,7 +2,7 @@ package com.synaptix.mm.engine.implem;
 
 import java.time.Instant;
 
-import com.synaptix.mm.engine.model.DefaultMessageInType;
+import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.shared.model.IMessage;
 import com.synaptix.mm.shared.model.IMessageType;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
@@ -25,7 +25,7 @@ public class DefaultMessage implements IMessage {
 	public DefaultMessage(String messageType) {
 		super();
 
-		this.messageType = new DefaultMessageInType(messageType);
+		this.messageType = new DefaultMessageType(messageType);
 		this.createdDate = Instant.now();
 	}
 

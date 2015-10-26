@@ -2,6 +2,9 @@ package com.synaptix.mm.engine;
 
 import java.util.ArrayList;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.google.inject.Inject;
 import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.model.IProcessContext;
@@ -17,6 +20,8 @@ import com.synaptix.pmgr.core.lib.ProcessingChannel;
  * Created by NicolasP on 23/10/2015.
  */
 public abstract class AbstractMMAgent<C extends IProcessContext> implements ProcessingChannel.Agent {
+
+	private static final Log LOG = LogFactory.getLog(AbstractMMAgent.class);
 
 	private final String messageTypeName;
 
@@ -43,7 +48,13 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 
 	@Override
 	public final void work(Object messageObject, Engine engine) {
-		doWork(messageObject);
+		try {
+			doWork(messageObject);
+		} catch (Exception e) {
+			addError("UNKNOWN_ERROR", null, e.getLocalizedMessage());
+			notifyMessageStatus(MessageStatus.TO_RECYCLE_MANUALLY);
+			reject();
+		}
 	}
 
 	public final IProcessingResult doWork(Object messageObject) {

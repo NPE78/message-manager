@@ -5,6 +5,7 @@ import java.time.Instant;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
 /**
+ * This implementation provides static methods to build a processing result, defined by its state, recycling kind and next processing date
  * Created by NicolasP on 22/10/2015.
  */
 public final class ProcessingResultBuilder {
