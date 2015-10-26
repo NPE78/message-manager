@@ -1,8 +1,8 @@
 package com.synaptix.mm.engine;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +11,7 @@ import java.util.Optional;
 import com.google.inject.Inject;
 import com.synaptix.mm.engine.exception.MessageTypeAlreadyDefinedException;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
+import com.synaptix.mm.engine.exception.UnknownMessageTypeException;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.engine.model.ProcessingResultBuilder;
 import com.synaptix.mm.shared.model.IErrorType;
@@ -102,17 +103,28 @@ public final class MMDictionary {
 	private IProcessingResult buildProcessingResult(Worst worst) {
 		switch (worst.errorRecyclingKind) {
 			case AUTOMATIC:
-				Calendar cal = Calendar.getInstance();
-				cal.add(Calendar.MINUTE, worst.delay);
-				return ProcessingResultBuilder.reject(ErrorRecyclingKind.AUTOMATIC, Instant.now());
+				Instant nextProcessingDate = Instant.now();
+				nextProcessingDate.plus(worst.delay, ChronoUnit.MINUTES);
+				return ProcessingResultBuilder.rejectAutomatically(nextProcessingDate);
 			case MANUAL:
-				return ProcessingResultBuilder.reject(ErrorRecyclingKind.MANUAL, null);
+				return ProcessingResultBuilder.rejectManually();
 			case NOT_RECYCLABLE:
-				return ProcessingResultBuilder.reject(ErrorRecyclingKind.NOT_RECYCLABLE, null);
+				return ProcessingResultBuilder.rejectDefinitely();
 			default:
-				// this is also the case of the WARNING enum value
-				return ProcessingResultBuilder.accept();
+				// case of the WARNING enum value
+				return ProcessingResultBuilder.acceptWithWarning();
 		}
+	}
+
+	/**
+	 * Get the message type corresponding to the given message type name. Throws an UnknownMessageTypeException if the message type does not exist
+	 */
+	public IMessageType getMessageType(String messageTypeName) {
+		IMessageType messageType = messageTypeMap.get(messageTypeName);
+		if (messageType == null) {
+			throw new UnknownMessageTypeException("The message type " + messageTypeName + " does not exist!");
+		}
+		return messageType;
 	}
 
 	private class Worst {

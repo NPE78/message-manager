@@ -13,22 +13,45 @@ public final class ProcessingResultBuilder {
 	}
 
 	/**
-	 * Mark the processing result as being accepted
+	 * Mark the processing result as being accepted without any error
 	 */
 	public static IProcessingResult accept() {
-		return new ProcessingResultBuilder().acceptResult();
+		return new ProcessingResultBuilder().acceptResult(null);
 	}
 
 	/**
-	 * Mark the processing result as being rejected with given error recycling kind and if "AUTOMATIC", given next processing date
+	 * Mark the processing result as being accepted with a warning
 	 */
-	public static IProcessingResult reject(ErrorRecyclingKind errorRecyclingKind, Instant nextProcessingDate) {
-		return new ProcessingResultBuilder().rejectResult(errorRecyclingKind, nextProcessingDate);
+	public static IProcessingResult acceptWithWarning() {
+		return new ProcessingResultBuilder().acceptResult(ErrorRecyclingKind.WARNING);
 	}
 
-	private IProcessingResult acceptResult() {
+	/**
+	 * Mark the processing result as being rejected with a manual recycling kind
+	 */
+	public static IProcessingResult rejectManually() {
+		return new ProcessingResultBuilder().rejectResult(ErrorRecyclingKind.MANUAL, null);
+	}
+
+	/**
+	 * Mark the processing result as being rejected with an automatic recycling kind
+	 * @param nextProcessingDate
+	 */
+	public static IProcessingResult rejectAutomatically(Instant nextProcessingDate) {
+		return new ProcessingResultBuilder().rejectResult(ErrorRecyclingKind.AUTOMATIC, nextProcessingDate);
+	}
+
+	/**
+	 * Mark the processing result as being rejected definitely
+	 */
+	public static IProcessingResult rejectDefinitely() {
+		return new ProcessingResultBuilder().rejectResult(ErrorRecyclingKind.NOT_RECYCLABLE, null);
+	}
+
+	private IProcessingResult acceptResult(ErrorRecyclingKind errorRecyclingKind) {
 		ProcessingResult recyclingResult = new ProcessingResult();
 		recyclingResult.setState(IProcessingResult.State.VALID);
+		recyclingResult.setErrorRecyclingKind(errorRecyclingKind);
 		return recyclingResult;
 	}
 

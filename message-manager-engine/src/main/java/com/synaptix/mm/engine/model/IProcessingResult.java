@@ -19,7 +19,7 @@ public interface IProcessingResult {
 		 */
 		VALID,
 		/**
-		 * The message is invalid (a recycling kind should be provided)
+		 * The message is invalid (an error recycling kind should be provided)
 		 */
 		INVALID
 

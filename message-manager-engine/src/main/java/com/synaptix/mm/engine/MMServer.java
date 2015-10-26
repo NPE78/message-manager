@@ -67,7 +67,7 @@ public class MMServer {
 
 	/**
 	 * Change the timeout, meaning the duration to wait for the agents to finish properly before killing the process manager
-	 * @param timeoutSeconds timeout in seconds, default is 2min
+	 * @param timeoutSeconds timeout in seconds, implem is 2min
 	 */
 	public void setTimeoutSeconds(int timeoutSeconds) {
 		this.timeoutSeconds = timeoutSeconds;
@@ -102,7 +102,7 @@ public class MMServer {
 
 	/**
 	 * Stop the process manager and wait for all agents to finish.
-	 * Use #setTimeoutSeconds to change the timeout (default is 2min)
+	 * Use #setTimeoutSeconds to change the timeout (implem is 2min)
 	 *
 	 */
 	public void stop() {

@@ -6,11 +6,11 @@ import com.synaptix.mm.shared.model.domain.MessageWay;
 /**
  * Created by NicolasP on 22/10/2015.
  */
-public class SimpleMessageType implements IMessageType {
+public class DefaultMessageInType implements IMessageType {
 
 	private final String name;
 
-	public SimpleMessageType(String name) {
+	public DefaultMessageInType(String name) {
 		super();
 
 		this.name = name;

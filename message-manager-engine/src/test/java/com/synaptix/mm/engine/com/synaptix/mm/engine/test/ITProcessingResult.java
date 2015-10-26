@@ -8,9 +8,9 @@ import org.junit.Test;
 import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
 import com.synaptix.mm.engine.factory.IProcessErrorFactory;
+import com.synaptix.mm.engine.model.DefaultErrorType;
+import com.synaptix.mm.engine.model.DefaultMessageInType;
 import com.synaptix.mm.engine.model.IProcessingResult;
-import com.synaptix.mm.engine.model.SimpleErrorType;
-import com.synaptix.mm.engine.model.SimpleMessageType;
 import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
@@ -27,25 +27,25 @@ public class ITProcessingResult extends AbstractMMTest {
 		MMDictionary dictionary = getInstance(MMDictionary.class);
 
 		{
-			List<IErrorType> errorTypeList = dictionary.addMessageType(new SimpleMessageType("MT1"));
-			errorTypeList.add(new SimpleErrorType("ET1", ErrorRecyclingKind.AUTOMATIC));
-			errorTypeList.add(new SimpleErrorType("ET2", ErrorRecyclingKind.MANUAL));
+			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageInType("MT1"));
+			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.AUTOMATIC));
+			errorTypeList.add(new DefaultErrorType("ET2", ErrorRecyclingKind.MANUAL));
 		}
 		{
 			List<IErrorType> errorTypeList = new ArrayList<>();
-			errorTypeList.add(new SimpleErrorType("ET1", ErrorRecyclingKind.WARNING));
-			dictionary.addMessageType(new SimpleMessageType("MT2"), errorTypeList);
+			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.WARNING));
+			dictionary.addMessageType(new DefaultMessageInType("MT2"), errorTypeList);
 		}
 		{
-			List<IErrorType> errorTypeList = dictionary.addMessageType(new SimpleMessageType("MT3"));
-			errorTypeList.add(new SimpleErrorType("ET1", ErrorRecyclingKind.MANUAL));
-			errorTypeList.add(new SimpleErrorType("ET2", ErrorRecyclingKind.WARNING));
-			errorTypeList.add(new SimpleErrorType("ET3", ErrorRecyclingKind.NOT_RECYCLABLE));
+			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageInType("MT3"));
+			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.MANUAL));
+			errorTypeList.add(new DefaultErrorType("ET2", ErrorRecyclingKind.WARNING));
+			errorTypeList.add(new DefaultErrorType("ET3", ErrorRecyclingKind.NOT_RECYCLABLE));
 		}
 		{
 			boolean raised = false;
 			try {
-				dictionary.addMessageType(new SimpleMessageType("MT1"), new ArrayList<>());
+				dictionary.addMessageType(new DefaultMessageInType("MT1"), new ArrayList<>());
 			} catch (Exception e) {
 				raised = true;
 			}

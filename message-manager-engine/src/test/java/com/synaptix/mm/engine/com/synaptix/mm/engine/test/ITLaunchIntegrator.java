@@ -33,7 +33,7 @@ public class ITLaunchIntegrator extends AbstractMMTest {
 		getServer().setTimeoutSeconds(2);
 		ProcessEngine.handle(SlowAgentTest.class.getSimpleName(), "message");
 
-		getServer().stop();
+		getServer().stop(); // will be stopped anyway, but this is to test the double stop
 	}
 
 	@Override

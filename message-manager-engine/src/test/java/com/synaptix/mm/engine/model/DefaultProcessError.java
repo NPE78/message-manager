@@ -5,7 +5,7 @@ import com.synaptix.mm.shared.model.IProcessError;
 /**
  * Created by NicolasP on 22/10/2015.
  */
-public class SimpleProcessError implements IProcessError {
+public class DefaultProcessError implements IProcessError {
 
 	private final String errorCode;
 
@@ -13,7 +13,7 @@ public class SimpleProcessError implements IProcessError {
 
 	private final String value;
 
-	public SimpleProcessError(String errorCode, String attribute, String value) {
+	public DefaultProcessError(String errorCode, String attribute, String value) {
 		super();
 
 		this.errorCode = errorCode;
