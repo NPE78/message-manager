@@ -1,5 +1,7 @@
 package com.synaptix.mm.engine.com.synaptix.mm.engine.test;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 
@@ -12,6 +14,8 @@ import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
  * Created by NicolasP on 21/10/2015.
  */
 class AbstractMMTest {
+
+	protected static final Log LOG = LogFactory.getLog(AbstractMMTest.class);
 
 	private Injector injector;
 

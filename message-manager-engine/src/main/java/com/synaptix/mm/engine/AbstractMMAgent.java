@@ -51,6 +51,7 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 		try {
 			doWork(messageObject);
 		} catch (Exception e) {
+			LOG.error(messageTypeName, e);
 			addError("UNKNOWN_ERROR", null, e.getLocalizedMessage());
 			notifyMessageStatus(MessageStatus.TO_RECYCLE_MANUALLY);
 			reject();

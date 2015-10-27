@@ -31,6 +31,8 @@ public class ITMMAgent extends AbstractMMTest {
 	@Test
 	public void testMMAgent() throws Exception {
 
+		LOG.info("Starting ITMMAgent");
+
 		MMDictionary dictionary = getInstance(MMDictionary.class);
 
 		List<TestCase> testCaseList = new ArrayList<>();
@@ -69,6 +71,7 @@ public class ITMMAgent extends AbstractMMTest {
 		}
 
 		testCaseList.forEach(testCase -> {
+					LOG.info("Testing " + testCase.name);
 					IProcessingResult processingResult = getInstance(MyImportAgent.class).doWork(testCase);
 					Assert.assertTrue(testCase.name + ", got " + processingResult.getState() + ", " + processingResult.getErrorRecyclingKind(), testCase.isTestValid(processingResult));
 				}
@@ -79,6 +82,7 @@ public class ITMMAgent extends AbstractMMTest {
 			TestCase testCase = new TestCase("Unknown error case", processErrorList, IProcessingResult.State.INVALID, ErrorRecyclingKind.MANUAL);
 			boolean raised = false;
 			try {
+				LOG.info("Testing " + testCase.name);
 				IProcessingResult processingResult = getInstance(MyImportAgent.class).doWork(testCase);
 			} catch (UnknownErrorException e) {
 				raised = true;
@@ -89,11 +93,10 @@ public class ITMMAgent extends AbstractMMTest {
 		{ // test export
 			processErrorList.clear();
 			TestCase testCase = new TestCase("Export error case", processErrorList, IProcessingResult.State.VALID, null);
+			LOG.info("Testing " + testCase.name);
 			IProcessingResult processingResult = getInstance(MyExportAgent.class).doWork(testCase);
 			Assert.assertTrue(testCase.name + ", got " + processingResult.getState() + ", " + processingResult.getErrorRecyclingKind(), testCase.isTestValid(processingResult));
-
 		}
-
 	}
 
 	@Override
