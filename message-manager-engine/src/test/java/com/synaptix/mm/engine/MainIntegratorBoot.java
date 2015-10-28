@@ -109,9 +109,9 @@ public class MainIntegratorBoot {
 		}
 	}
 
-	public interface IJettyStarted {
+	private interface IJettyStarted {
 
-		public void jettyStarted(Server server, WebAppContext context);
+		void jettyStarted(Server server, WebAppContext context);
 
 	}
 }

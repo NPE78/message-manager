@@ -13,21 +13,21 @@ public interface IError {
 	/**
 	 * The type of the error
 	 */
-	public IErrorType getType();
+	IErrorType getType();
 
 	/**
 	 * The recycling kind induced by the error
 	 */
-	public ErrorRecyclingKind getRecyclingKind();
+	ErrorRecyclingKind getRecyclingKind();
 
 	/**
 	 * The status of the error
 	 */
-	public ErrorStatus getErrorStatus();
+	ErrorStatus getErrorStatus();
 
 	/**
 	 * The error will ask the message to be recycled starting the given date (or after if another error has a superior next processing date) if the message has to be recycled automatically
 	 */
-	public Date getNextProcessingDate();
+	Date getNextProcessingDate();
 
 }

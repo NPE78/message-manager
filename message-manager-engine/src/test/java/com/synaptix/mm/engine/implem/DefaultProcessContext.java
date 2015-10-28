@@ -7,8 +7,8 @@ import com.synaptix.mm.engine.model.IProcessContext;
  */
 public interface DefaultProcessContext extends IProcessContext {
 
-	public DefaultMessage getMessage();
+	DefaultMessage getMessage();
 
-	public void setMessage(DefaultMessage defaultMessage);
+	void setMessage(DefaultMessage defaultMessage);
 
 }

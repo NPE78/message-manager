@@ -67,7 +67,7 @@ public final class MMDictionary {
 
 	private void checkConflict(String messageTypeName) {
 		if (messageTypeMap.containsKey(messageTypeName)) {
-			throw new MessageTypeAlreadyDefinedException("The message type " + messageTypeName + " already exists!");
+			throw new MessageTypeAlreadyDefinedException("The message type '" + messageTypeName + "' already exists!");
 		}
 	}
 
@@ -87,7 +87,7 @@ public final class MMDictionary {
 		errorList.forEach(s -> {
 			Optional<IErrorType> first = errorTypeList.stream().filter(errorType -> errorType.getCode().equals(s.getErrorCode())).findFirst();
 			if (!first.isPresent()) {
-				throw new UnknownErrorException("Error code " + s.getErrorCode() + " not found in Message Type " + messageTypeName);
+				throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found in Message Type " + messageTypeName);
 			}
 			updateWorst(worst, first.get());
 		});
@@ -122,7 +122,7 @@ public final class MMDictionary {
 	public IMessageType getMessageType(String messageTypeName) {
 		IMessageType messageType = messageTypeMap.get(messageTypeName);
 		if (messageType == null) {
-			throw new UnknownMessageTypeException("The message type " + messageTypeName + " does not exist!");
+			throw new UnknownMessageTypeException("The message type '" + messageTypeName + "' does not exist!");
 		}
 		return messageType;
 	}

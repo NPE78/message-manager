@@ -12,7 +12,7 @@ import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
  */
 public interface IProcessingResult {
 
-	public enum State {
+	enum State {
 
 		/**
 		 * The message is valid
@@ -28,17 +28,16 @@ public interface IProcessingResult {
 	/**
 	 * The state can either be VALID or INVALID. VALID means the message is successful and should be accepted. INVALID means the message should be recycled or rejected definitely
 	 */
-	public State getState();
+	State getState();
 
 	/**
 	 * If the state is INVALID, the following recycling kind is provided
 	 */
-	public ErrorRecyclingKind getErrorRecyclingKind();
+	ErrorRecyclingKind getErrorRecyclingKind();
 
 	/**
 	 * If the recycling kind is AUTOMATIC, the following next processing date is provided
-	 * @return
 	 */
-	public Instant getNextProcessingDate();
+	Instant getNextProcessingDate();
 
 }

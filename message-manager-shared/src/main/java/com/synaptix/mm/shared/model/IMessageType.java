@@ -10,10 +10,10 @@ public interface IMessageType {
 	/**
 	 * The name of the message type, should be unique
 	 */
-	public String getName();
+	String getName();
 
-	public MessageWay getMessageWay();
+	MessageWay getMessageWay();
 
-	public Integer getRecyclingDeadline();
+	Integer getRecyclingDeadline();
 
 }

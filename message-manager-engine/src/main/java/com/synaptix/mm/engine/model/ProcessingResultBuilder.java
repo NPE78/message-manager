@@ -36,7 +36,6 @@ public final class ProcessingResultBuilder {
 
 	/**
 	 * Mark the processing result as being rejected with an automatic recycling kind
-	 * @param nextProcessingDate
 	 */
 	public static IProcessingResult rejectAutomatically(Instant nextProcessingDate) {
 		return new ProcessingResultBuilder().rejectResult(ErrorRecyclingKind.AUTOMATIC, nextProcessingDate);

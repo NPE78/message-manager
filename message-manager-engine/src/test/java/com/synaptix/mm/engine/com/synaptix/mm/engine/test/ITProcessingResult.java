@@ -90,7 +90,7 @@ public class ITProcessingResult extends AbstractMMTest {
 		{
 			boolean exceptionRaised = false;
 			try {
-				IProcessingResult r1 = dictionary.getProcessingResult("MT1", errorList);
+				dictionary.getProcessingResult("MT1", errorList);
 			} catch (UnknownErrorException e) {
 				exceptionRaised = true;
 			} finally {

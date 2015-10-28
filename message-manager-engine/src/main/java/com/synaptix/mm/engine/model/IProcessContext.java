@@ -10,8 +10,8 @@ import com.synaptix.mm.shared.model.IProcessError;
  */
 public interface IProcessContext extends IComponent {
 
-	public List<IProcessError> getProcessErrorList();
+	List<IProcessError> getProcessErrorList();
 
-	public void setProcessErrorList(List<IProcessError> processErrorList);
+	void setProcessErrorList(List<IProcessError> processErrorList);
 
 }

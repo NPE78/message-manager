@@ -83,7 +83,7 @@ public class ITMMAgent extends AbstractMMTest {
 			boolean raised = false;
 			try {
 				LOG.info("Testing " + testCase.name);
-				IProcessingResult processingResult = getInstance(MyImportAgent.class).doWork(testCase);
+				getInstance(MyImportAgent.class).doWork(testCase);
 			} catch (UnknownErrorException e) {
 				raised = true;
 			}
@@ -114,7 +114,7 @@ public class ITMMAgent extends AbstractMMTest {
 	private static class MyImportAgent extends DefaultMMAgent {
 
 		@Inject
-		public MyImportAgent() {
+		private MyImportAgent() {
 			super("TEST_AGENT_IMPORT");
 		}
 
@@ -128,14 +128,14 @@ public class ITMMAgent extends AbstractMMTest {
 
 		@Override
 		protected boolean isConcerned(Object messageObject) {
-			return messageObject instanceof TestCase ? true : false;
+			return messageObject instanceof TestCase;
 		}
 	}
 
 	private static class MyExportAgent extends DefaultMMAgent {
 
 		@Inject
-		public MyExportAgent() {
+		private MyExportAgent() {
 			super("TEST_AGENT_EXPORT");
 		}
 
@@ -149,7 +149,7 @@ public class ITMMAgent extends AbstractMMTest {
 
 		@Override
 		protected boolean isConcerned(Object messageObject) {
-			return messageObject instanceof TestCase ? true : false;
+			return messageObject instanceof TestCase;
 		}
 	}
 
@@ -163,7 +163,7 @@ public class ITMMAgent extends AbstractMMTest {
 
 		private final ErrorRecyclingKind expectedErrorRecyclingKind;
 
-		public TestCase(String name, List<IProcessError> processErrorList, IProcessingResult.State expectedState, ErrorRecyclingKind expectedErrorRecyclingKind) {
+		private TestCase(String name, List<IProcessError> processErrorList, IProcessingResult.State expectedState, ErrorRecyclingKind expectedErrorRecyclingKind) {
 			this.name = name;
 			this.processErrorList = Collections.unmodifiableList(new ArrayList<>(processErrorList));
 			this.expectedState = expectedState;

@@ -11,6 +11,6 @@ public interface IProcessErrorFactory {
 	/**
 	 * Create a process error with given errorCode, attribute and value. If needed, the other fields can be enriched after.
 	 */
-	public IProcessError createProcessError(String errorCode, String attribute, String value);
+	IProcessError createProcessError(String errorCode, String attribute, String value);
 
 }

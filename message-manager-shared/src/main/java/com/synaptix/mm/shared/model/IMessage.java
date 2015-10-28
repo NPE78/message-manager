@@ -12,26 +12,26 @@ public interface IMessage {
 	/**
 	 * The type of the message
 	 */
-	public IMessageType getMessageType();
+	IMessageType getMessageType();
 
 	/**
 	 * The status of the message. Uses a kind of workflow to know what to do next
 	 */
-	public MessageStatus getMessageStatus();
+	MessageStatus getMessageStatus();
 
 	/**
 	 * In case of a message which needs to be recycled, this is the date the message can be recycled again
 	 */
-	public Instant getNextProcessingDate();
+	Instant getNextProcessingDate();
 
 	/**
 	 * If the message still hasn't been integrated or sent at the deadline date, it will be definitely rejected
 	 */
-	public Instant getDeadlineDate();
+	Instant getDeadlineDate();
 
 	/**
 	 * This date is used to compute the deadline date
 	 */
-	public Instant getCreatedDate();
+	Instant getCreatedDate();
 
 }
