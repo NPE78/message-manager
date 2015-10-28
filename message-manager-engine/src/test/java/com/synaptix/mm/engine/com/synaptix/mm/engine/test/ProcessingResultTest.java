@@ -8,6 +8,7 @@ import org.junit.Test;
 import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
 import com.synaptix.mm.engine.factory.IProcessErrorFactory;
+import com.synaptix.mm.engine.implem.DefaultProcessErrorFactory;
 import com.synaptix.mm.engine.model.DefaultErrorType;
 import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.engine.model.IProcessingResult;
@@ -20,11 +21,11 @@ import junit.framework.Assert;
 /**
  * Created by NicolasP on 22/10/2015.
  */
-public class ITProcessingResult extends AbstractMMTest {
+public class ProcessingResultTest {
 
 	@Test
 	public void testRecycling() throws Exception {
-		MMDictionary dictionary = getInstance(MMDictionary.class);
+		MMDictionary dictionary = new MMDictionary();
 
 		{
 			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("MT1"));
@@ -52,7 +53,7 @@ public class ITProcessingResult extends AbstractMMTest {
 			Assert.assertTrue(raised); // test unique
 		}
 
-		IProcessErrorFactory processErrorFactory = getInstance(IProcessErrorFactory.class);
+		IProcessErrorFactory processErrorFactory = new DefaultProcessErrorFactory();
 
 		List<IProcessError> errorList = new ArrayList<>();
 

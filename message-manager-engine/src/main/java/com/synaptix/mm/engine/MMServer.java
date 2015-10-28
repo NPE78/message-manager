@@ -102,7 +102,7 @@ public class MMServer {
 
 	/**
 	 * Stop the process manager and wait for all agents to finish.
-	 * Use #setTimeoutSeconds to change the timeout (implem is 2min)
+	 * Use {@link #setTimeoutSeconds} to change the timeout (default is 2min)
 	 *
 	 */
 	public void stop() {
