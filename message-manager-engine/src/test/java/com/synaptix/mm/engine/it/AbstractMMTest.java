@@ -1,4 +1,4 @@
-package com.synaptix.mm.engine.com.synaptix.mm.engine.test;
+package com.synaptix.mm.engine.it;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

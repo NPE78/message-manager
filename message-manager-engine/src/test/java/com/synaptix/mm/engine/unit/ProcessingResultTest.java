@@ -1,4 +1,4 @@
-package com.synaptix.mm.engine.com.synaptix.mm.engine.test;
+package com.synaptix.mm.engine.unit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,18 +31,25 @@ public class ProcessingResultTest {
 			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("MT1"));
 			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.AUTOMATIC));
 			errorTypeList.add(new DefaultErrorType("ET2", ErrorRecyclingKind.MANUAL));
+
+			Assert.assertNotNull(dictionary.getMessageType("MT1"));
 		}
 		{
 			List<IErrorType> errorTypeList = new ArrayList<>();
 			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.WARNING));
 			dictionary.addMessageType(new DefaultMessageType("MT2"), errorTypeList);
+
+			Assert.assertNotNull(dictionary.getMessageType("MT2"));
 		}
 		{
 			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("MT3"));
 			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.MANUAL));
 			errorTypeList.add(new DefaultErrorType("ET2", ErrorRecyclingKind.WARNING));
 			errorTypeList.add(new DefaultErrorType("ET3", ErrorRecyclingKind.NOT_RECYCLABLE));
+
+			Assert.assertNotNull(dictionary.getMessageType("MT3"));
 		}
+
 		{
 			boolean raised = false;
 			try {

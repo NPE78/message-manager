@@ -1,4 +1,4 @@
-package com.synaptix.mm.engine.com.synaptix.mm.engine.test;
+package com.synaptix.mm.engine.it;
 
 import com.google.inject.Singleton;
 import com.synaptix.mm.engine.factory.IProcessErrorFactory;

@@ -1,4 +1,4 @@
-package com.synaptix.mm.engine.com.synaptix.mm.engine.test;
+package com.synaptix.mm.engine.it;
 
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
