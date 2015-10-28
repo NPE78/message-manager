@@ -77,6 +77,9 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 			} else {
 				accept();
 			}
+		} else {
+			// TODO: shouldn't we add an error?
+//			reject(); //CONFIRM
 		}
 		return processingResult;
 	}

@@ -8,7 +8,7 @@ import com.synaptix.mm.shared.model.domain.MessageStatus;
 /**
  * Created by NicolasP on 26/10/2015.
  */
-public class DefaultMMAgent extends AbstractMMAgent<DefaultProcessContext> {
+public class DefaultMMAgent extends AbstractMMAgent<IDefaultProcessContext> {
 
 	@Inject
 	public DefaultMMAgent() {
@@ -23,8 +23,8 @@ public class DefaultMMAgent extends AbstractMMAgent<DefaultProcessContext> {
 	}
 
 	@Override
-	protected DefaultProcessContext buildProcessContext(Object messageObject) {
-		DefaultProcessContext processContext = ComponentFactory.getInstance().createInstance(DefaultProcessContext.class);
+	protected IDefaultProcessContext buildProcessContext(Object messageObject) {
+		IDefaultProcessContext processContext = ComponentFactory.getInstance().createInstance(IDefaultProcessContext.class);
 		processContext.setMessage(new DefaultMessage(getMessageTypeName()));
 		return processContext;
 	}
