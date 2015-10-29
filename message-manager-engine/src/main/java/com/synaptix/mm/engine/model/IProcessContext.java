@@ -6,6 +6,7 @@ import com.synaptix.component.IComponent;
 import com.synaptix.mm.shared.model.IProcessError;
 
 /**
+ * This component is the lowest level of what needs to be a process context: a list of errors raised during the process
  * Created by NicolasP on 23/10/2015.
  */
 public interface IProcessContext extends IComponent {

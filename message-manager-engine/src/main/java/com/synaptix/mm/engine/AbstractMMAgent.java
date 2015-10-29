@@ -13,10 +13,12 @@ import com.synaptix.mm.shared.model.IMessageType;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
 import com.synaptix.mm.shared.model.domain.MessageWay;
 import com.synaptix.pmgr.core.apis.Engine;
+import com.synaptix.pmgr.core.lib.ProcessEngine;
 import com.synaptix.pmgr.core.lib.ProcessingChannel;
 
 /**
  * Always use Guice to create an agent properly
+ * An agent is the main class of a process. It is used by the Process Manager and {@link ProcessEngine#handle(String, Object)} method
  * Created by NicolasP on 23/10/2015.
  */
 public abstract class AbstractMMAgent<C extends IProcessContext> implements ProcessingChannel.Agent {
@@ -25,6 +27,9 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 
 	private final String messageTypeName;
 
+	/**
+	 * Since the agent is used by many threads at the same time, we need to use a thread local to ensure the process context is thread-safe
+	 */
 	private final ThreadLocal<C> processContextThreadLocal;
 
 	@Inject
@@ -78,8 +83,7 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 				accept();
 			}
 		} else {
-			// TODO: shouldn't we add an error?
-//			reject(); //CONFIRM
+			// we could consider doing something here...
 		}
 		return processingResult;
 	}

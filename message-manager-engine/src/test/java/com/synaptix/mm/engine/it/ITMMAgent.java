@@ -57,16 +57,16 @@ public class ITMMAgent extends AbstractMMTest {
 
 		{
 			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("TEST_AGENT_IMPORT"));
+			errorTypeList.add(new DefaultErrorType("WARN", ErrorRecyclingKind.WARNING));
 			errorTypeList.add(new DefaultErrorType("AUTO", ErrorRecyclingKind.AUTOMATIC));
 			errorTypeList.add(new DefaultErrorType("MAN", ErrorRecyclingKind.MANUAL));
-			errorTypeList.add(new DefaultErrorType("WARN", ErrorRecyclingKind.WARNING));
 			errorTypeList.add(new DefaultErrorType("REJ", ErrorRecyclingKind.NOT_RECYCLABLE));
 		}
 		{
 			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("TEST_AGENT_EXPORT", MessageWay.OUT));
+			errorTypeList.add(new DefaultErrorType("WARN", ErrorRecyclingKind.WARNING));
 			errorTypeList.add(new DefaultErrorType("AUTO", ErrorRecyclingKind.AUTOMATIC));
 			errorTypeList.add(new DefaultErrorType("MAN", ErrorRecyclingKind.MANUAL));
-			errorTypeList.add(new DefaultErrorType("WARN", ErrorRecyclingKind.WARNING));
 			errorTypeList.add(new DefaultErrorType("REJ", ErrorRecyclingKind.NOT_RECYCLABLE));
 		}
 

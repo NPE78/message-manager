@@ -74,6 +74,7 @@ public final class MMDictionary {
 	/**
 	 * Get the processing result given a message type and a list of errors raised during the process.
 	 * It uses the dictionnary to determine whether the process is valid or invalid, computes the recycling kind according to the configuration and if needed a next processing date
+	 * If an error is unknown for the message type, an {@Link UnknownErrorException} is raised
 	 */
 	public IProcessingResult getProcessingResult(String messageTypeName, List<IProcessError> errorList) {
 		if (errorList == null || errorList.isEmpty()) {
@@ -87,7 +88,7 @@ public final class MMDictionary {
 		errorList.forEach(s -> {
 			Optional<IErrorType> first = errorTypeList.stream().filter(errorType -> errorType.getCode().equals(s.getErrorCode())).findFirst();
 			if (!first.isPresent()) {
-				throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found in Message Type " + messageTypeName);
+				throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found in Message Type '" + messageTypeName + "'");
 			}
 			updateWorst(worst, first.get());
 		});
@@ -117,7 +118,7 @@ public final class MMDictionary {
 	}
 
 	/**
-	 * Get the message type corresponding to the given message type name. Throws an UnknownMessageTypeException if the message type does not exist
+	 * Get the message type corresponding to the given message type name. Throws an {@link UnknownMessageTypeException} if the message type does not exist
 	 */
 	public IMessageType getMessageType(String messageTypeName) {
 		IMessageType messageType = messageTypeMap.get(messageTypeName);
