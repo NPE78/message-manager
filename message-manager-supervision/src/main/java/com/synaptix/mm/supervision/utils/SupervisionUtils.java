@@ -17,10 +17,13 @@ import com.synaptix.pmgr.core.lib.ProcessingChannel;
  */
 public final class SupervisionUtils {
 
+	private SupervisionUtils() {
+	}
+
 	/**
 	 * Get the current agent info of all agents used at the present time
 	 * @param agentName optional, use this to show only the selected agent info
-	 * @return
+	 * @return the list of currently used agents with their running count, waiting count... ordered by running+waiting (descending)
 	 */
 	public static List<AgentInfoDto> getAgentInfo(String agentName) {
 		List<AgentInfoDto> agentInfoDtos = new ArrayList<AgentInfoDto>();
@@ -42,6 +45,11 @@ public final class SupervisionUtils {
 				agentInfoDtos.add(agentInfoDto);
 			}
 		}
+		sortAgentInfo(agentInfoDtos);
+		return agentInfoDtos;
+	}
+
+	private static void sortAgentInfo(List<AgentInfoDto> agentInfoDtos) {
 		Comparator<AgentInfoDto> comparator = new Comparator<AgentInfoDto>() {
 
 			@Override
@@ -52,6 +60,5 @@ public final class SupervisionUtils {
 			}
 		};
 		Collections.sort(agentInfoDtos, comparator);
-		return agentInfoDtos;
 	}
 }
