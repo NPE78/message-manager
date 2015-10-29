@@ -8,11 +8,13 @@ import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
 /**
  * Created by NicolasP on 22/10/2015.
  */
-class DefaultTestMMModule extends AbstractSynaptixIntegratorServletModule {
+public class DefaultTestMMModule extends AbstractSynaptixIntegratorServletModule {
 
 	@Override
 	protected final void configure() {
 		bind(IProcessErrorFactory.class).to(DefaultProcessErrorFactory.class).in(Singleton.class);
+
+		configureTestModule();
 	}
 
 	protected void configureTestModule() {

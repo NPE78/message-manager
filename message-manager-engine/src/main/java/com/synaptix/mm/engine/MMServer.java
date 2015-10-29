@@ -167,7 +167,7 @@ public class MMServer {
 		}
 	}
 
-	private boolean isRunning() {
+	public final boolean isRunning() {
 		Collection<ChannelSlot> channels = ProcessEngine.getInstance().getChannels();
 		for (ChannelSlot channelSlot : channels) {
 			PluggableChannel pluggedChannel = channelSlot.getPluggedChannel();
@@ -181,7 +181,7 @@ public class MMServer {
 		return false;
 	}
 
-	private Set<String> runningSet() {
+	public final Set<String> runningSet() {
 		Set<String> set = new HashSet<>();
 		Collection<ChannelSlot> channels = ProcessEngine.getInstance().getChannels();
 		for (ChannelSlot channelSlot : channels) {

@@ -19,7 +19,6 @@ import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 import com.synaptix.mm.shared.model.domain.MessageWay;
-import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
 
 import junit.framework.Assert;
 
@@ -97,18 +96,6 @@ public class ITMMAgent extends AbstractMMTest {
 			IProcessingResult processingResult = getInstance(MyExportAgent.class).doWork(testCase);
 			Assert.assertTrue(testCase.name + ", got " + processingResult.getState() + ", " + processingResult.getErrorRecyclingKind(), testCase.isTestValid(processingResult));
 		}
-	}
-
-	@Override
-	AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
-		return new DefaultTestMMModule() {
-
-			@Override
-			protected void configureTestModule() {
-				bindAgent(MyImportAgent.class, 5, 10);
-				bindAgent(MyExportAgent.class, 5, 10);
-			}
-		};
 	}
 
 	private static class MyImportAgent extends DefaultMMAgent {
