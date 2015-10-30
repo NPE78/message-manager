@@ -1,4 +1,4 @@
-package com.synaptix.mm.server.it;
+package com.synaptix.mm.server.unit;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +15,7 @@ import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.engine.model.DefaultProcessError;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.server.implem.DefaultMMAgent;
+import com.synaptix.mm.server.it.AbstractMMTest;
 import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
@@ -25,12 +26,12 @@ import junit.framework.Assert;
 /**
  * Created by NicolasP on 26/10/2015.
  */
-public class ITMMAgent extends AbstractMMTest {
+public class TestMMAgent extends AbstractMMTest {
 
 	@Test
 	public void testMMAgent() throws Exception {
 
-		LOG.info("Starting ITMMAgent");
+		LOG.info("Starting TestMMAgent");
 
 		MMDictionary dictionary = getInstance(MMDictionary.class);
 
@@ -96,6 +97,29 @@ public class ITMMAgent extends AbstractMMTest {
 			IProcessingResult processingResult = getInstance(MyExportAgent.class).doWork(testCase);
 			Assert.assertTrue(testCase.name + ", got " + processingResult.getState() + ", " + processingResult.getErrorRecyclingKind(), testCase.isTestValid(processingResult));
 		}
+
+		{ // test foreign
+			IProcessingResult processingResult = getInstance(MyForeignAgent.class).doWork(null);
+			Assert.assertEquals(IProcessingResult.State.INVALID, processingResult.getState());
+			Assert.assertEquals(ErrorRecyclingKind.NOT_RECYCLABLE, processingResult.getErrorRecyclingKind());
+		}
+
+		{ // test bug
+			MyObject obj = new MyObject() {
+				boolean ok;
+			};
+			try {
+				getInstance(MyBugguedAgent.class).work(obj, null);
+			} catch (Exception e) {
+			}
+			Assert.assertTrue(obj.ok);
+		}
+	}
+
+	private class MyObject {
+
+		boolean ok;
+
 	}
 
 	private static class MyImportAgent extends DefaultMMAgent {
@@ -137,6 +161,44 @@ public class ITMMAgent extends AbstractMMTest {
 		@Override
 		protected boolean isConcerned(Object messageObject) {
 			return messageObject instanceof TestCase;
+		}
+	}
+
+	private static class MyForeignAgent extends DefaultMMAgent {
+
+		@Inject
+		private MyForeignAgent() {
+			super("TEST_AGENT_FOREIGN");
+		}
+
+		@Override
+		public void process(Object messageObject) {
+		}
+
+		@Override
+		protected boolean isConcerned(Object messageObject) {
+			return false;
+		}
+	}
+
+	private static class MyBugguedAgent extends DefaultMMAgent {
+
+		private MyObject obj;
+
+		@Inject
+		private MyBugguedAgent() {
+			super("TEST_AGENT_BUG");
+		}
+
+		@Override
+		public void process(Object messageObject) {
+			this.obj = (MyObject) messageObject;
+			throw new RuntimeException("error");
+		}
+
+		@Override
+		public void reject() {
+			obj.ok = true;
 		}
 	}
 
