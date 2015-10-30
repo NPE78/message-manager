@@ -41,7 +41,10 @@ public class MMEngineTest {
 
 	@Test
 	public void testMMEngine() throws Exception {
+		MMEngine engine = new MMEngine();
 		MMDictionary dictionary = new MMDictionary();
+		engine.setDictionary(dictionary);
+
 		List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("TEST"));
 		errorTypeList.add(new DefaultErrorType("ACCEPT_WARN", ErrorRecyclingKind.WARNING));
 		errorTypeList.add(new DefaultErrorType("REJECT_AUTO", ErrorRecyclingKind.AUTOMATIC));
@@ -50,36 +53,31 @@ public class MMEngineTest {
 
 		MyMMProcess process = new MyMMProcess();
 		{
-			process.process("ACCEPT");
-			IProcessingResult processingResult = dictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
+			IProcessingResult processingResult = engine.start("ACCEPT", process);
 			Assert.assertEquals(IProcessingResult.State.VALID, processingResult.getState());
 			Assert.assertNull(processingResult.getErrorRecyclingKind());
 			Assert.assertNull(processingResult.getNextProcessingDate());
 		}
 		{
-			process.process("ACCEPT_WARN");
-			IProcessingResult processingResult = dictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
+			IProcessingResult processingResult = engine.start("ACCEPT_WARN", process);
 			Assert.assertEquals(IProcessingResult.State.VALID, processingResult.getState());
 			Assert.assertEquals(ErrorRecyclingKind.WARNING, processingResult.getErrorRecyclingKind());
 			Assert.assertNull(processingResult.getNextProcessingDate());
 		}
 		{
-			process.process("REJECT_AUTO");
-			IProcessingResult processingResult = dictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
+			IProcessingResult processingResult = engine.start("REJECT_AUTO", process);
 			Assert.assertEquals(IProcessingResult.State.INVALID, processingResult.getState());
 			Assert.assertEquals(ErrorRecyclingKind.AUTOMATIC, processingResult.getErrorRecyclingKind());
 			Assert.assertNotNull(processingResult.getNextProcessingDate());
 		}
 		{
-			process.process("REJECT_MAN");
-			IProcessingResult processingResult = dictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
+			IProcessingResult processingResult = engine.start("REJECT_MAN", process);
 			Assert.assertEquals(IProcessingResult.State.INVALID, processingResult.getState());
 			Assert.assertEquals(ErrorRecyclingKind.MANUAL, processingResult.getErrorRecyclingKind());
 			Assert.assertNull(processingResult.getNextProcessingDate());
 		}
 		{
-			process.process("REJECT_DEF");
-			IProcessingResult processingResult = dictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
+			IProcessingResult processingResult = engine.start("REJECT_DEF", process);
 			Assert.assertEquals(IProcessingResult.State.INVALID, processingResult.getState());
 			Assert.assertEquals(ErrorRecyclingKind.NOT_RECYCLABLE, processingResult.getErrorRecyclingKind());
 			Assert.assertNull(processingResult.getNextProcessingDate());
