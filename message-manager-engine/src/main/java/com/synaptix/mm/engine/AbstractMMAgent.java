@@ -135,14 +135,14 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 	protected abstract void reject();
 
 	/**
-	 * The process is in a valid state, it has been accepted
+	 * The process is in a valid state, it has been accepted.
 	 */
 	protected abstract void accept();
 
 	/**
-	 * Are the raised errors blocking the final step of the process?
+	 * Of all the errors raised until here, are they blocking the process?
 	 */
-	private boolean checkBlocking(IProcessingResult processingResult) {
+	protected final boolean checkBlocking(IProcessingResult processingResult) {
 		IMessageType messageType = dictionary.getMessageType(messageTypeName);
 		if (processingResult.getState() == IProcessingResult.State.INVALID) {
 			switch (processingResult.getErrorRecyclingKind()) {

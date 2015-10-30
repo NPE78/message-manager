@@ -6,7 +6,10 @@ import java.util.List;
 import org.junit.Test;
 
 import com.synaptix.mm.engine.MMDictionary;
+import com.synaptix.mm.engine.SubDictionary;
+import com.synaptix.mm.engine.exception.UnknownDictionaryException;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
+import com.synaptix.mm.engine.exception.UnknownMessageTypeException;
 import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.implem.DefaultProcessErrorFactory;
 import com.synaptix.mm.engine.model.DefaultErrorType;
@@ -26,11 +29,14 @@ public class ProcessingResultTest {
 	@Test
 	public void testRecycling() throws Exception {
 		MMDictionary dictionary = new MMDictionary();
+		SubDictionary subDictionary = dictionary.addSubsetDictionary("sub");
 
 		{
 			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("MT1"));
 			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.AUTOMATIC));
 			errorTypeList.add(new DefaultErrorType("ET2", ErrorRecyclingKind.MANUAL));
+
+			subDictionary.fixError("MT1", new DefaultErrorType("ET2", ErrorRecyclingKind.AUTOMATIC, 60));
 
 			Assert.assertNotNull(dictionary.getMessageType("MT1"));
 		}
@@ -89,6 +95,13 @@ public class ProcessingResultTest {
 			Assert.assertNull(r1.getNextProcessingDate());
 		}
 		{
+			errorList.add(processErrorFactory.createProcessError("ET2", "", ""));
+			IProcessingResult r1 = dictionary.getSubsetDictionary("sub").getProcessingResult("MT1", errorList);
+			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
+			Assert.assertEquals(ErrorRecyclingKind.AUTOMATIC, r1.getErrorRecyclingKind());
+			Assert.assertNotNull(r1.getNextProcessingDate());
+		}
+		{
 			errorList.add(processErrorFactory.createProcessError("ET3", "", ""));
 			IProcessingResult r1 = dictionary.getProcessingResult("MT3", errorList);
 			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
@@ -100,6 +113,26 @@ public class ProcessingResultTest {
 			try {
 				dictionary.getProcessingResult("MT1", errorList);
 			} catch (UnknownErrorException e) {
+				exceptionRaised = true;
+			} finally {
+				Assert.assertTrue(exceptionRaised);
+			}
+		}
+		{
+			boolean exceptionRaised = false;
+			try {
+			dictionary.getSubsetDictionary("unknownSubDictionary");
+			} catch (UnknownDictionaryException e) {
+				exceptionRaised = true;
+			} finally {
+				Assert.assertTrue(exceptionRaised);
+			}
+		}
+		{
+			boolean exceptionRaised = false;
+			try {
+				dictionary.getProcessingResult("unknownMessageType", errorList);
+			} catch (UnknownMessageTypeException e) {
 				exceptionRaised = true;
 			} finally {
 				Assert.assertTrue(exceptionRaised);

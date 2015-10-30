@@ -7,7 +7,7 @@ import com.synaptix.mm.engine.MMDictionary;
  * See {@link MMDictionary}
  * Created by NicolasP on 23/10/2015.
  */
-public class UnknownMessageTypeException extends RuntimeException {
+public final class UnknownMessageTypeException extends RuntimeException {
 
 	public UnknownMessageTypeException(String message) {
 		super(message);
