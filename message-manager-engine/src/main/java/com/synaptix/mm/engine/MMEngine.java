@@ -1,6 +1,7 @@
 package com.synaptix.mm.engine;
 
 import com.google.inject.Inject;
+import com.synaptix.mm.engine.exception.DictionaryAlreadyDefinedException;
 import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.shared.model.IMessageType;
@@ -25,6 +26,13 @@ public class MMEngine {
 	@Inject
 	public MMEngine() {
 		super();
+	}
+
+	public final void setDictionary(MMDictionary dictionary) {
+		if (this.dictionary != null) {
+			throw new DictionaryAlreadyDefinedException("A main dictionary has already been defined");
+		}
+		this.dictionary = dictionary;
 	}
 
 	public final IProcessingResult start(Object messageObject, IMMProcess process) {
