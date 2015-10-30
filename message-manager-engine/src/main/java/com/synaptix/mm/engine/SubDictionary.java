@@ -59,7 +59,7 @@ public class SubDictionary {
 		for (String key : keys) {
 			dictionary = dictionary.subsetDictionaryMap.get(key);
 			if (dictionary == null) {
-				throw new UnknownDictionaryException("'" + key + "' in dictionary '" + dictionaryName + "'");
+				throw new UnknownDictionaryException("'" + key + "'" + getDictionaryExceptionString());
 			}
 		}
 		return dictionary;
@@ -139,16 +139,20 @@ public class SubDictionary {
 		}
 		if (first == null || !first.isPresent()) {
 			if (parentDictionary == null) {
-				throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found for message type '" + messageTypeName + "' in dictionary '" + dictionaryName + "'");
+				throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found for message type '" + messageTypeName + "'" + getDictionaryExceptionString());
 			} else {
 				try {
 					return parentDictionary.getErrorType(messageTypeName, s);
 				} catch (UnknownErrorException e) {
-					throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found for message type '" + messageTypeName + "' in dictionary '" + dictionaryName + "'", e);
+					throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found for message type '" + messageTypeName + "'" + getDictionaryExceptionString(), e);
 				}
 			}
 		}
 		return first.get();
+	}
+
+	private String getDictionaryExceptionString() {
+		return " in dictionary '" + dictionaryName + "'";
 	}
 
 	private void updateWorst(Worst worst, IErrorType errorType) {

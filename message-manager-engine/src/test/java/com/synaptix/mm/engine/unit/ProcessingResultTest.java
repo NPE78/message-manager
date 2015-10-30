@@ -36,6 +36,7 @@ public class ProcessingResultTest {
 			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.AUTOMATIC));
 			errorTypeList.add(new DefaultErrorType("ET2", ErrorRecyclingKind.MANUAL));
 
+			subDictionary.fixError("MT1", new DefaultErrorType("ET2", ErrorRecyclingKind.WARNING, 60));
 			subDictionary.fixError("MT1", new DefaultErrorType("ET2", ErrorRecyclingKind.AUTOMATIC, 60));
 
 			Assert.assertNotNull(dictionary.getMessageType("MT1"));
@@ -132,6 +133,16 @@ public class ProcessingResultTest {
 			boolean exceptionRaised = false;
 			try {
 				dictionary.getProcessingResult("unknownMessageType", errorList);
+			} catch (UnknownMessageTypeException e) {
+				exceptionRaised = true;
+			} finally {
+				Assert.assertTrue(exceptionRaised);
+			}
+		}
+		{
+			boolean exceptionRaised = false;
+			try {
+				dictionary.getMessageType("unknownMessageType");
 			} catch (UnknownMessageTypeException e) {
 				exceptionRaised = true;
 			} finally {
