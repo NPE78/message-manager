@@ -12,4 +12,8 @@ public final class UnknownErrorException extends RuntimeException {
 	public UnknownErrorException(String message) {
 		super(message);
 	}
+
+	public UnknownErrorException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

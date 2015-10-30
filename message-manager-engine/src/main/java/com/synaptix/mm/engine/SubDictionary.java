@@ -144,7 +144,7 @@ public class SubDictionary {
 				try {
 					return parentDictionary.getErrorType(messageTypeName, s);
 				} catch (UnknownErrorException e) {
-					throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found for message type '" + messageTypeName + "' in dictionary '" + dictionaryName + "'");
+					throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found for message type '" + messageTypeName + "' in dictionary '" + dictionaryName + "'", e);
 				}
 			}
 		}
