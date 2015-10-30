@@ -1,4 +1,4 @@
-package com.synaptix.mm.engine.it;
+package com.synaptix.mm.server.it;
 
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
+import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
 import com.synaptix.pmgr.core.apis.Engine;
 import com.synaptix.pmgr.core.lib.ProcessEngine;
 import com.synaptix.pmgr.core.lib.ProcessingChannel;
@@ -69,10 +70,10 @@ public class ITLaunchIntegrator extends AbstractMMTest {
 		}
 	}
 
-	private class TestIntegratorServletModule extends AbstractSynaptixIntegratorServletModule {
+	private class TestIntegratorServletModule extends DefaultTestMMServerModule {
 
 		@Override
-		protected void configure() {
+		protected void configureTestModule() {
 			bindAgent(AgentTest.class, 5, 10);
 			bindAgent(SlowAgentTest.class, 5, 10);
 		}

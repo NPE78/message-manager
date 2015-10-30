@@ -1,4 +1,4 @@
-package com.synaptix.mm.engine.unit;
+package com.synaptix.mm.server.unit;
 
 import java.util.List;
 
@@ -9,15 +9,15 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.google.inject.util.Modules;
 import com.synaptix.component.factory.ComponentFactory;
-import com.synaptix.mm.engine.AbstractMMAgent;
 import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.factory.IProcessErrorFactory;
-import com.synaptix.mm.engine.guice.MMEngineModule;
 import com.synaptix.mm.engine.implem.DefaultProcessErrorFactory;
 import com.synaptix.mm.engine.model.DefaultErrorType;
 import com.synaptix.mm.engine.model.DefaultMessageType;
-import com.synaptix.mm.engine.model.IProcessContext;
 import com.synaptix.mm.engine.model.IProcessingResult;
+import com.synaptix.mm.server.AbstractMMAgent;
+import com.synaptix.mm.server.guice.MMServerModule;
+import com.synaptix.mm.server.model.IProcessContext;
 import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
@@ -32,7 +32,7 @@ public class MMAgentTest {
 
 	@Test
 	public void testMMAgent() throws Exception {
-		Injector injector = Guice.createInjector(Modules.combine(new MMEngineModule("trmt"), new MyModule()));
+		Injector injector = Guice.createInjector(Modules.combine(new MMServerModule("trmt"), new MyModule()));
 
 		List<IErrorType> errorTypeList = injector.getInstance(MMDictionary.class).addMessageType(new DefaultMessageType("TEST"));
 		errorTypeList.add(new DefaultErrorType("ACCEPT_WARN", ErrorRecyclingKind.WARNING));
@@ -87,8 +87,7 @@ public class MMAgentTest {
 		}
 
 		@Override
-		protected void notifyMessageStatus(MessageStatus newMessageStatus) {
-
+		public void notifyMessageStatus(MessageStatus newMessageStatus) {
 		}
 
 		@Override
@@ -102,7 +101,7 @@ public class MMAgentTest {
 		}
 
 		@Override
-		protected void process(Object messageObject) {
+		public void process(Object messageObject) {
 			String msg = (String) messageObject;
 			getProcessContext().setMsg(msg);
 			if (!"ACCEPT".equals(msg)) {
@@ -111,12 +110,12 @@ public class MMAgentTest {
 		}
 
 		@Override
-		protected void reject() {
+		public void reject() {
 			Assert.assertFalse(getProcessContext().getMsg().startsWith("ACCEPT"));
 		}
 
 		@Override
-		protected void accept() {
+		public void accept() {
 			Assert.assertTrue(getProcessContext().getMsg().startsWith("ACCEPT"));
 		}
 	}

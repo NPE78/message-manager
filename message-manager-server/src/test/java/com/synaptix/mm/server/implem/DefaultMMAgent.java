@@ -1,8 +1,9 @@
-package com.synaptix.mm.engine.implem;
+package com.synaptix.mm.server.implem;
 
 import com.google.inject.Inject;
 import com.synaptix.component.factory.ComponentFactory;
-import com.synaptix.mm.engine.AbstractMMAgent;
+import com.synaptix.mm.engine.implem.DefaultMessage;
+import com.synaptix.mm.server.AbstractMMAgent;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
 
 /**
@@ -30,7 +31,7 @@ public class DefaultMMAgent extends AbstractMMAgent<IDefaultProcessContext> {
 	}
 
 	@Override
-	protected void notifyMessageStatus(MessageStatus newMessageStatus) {
+	public void notifyMessageStatus(MessageStatus newMessageStatus) {
 		getProcessContext().getMessage().setMessageStatus(newMessageStatus);
 	}
 
@@ -40,17 +41,17 @@ public class DefaultMMAgent extends AbstractMMAgent<IDefaultProcessContext> {
 	}
 
 	@Override
-	protected void process(Object messageObject) {
+	public void process(Object messageObject) {
 		// do stuff
 	}
 
 	@Override
-	protected void reject() {
+	public void reject() {
 		// do stuff
 	}
 
 	@Override
-	protected void accept() {
+	public void accept() {
 		// do stuff
 	}
 }

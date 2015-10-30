@@ -1,4 +1,4 @@
-package com.synaptix.mm.engine.it;
+package com.synaptix.mm.server.it;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,11 +10,11 @@ import org.junit.Test;
 import com.google.inject.Inject;
 import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
-import com.synaptix.mm.engine.implem.DefaultMMAgent;
 import com.synaptix.mm.engine.model.DefaultErrorType;
 import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.engine.model.DefaultProcessError;
 import com.synaptix.mm.engine.model.IProcessingResult;
+import com.synaptix.mm.server.implem.DefaultMMAgent;
 import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
@@ -106,7 +106,7 @@ public class ITMMAgent extends AbstractMMTest {
 		}
 
 		@Override
-		protected void process(Object messageObject) {
+		public void process(Object messageObject) {
 			TestCase testCase = (TestCase) messageObject;
 			List<IProcessError> processErrorList = testCase.getErrors();
 
@@ -127,7 +127,7 @@ public class ITMMAgent extends AbstractMMTest {
 		}
 
 		@Override
-		protected void process(Object messageObject) {
+		public void process(Object messageObject) {
 			TestCase testCase = (TestCase) messageObject;
 			List<IProcessError> processErrorList = testCase.getErrors();
 

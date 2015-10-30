@@ -6,11 +6,8 @@
         <artifactId>message-manager</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>message-manager-engine</artifactId>
-    <name>Message Manager Engine</name>
-    <properties>
-        <guice.version>3.0</guice.version>
-    </properties>
+    <artifactId>message-manager-server</artifactId>
+    <name>Message Manager server</name>
     <build>
         <plugins>
             <plugin>
@@ -29,28 +26,37 @@
     <dependencies>
         <dependency>
             <groupId>com.synaptix</groupId>
-            <artifactId>message-manager-shared</artifactId>
+            <artifactId>message-manager-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>${guice.version}</version>
+            <groupId>com.synaptix</groupId>
+            <artifactId>message-manager-engine</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-servlet</artifactId>
-            <version>${guice.version}</version>
+            <groupId>com.synaptix</groupId>
+            <artifactId>SynaptixProcessManagerPlugin</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-assistedinject</artifactId>
-            <version>${guice.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-multibindings</artifactId>
-            <version>${guice.version}</version>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>PROD_ENV</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <filters>
+                    <filter>src/main/filters/NORMAL.properties</filter>
+                </filters>
+            </build>
+        </profile>
+    </profiles>
 </project>

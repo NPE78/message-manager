@@ -8,10 +8,10 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import com.synaptix.mm.engine.MMDictionary;
-import com.synaptix.mm.engine.implem.DefaultMMAgent;
-import com.synaptix.mm.engine.it.AbstractMMTest;
-import com.synaptix.mm.engine.it.DefaultTestMMModule;
 import com.synaptix.mm.engine.model.DefaultMessageType;
+import com.synaptix.mm.server.implem.DefaultMMAgent;
+import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
+import com.synaptix.mm.server.it.AbstractMMTest;
 import com.synaptix.mm.supervision.model.AgentInfoDto;
 import com.synaptix.pmgr.core.lib.ProcessEngine;
 import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
@@ -49,7 +49,7 @@ public class SupervisionUtilsTest extends AbstractMMTest {
 
 	@Override
 	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
-		return new DefaultTestMMModule() {
+		return new DefaultTestMMServerModule() {
 
 			@Override
 			protected void configureTestModule() {
@@ -66,7 +66,7 @@ public class SupervisionUtilsTest extends AbstractMMTest {
 		}
 
 		@Override
-		protected void process(Object messageObject) {
+		public void process(Object messageObject) {
 			List<AgentInfoDto> agentInfoDtoList = SupervisionUtils.getAgentInfo("MyMMAgent");
 			Assert.assertEquals(1, agentInfoDtoList.size());
 
@@ -89,7 +89,7 @@ public class SupervisionUtilsTest extends AbstractMMTest {
 		}
 
 		@Override
-		protected void process(Object messageObject) {
+		public void process(Object messageObject) {
 			CountDownLatch cdl = new CountDownLatch(1);
 			try {
 				cdl.await(1, TimeUnit.SECONDS);

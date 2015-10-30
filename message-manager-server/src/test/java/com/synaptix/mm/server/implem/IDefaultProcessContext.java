@@ -1,6 +1,7 @@
-package com.synaptix.mm.engine.implem;
+package com.synaptix.mm.server.implem;
 
-import com.synaptix.mm.engine.model.IProcessContext;
+import com.synaptix.mm.engine.implem.DefaultMessage;
+import com.synaptix.mm.server.model.IProcessContext;
 
 /**
  * Created by NicolasP on 26/10/2015.

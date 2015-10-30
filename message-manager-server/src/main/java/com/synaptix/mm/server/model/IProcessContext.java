@@ -1,4 +1,4 @@
-package com.synaptix.mm.engine.model;
+package com.synaptix.mm.server.model;
 
 import java.util.List;
 

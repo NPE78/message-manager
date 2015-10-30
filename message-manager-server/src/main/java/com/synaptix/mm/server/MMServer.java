@@ -1,4 +1,4 @@
-package com.synaptix.mm.engine;
+package com.synaptix.mm.server;
 
 import java.util.Collection;
 import java.util.HashSet;

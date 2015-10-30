@@ -1,4 +1,4 @@
-package com.synaptix.mm.engine;
+package com.synaptix.mm.server.unit;
 
 import java.io.FileReader;
 import java.net.URL;
@@ -16,7 +16,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.util.Modules;
-import com.synaptix.mm.engine.guice.MMEngineModule;
+import com.synaptix.mm.server.MMServer;
+import com.synaptix.mm.server.guice.MMServerModule;
 
 /**
  * Created by NicolasP on 21/10/2015.
@@ -52,9 +53,9 @@ public class MainIntegratorBoot {
 			String trmt = p.getProperty("trmt_engine", "TRMT_LOCAL");
 
 			if (integratorTestModule != null) {
-				injector = Guice.createInjector(Modules.combine(new MMEngineModule(trmt), integratorTestModule));
+				injector = Guice.createInjector(Modules.combine(new MMServerModule(trmt), integratorTestModule));
 			} else {
-				injector = Guice.createInjector(new MMEngineModule(trmt));
+				injector = Guice.createInjector(new MMServerModule(trmt));
 			}
 			MMServer server = injector.getInstance(MMServer.class);
 

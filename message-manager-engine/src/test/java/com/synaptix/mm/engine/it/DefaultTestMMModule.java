@@ -1,14 +1,14 @@
 package com.synaptix.mm.engine.it;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.implem.DefaultProcessErrorFactory;
-import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
 
 /**
  * Created by NicolasP on 22/10/2015.
  */
-public class DefaultTestMMModule extends AbstractSynaptixIntegratorServletModule {
+public class DefaultTestMMModule extends AbstractModule {
 
 	@Override
 	protected final void configure() {

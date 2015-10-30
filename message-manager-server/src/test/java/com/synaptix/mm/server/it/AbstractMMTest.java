@@ -1,4 +1,4 @@
-package com.synaptix.mm.engine.it;
+package com.synaptix.mm.server.it;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -9,8 +9,9 @@ import org.junit.After;
 import org.junit.Before;
 
 import com.google.inject.Injector;
-import com.synaptix.mm.engine.MMServer;
-import com.synaptix.mm.engine.MainIntegratorBoot;
+import com.synaptix.mm.server.MMServer;
+import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
+import com.synaptix.mm.server.unit.MainIntegratorBoot;
 import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
 
 /**
@@ -28,7 +29,7 @@ public class AbstractMMTest {
 	}
 
 	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
-		return new DefaultTestMMModule();
+		return new DefaultTestMMServerModule();
 	}
 
 	final MMServer getServer() {
