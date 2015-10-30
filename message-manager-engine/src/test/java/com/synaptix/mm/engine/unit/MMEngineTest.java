@@ -1,5 +1,6 @@
 package com.synaptix.mm.engine.unit;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import com.synaptix.mm.engine.MMEngine;
 import com.synaptix.mm.engine.model.DefaultErrorType;
 import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.engine.model.DefaultProcessError;
+import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
@@ -29,10 +31,96 @@ public class MMEngineTest {
 		MMDictionary dictionary = new MMDictionary();
 		engine.setDictionary(dictionary);
 
-		List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("test"));
-		errorTypeList.add(new DefaultErrorType("errorCode", ErrorRecyclingKind.AUTOMATIC));
+		{
+			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("test"));
+			errorTypeList.add(new DefaultErrorType("AUTO", ErrorRecyclingKind.AUTOMATIC));
+		}
 
 		engine.start(null, new MyProcess());
+	}
+
+	@Test
+	public void testMMEngine() throws Exception {
+		MMDictionary dictionary = new MMDictionary();
+		List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("TEST"));
+		errorTypeList.add(new DefaultErrorType("ACCEPT_WARN", ErrorRecyclingKind.WARNING));
+		errorTypeList.add(new DefaultErrorType("REJECT_AUTO", ErrorRecyclingKind.AUTOMATIC));
+		errorTypeList.add(new DefaultErrorType("REJECT_MAN", ErrorRecyclingKind.MANUAL));
+		errorTypeList.add(new DefaultErrorType("REJECT_DEF", ErrorRecyclingKind.NOT_RECYCLABLE));
+
+		MyMMProcess process = new MyMMProcess();
+		{
+			process.process("ACCEPT");
+			IProcessingResult processingResult = dictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
+			Assert.assertEquals(IProcessingResult.State.VALID, processingResult.getState());
+			Assert.assertNull(processingResult.getErrorRecyclingKind());
+			Assert.assertNull(processingResult.getNextProcessingDate());
+		}
+		{
+			process.process("ACCEPT_WARN");
+			IProcessingResult processingResult = dictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
+			Assert.assertEquals(IProcessingResult.State.VALID, processingResult.getState());
+			Assert.assertEquals(ErrorRecyclingKind.WARNING, processingResult.getErrorRecyclingKind());
+			Assert.assertNull(processingResult.getNextProcessingDate());
+		}
+		{
+			process.process("REJECT_AUTO");
+			IProcessingResult processingResult = dictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
+			Assert.assertEquals(IProcessingResult.State.INVALID, processingResult.getState());
+			Assert.assertEquals(ErrorRecyclingKind.AUTOMATIC, processingResult.getErrorRecyclingKind());
+			Assert.assertNotNull(processingResult.getNextProcessingDate());
+		}
+		{
+			process.process("REJECT_MAN");
+			IProcessingResult processingResult = dictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
+			Assert.assertEquals(IProcessingResult.State.INVALID, processingResult.getState());
+			Assert.assertEquals(ErrorRecyclingKind.MANUAL, processingResult.getErrorRecyclingKind());
+			Assert.assertNull(processingResult.getNextProcessingDate());
+		}
+		{
+			process.process("REJECT_DEF");
+			IProcessingResult processingResult = dictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
+			Assert.assertEquals(IProcessingResult.State.INVALID, processingResult.getState());
+			Assert.assertEquals(ErrorRecyclingKind.NOT_RECYCLABLE, processingResult.getErrorRecyclingKind());
+			Assert.assertNull(processingResult.getNextProcessingDate());
+		}
+	}
+
+	private class MyMMProcess implements IMMProcess {
+
+		private List<IProcessError> processErrorList = new ArrayList<>();
+
+		@Override
+		public void process(Object messageObject) {
+			processErrorList.clear();
+
+			String errorCode = (String) messageObject;
+			if (!"ACCEPT".equals(errorCode)) {
+				processErrorList.add(new DefaultProcessError(errorCode, "", ""));
+			}
+		}
+
+		@Override
+		public void reject() {
+		}
+
+		@Override
+		public void accept() {
+		}
+
+		@Override
+		public void notifyMessageStatus(MessageStatus newMessageStatus) {
+		}
+
+		@Override
+		public List<IProcessError> getProcessErrorList() {
+			return processErrorList;
+		}
+
+		@Override
+		public String getMessageTypeName() {
+			return "TEST";
+		}
 	}
 
 	private class MyProcess implements IMMProcess {
@@ -58,7 +146,7 @@ public class MMEngineTest {
 
 		@Override
 		public List<IProcessError> getProcessErrorList() {
-			DefaultProcessError error = new DefaultProcessError("errorCode", "", "");
+			DefaultProcessError error = new DefaultProcessError("AUTO", "", "");
 			return Arrays.asList(error);
 		}
 

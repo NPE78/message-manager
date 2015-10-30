@@ -26,12 +26,12 @@ import junit.framework.Assert;
 /**
  * Created by NicolasP on 26/10/2015.
  */
-public class TestMMAgent extends AbstractMMTest {
+public class MMAgentTest2 extends AbstractMMTest {
 
 	@Test
 	public void testMMAgent() throws Exception {
 
-		LOG.info("Starting TestMMAgent");
+		LOG.info("Starting MMAgentTest2");
 
 		MMDictionary dictionary = getInstance(MMDictionary.class);
 
