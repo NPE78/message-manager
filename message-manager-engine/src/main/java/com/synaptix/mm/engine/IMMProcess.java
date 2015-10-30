@@ -45,4 +45,10 @@ public interface IMMProcess {
 	 */
 	String getMessageTypeName();
 
+	/**
+	 * Get the dictionary used to match the errors to their recycling kind
+	 */
+	default SubDictionary getValidationDictionary(MMDictionary rootDictionary) {
+		return rootDictionary;
+	}
 }

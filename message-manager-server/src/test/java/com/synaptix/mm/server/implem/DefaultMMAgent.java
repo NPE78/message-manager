@@ -2,6 +2,8 @@ package com.synaptix.mm.server.implem;
 
 import com.google.inject.Inject;
 import com.synaptix.component.factory.ComponentFactory;
+import com.synaptix.mm.engine.MMDictionary;
+import com.synaptix.mm.engine.SubDictionary;
 import com.synaptix.mm.engine.implem.DefaultMessage;
 import com.synaptix.mm.server.AbstractMMAgent;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
@@ -53,5 +55,10 @@ public class DefaultMMAgent extends AbstractMMAgent<IDefaultProcessContext> {
 	@Override
 	public void accept() {
 		// do stuff
+	}
+
+	@Override
+	public SubDictionary getValidationDictionary(MMDictionary rootDictionary) {
+		return rootDictionary;
 	}
 }

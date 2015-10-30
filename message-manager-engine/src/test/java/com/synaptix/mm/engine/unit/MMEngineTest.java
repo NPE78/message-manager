@@ -9,6 +9,7 @@ import org.junit.Test;
 import com.synaptix.mm.engine.IMMProcess;
 import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.MMEngine;
+import com.synaptix.mm.engine.SubDictionary;
 import com.synaptix.mm.engine.model.DefaultErrorType;
 import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.engine.model.DefaultProcessError;
@@ -119,6 +120,11 @@ public class MMEngineTest {
 		public String getMessageTypeName() {
 			return "TEST";
 		}
+
+		@Override
+		public SubDictionary getValidationDictionary(MMDictionary rootDictionary) {
+			return rootDictionary;
+		}
 	}
 
 	private class MyProcess implements IMMProcess {
@@ -139,7 +145,6 @@ public class MMEngineTest {
 
 		@Override
 		public void notifyMessageStatus(MessageStatus newMessageStatus) {
-
 		}
 
 		@Override
@@ -151,6 +156,11 @@ public class MMEngineTest {
 		@Override
 		public String getMessageTypeName() {
 			return "test";
+		}
+
+		@Override
+		public SubDictionary getValidationDictionary(MMDictionary rootDictionary) {
+			return rootDictionary;
 		}
 	}
 }

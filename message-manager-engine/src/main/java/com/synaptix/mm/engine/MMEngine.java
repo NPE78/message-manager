@@ -39,7 +39,8 @@ public class MMEngine {
 		process.notifyMessageStatus(MessageStatus.IN_PROGRESS);
 		process.process(messageObject);
 
-		IProcessingResult processingResult = dictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
+		SubDictionary subDictionary = process.getValidationDictionary(dictionary);
+		IProcessingResult processingResult = subDictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
 
 		if (checkBlocking(processingResult, process)) {
 			process.reject();
