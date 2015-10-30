@@ -58,7 +58,7 @@ public class ITLaunchIntegrator extends AbstractMMTest {
 			boolean hasBeenStopped = false;
 			try {
 				CountDownLatch cdl = new CountDownLatch(1);
-				cdl.await(3000, TimeUnit.SECONDS);
+				cdl.await(30, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
 				hasBeenStopped = true; // never called if the integrator really stopped
 			} catch (Exception e) {

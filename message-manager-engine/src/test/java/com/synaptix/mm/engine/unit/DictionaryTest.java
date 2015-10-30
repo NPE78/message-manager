@@ -24,7 +24,7 @@ import junit.framework.Assert;
 /**
  * Created by NicolasP on 22/10/2015.
  */
-public class ProcessingResultTest {
+public class DictionaryTest {
 
 	@Test
 	public void testRecycling() throws Exception {
