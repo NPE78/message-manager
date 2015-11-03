@@ -1,4 +1,4 @@
-package com.synaptix.mm.server.it;
+package com.synaptix.mm.server.unit;
 
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
+import com.synaptix.mm.server.it.AbstractMMTest;
 import com.synaptix.pmgr.core.apis.Engine;
 import com.synaptix.pmgr.core.lib.ProcessEngine;
 import com.synaptix.pmgr.core.lib.ProcessingChannel;
@@ -17,7 +18,7 @@ import junit.framework.Assert;
 /**
  * Created by NicolasP on 21/10/2015.
  */
-public class ITLaunchIntegrator extends AbstractMMTest {
+public class MMServerTest extends AbstractMMTest {
 
 	private static int randomInt;
 

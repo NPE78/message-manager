@@ -32,7 +32,7 @@ public class AbstractMMTest {
 		return new DefaultTestMMServerModule();
 	}
 
-	final MMServer getServer() {
+	protected final MMServer getServer() {
 		return injector.getInstance(MMServer.class);
 	}
 
