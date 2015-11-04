@@ -117,6 +117,14 @@ public class SubDictionary {
 		errorTypeList.add(errorType);
 	}
 
+	/**
+	 * Clear the dictionary from all errors and subset dictionaries
+	 */
+	public void clear() {
+		errorTypeMap.clear();
+		subsetDictionaryMap.clear();
+	}
+
 	private void checkMessageTypeExistence(String messageTypeName) {
 		SubDictionary parent = this;
 		while (parent.parentDictionary != null) {

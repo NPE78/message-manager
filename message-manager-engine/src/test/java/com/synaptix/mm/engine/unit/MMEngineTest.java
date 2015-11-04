@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.synaptix.mm.engine.IMMProcess;
@@ -18,8 +19,6 @@ import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
-
-import junit.framework.Assert;
 
 /**
  * Created by NicolasP on 30/10/2015.

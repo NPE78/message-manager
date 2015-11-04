@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.inject.Inject;
@@ -25,8 +26,6 @@ import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
 import com.synaptix.mm.shared.model.domain.MessageWay;
-
-import junit.framework.Assert;
 
 /**
  * Created by NicolasP on 28/10/2015.

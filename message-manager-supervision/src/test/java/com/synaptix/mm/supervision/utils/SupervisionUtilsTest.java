@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.synaptix.mm.engine.MMDictionary;
@@ -15,8 +16,6 @@ import com.synaptix.mm.server.it.AbstractMMTest;
 import com.synaptix.mm.supervision.model.AgentInfoDto;
 import com.synaptix.pmgr.core.lib.ProcessEngine;
 import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
-
-import junit.framework.Assert;
 
 /**
  * Created by NicolasP on 29/10/2015.

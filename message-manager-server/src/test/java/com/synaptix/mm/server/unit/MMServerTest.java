@@ -4,6 +4,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
@@ -12,8 +13,6 @@ import com.synaptix.pmgr.core.apis.Engine;
 import com.synaptix.pmgr.core.lib.ProcessEngine;
 import com.synaptix.pmgr.core.lib.ProcessingChannel;
 import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
-
-import junit.framework.Assert;
 
 /**
  * Created by NicolasP on 21/10/2015.

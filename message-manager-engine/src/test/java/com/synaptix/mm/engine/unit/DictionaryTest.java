@@ -3,6 +3,7 @@ package com.synaptix.mm.engine.unit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.synaptix.mm.engine.MMDictionary;
@@ -18,8 +19,6 @@ import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
-
-import junit.framework.Assert;
 
 /**
  * Created by NicolasP on 22/10/2015.
@@ -165,6 +164,27 @@ public class DictionaryTest {
 			} finally {
 				Assert.assertTrue(exceptionRaised);
 			}
+		}
+
+		dictionary.clear();
+		errorList.clear();
+		{
+			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("MT1"));
+			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.WARNING));
+			errorTypeList.add(new DefaultErrorType("ET2", ErrorRecyclingKind.MANUAL));
+
+			Assert.assertNotNull(dictionary.getMessageType("MT1"));
+		}
+		{
+			IProcessingResult r1 = dictionary.getProcessingResult("MT1", errorList);
+			Assert.assertEquals(IProcessingResult.State.VALID, r1.getState());
+		}
+		{
+			errorList.add(processErrorFactory.createProcessError("ET1", "", ""));
+			IProcessingResult r1 = dictionary.getProcessingResult("MT1", errorList);
+			Assert.assertEquals(IProcessingResult.State.VALID, r1.getState());
+			Assert.assertEquals(ErrorRecyclingKind.WARNING, r1.getErrorRecyclingKind());
+			Assert.assertNull(r1.getNextProcessingDate());
 		}
 	}
 }

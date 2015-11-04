@@ -2,13 +2,12 @@ package com.synaptix.mm.engine.unit;
 
 import java.time.Instant;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.engine.model.ProcessingResultBuilder;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
-
-import junit.framework.Assert;
 
 /**
  * Created by NicolasP on 28/10/2015.

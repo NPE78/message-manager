@@ -30,7 +30,6 @@ public final class MMDictionary extends SubDictionary {
 		this.messageTypeMap = new HashMap<>();
 	}
 
-
 	/**
 	 * Add a message type and returns the list of errors which will be used to compute the processing result
 	 */
@@ -71,5 +70,11 @@ public final class MMDictionary extends SubDictionary {
 			throw new UnknownMessageTypeException("The message type '" + messageTypeName + "' does not exist!");
 		}
 		return messageType;
+	}
+
+	@Override
+	public void clear() {
+		super.clear();
+		messageTypeMap.clear();
 	}
 }
