@@ -49,10 +49,10 @@ public class DictionaryTest {
 			Assert.assertNotNull(dictionary.getMessageType("MT2"));
 		}
 		{
-			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("MT3"));
-			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.MANUAL));
-			errorTypeList.add(new DefaultErrorType("ET2", ErrorRecyclingKind.WARNING));
-			errorTypeList.add(new DefaultErrorType("ET3", ErrorRecyclingKind.NOT_RECYCLABLE));
+			dictionary.addMessageType(new DefaultMessageType("MT3"), null);
+			dictionary.fixError("MT3",new DefaultErrorType("ET1", ErrorRecyclingKind.MANUAL));
+			dictionary.fixError("MT3",new DefaultErrorType("ET2", ErrorRecyclingKind.WARNING));
+			dictionary.fixError("MT3",new DefaultErrorType("ET3", ErrorRecyclingKind.NOT_RECYCLABLE));
 
 			Assert.assertNotNull(dictionary.getMessageType("MT3"));
 		}
