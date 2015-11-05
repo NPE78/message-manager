@@ -33,6 +33,10 @@ import com.synaptix.pmgr.core.lib.probe.HeartbeatAgent;
 import com.synaptix.pmgr.plugin.GuicePluginManager;
 import com.synaptix.toolkits.properties.PropertiesKit;
 
+/**
+ * Launches an instance of the process manager
+ * Created by NicolasP on 28/10/2015.
+ */
 public class MMServer {
 
 	private static final Log LOG = LogFactory.getLog(MMServer.class);
@@ -66,7 +70,7 @@ public class MMServer {
 	}
 
 	/**
-	 * Change the timeout, meaning the duration to wait for the agents to finish properly before killing the process manager
+	 * Changes the timeout, meaning the duration to wait for the agents to finish properly before killing the process manager
 	 * @param timeoutSeconds timeout in seconds, implem is 2min
 	 */
 	public void setTimeoutSeconds(int timeoutSeconds) {
@@ -82,7 +86,7 @@ public class MMServer {
 	}
 
 	/**
-	 * Launch the process manager
+	 * Launches the process manager
 	 */
 	public void start() {
 		LOG.info("START MMServer");
@@ -167,6 +171,9 @@ public class MMServer {
 		}
 	}
 
+	/**
+	 * Returns true if there is at least one agent which is running
+	 */
 	public final boolean isRunning() {
 		Collection<ChannelSlot> channels = ProcessEngine.getInstance().getChannels();
 		for (ChannelSlot channelSlot : channels) {
@@ -181,6 +188,9 @@ public class MMServer {
 		return false;
 	}
 
+	/**
+	 * Returns a set of agents which are running at that moment
+	 */
 	public final Set<String> runningSet() {
 		Set<String> set = new HashSet<>();
 		Collection<ChannelSlot> channels = ProcessEngine.getInstance().getChannels();
