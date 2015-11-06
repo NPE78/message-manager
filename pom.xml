@@ -64,6 +64,7 @@
         <module>message-manager-example</module>
         <module>message-manager-server</module>
         <module>message-manager-supervision</module>
+        <module>message-manager-test-dependencies</module>
     </modules>
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
