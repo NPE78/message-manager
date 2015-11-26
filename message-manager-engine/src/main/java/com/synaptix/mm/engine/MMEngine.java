@@ -12,7 +12,7 @@ import com.synaptix.mm.shared.model.domain.MessageWay;
  * This class represents an instance of a message manager engine. It encapsulates a whole process
  * Created by NicolasP on 30/10/2015.
  */
-public class MMEngine {
+public final class MMEngine {
 
 	@Inject
 	private IProcessErrorFactory processErrorFactory;
@@ -28,14 +28,14 @@ public class MMEngine {
 		super();
 	}
 
-	public final void setDictionary(MMDictionary dictionary) {
+	public void setDictionary(MMDictionary dictionary) {
 		if (this.dictionary != null) {
 			throw new DictionaryAlreadyDefinedException("A main dictionary has already been defined");
 		}
 		this.dictionary = dictionary;
 	}
 
-	public final IProcessingResult start(Object messageObject, IMMProcess process) {
+	public IProcessingResult start(Object messageObject, IMMProcess process) {
 		process.notifyMessageStatus(MessageStatus.IN_PROGRESS);
 		process.process(messageObject);
 

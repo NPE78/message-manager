@@ -1,5 +1,11 @@
 package com.synaptix.mm.server.it;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +32,7 @@ public class AbstractMMTest {
 	@Before
 	public void startIntegrator() {
 		injector = MainIntegratorBoot.createServer(buildIntegratorTestModule());
+		injector.injectMembers(this);
 	}
 
 	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
@@ -79,5 +86,23 @@ public class AbstractMMTest {
 		} catch (InterruptedException e) {
 			LOG.error("Stop called", e);
 		}
+	}
+
+	public String readFile(String filename) {
+		StringBuilder content = new StringBuilder();
+		try {
+			Path file = Paths.get(filename);
+			BufferedReader reader = Files.newBufferedReader(file, Charset.defaultCharset());
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				if (content.length() > 0) {
+					content.append("/n");
+				}
+				content.append(line);
+			}
+		} catch (IOException e) {
+			LOG.error("IOException", e);
+		}
+		return content.toString();
 	}
 }
