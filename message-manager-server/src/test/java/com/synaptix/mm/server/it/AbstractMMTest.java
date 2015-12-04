@@ -32,16 +32,24 @@ public class AbstractMMTest {
 
 	@Before
 	public void startIntegrator() {
-		injector = MainIntegratorBoot.createServer(buildIntegratorTestModule());
+		injector = createInjector();
 		injector.injectMembers(this);
+	}
+
+	protected Injector createInjector() {
+		return MainIntegratorBoot.launchServer(buildIntegratorTestModule(), MMServer.class);
 	}
 
 	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
 		return new DefaultTestMMServerModule();
 	}
 
+	protected Class<? extends IServer> getServerClass() {
+		return MMServer.class;
+	}
+
 	protected final IServer getServer() {
-		return injector.getInstance(MMServer.class);
+		return injector.getInstance(getServerClass());
 	}
 
 	protected final <I> I getInstance(Class<I> clazz) {

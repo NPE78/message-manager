@@ -16,6 +16,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.util.Modules;
+import com.synaptix.mm.server.IServer;
 import com.synaptix.mm.server.MMServer;
 import com.synaptix.mm.server.guice.MMServerModule;
 import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
@@ -30,7 +31,7 @@ public class MainIntegratorBoot {
 
 	public static void main(String[] args) {
 
-		createServer(null);
+		launchServer(null, MMServer.class);
 
 		// MainIntegratorHelper.createJetty(new IJettyStarted() {
 		// @Override
@@ -41,9 +42,9 @@ public class MainIntegratorBoot {
 
 	/**
 	 * @param integratorTestModule optional
-	 * @return the server instance
+	 * @return the injector instance
 	 */
-	public static Injector createServer(AbstractModule integratorTestModule) {
+	public static Injector launchServer(AbstractModule integratorTestModule, Class<? extends IServer> serverClass) {
 		Injector injector = null;
 		Properties p = new Properties();
 		try {
@@ -54,11 +55,11 @@ public class MainIntegratorBoot {
 			String trmt = p.getProperty("trmt_engine", "TRMT_LOCAL");
 
 			if (integratorTestModule != null) {
-				injector = Guice.createInjector(Modules.combine(new MMServerModule("trmt"), new DefaultTestMMServerModule(), integratorTestModule));
+				injector = Guice.createInjector(Modules.combine(new MMServerModule("trmt"), Modules.override(new DefaultTestMMServerModule()).with(integratorTestModule)));
 			} else {
 				injector = Guice.createInjector(Modules.combine(new MMServerModule("trmt"), new DefaultTestMMServerModule()));
 			}
-			MMServer server = injector.getInstance(MMServer.class);
+			IServer server = injector.getInstance(serverClass);
 
 			server.start();
 

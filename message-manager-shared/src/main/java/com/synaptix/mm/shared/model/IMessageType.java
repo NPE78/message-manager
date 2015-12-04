@@ -12,8 +12,14 @@ public interface IMessageType {
 	 */
 	String getName();
 
+	/**
+	 * The message way of the messages: IN or OUT
+	 */
 	MessageWay getMessageWay();
 
+	/**
+	 * The recycling deadline in minutes
+	 */
 	Integer getRecyclingDeadline();
 
 }
