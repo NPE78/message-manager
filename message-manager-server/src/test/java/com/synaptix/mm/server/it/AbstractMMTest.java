@@ -15,7 +15,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import com.google.inject.Injector;
-import com.synaptix.mm.server.ITestServer;
+import com.synaptix.mm.server.IServer;
 import com.synaptix.mm.server.MMServer;
 import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
 import com.synaptix.mm.server.unit.MainIntegratorBoot;
@@ -40,7 +40,7 @@ public class AbstractMMTest {
 		return new DefaultTestMMServerModule();
 	}
 
-	protected final ITestServer getServer() {
+	protected final IServer getServer() {
 		return injector.getInstance(MMServer.class);
 	}
 
@@ -50,7 +50,7 @@ public class AbstractMMTest {
 
 	@After
 	public void stopIntegrator() {
-		ITestServer server = getServer();
+		IServer server = getServer();
 		if (server != null) {
 			server.stop();
 		}
@@ -61,7 +61,7 @@ public class AbstractMMTest {
 	}
 
 	protected final void waitIntegrator(int timeout) {
-		ITestServer server = getServer();
+		IServer server = getServer();
 
 		final CountDownLatch cdl = new CountDownLatch(1);
 		Thread thread = new Thread(() -> {

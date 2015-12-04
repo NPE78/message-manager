@@ -37,7 +37,7 @@ import com.synaptix.toolkits.properties.PropertiesKit;
  * Launches an instance of the process manager
  * Created by NicolasP on 28/10/2015.
  */
-public class MMServer implements ITestServer {
+public class MMServer implements IServer {
 
 	private static final Log LOG = LogFactory.getLog(MMServer.class);
 

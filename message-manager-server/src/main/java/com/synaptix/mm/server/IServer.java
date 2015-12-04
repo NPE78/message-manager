@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  * Created by NicolasP on 04/12/2015.
  */
-public interface ITestServer {
+public interface IServer {
 
 	/**
 	 * Starts the server
