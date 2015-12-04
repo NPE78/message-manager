@@ -1,6 +1,6 @@
 package com.synaptix.mm.engine.implem;
 
-import java.util.Date;
+import java.time.Instant;
 
 import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.shared.model.IMessage;
@@ -14,19 +14,19 @@ public class DefaultMessage implements IMessage {
 
 	private final IMessageType messageType;
 
-	private final Date createdDate;
+	private final Instant firstProcessingDate;
 
 	private MessageStatus messageStatus;
 
-	private Date nextProcessingDate;
+	private Instant nextProcessingDate;
 
-	private Date deadlineDate;
+	private Instant deadlineDate;
 
 	public DefaultMessage(String messageType) {
 		super();
 
 		this.messageType = new DefaultMessageType(messageType);
-		this.createdDate = new Date();
+		this.firstProcessingDate = Instant.now();
 	}
 
 	@Override
@@ -44,25 +44,25 @@ public class DefaultMessage implements IMessage {
 	}
 
 	@Override
-	public Date getNextProcessingDate() {
+	public Instant getNextProcessingDate() {
 		return nextProcessingDate;
 	}
 
-	public void setNextProcessingDate(Date nextProcessingDate) {
+	public void setNextProcessingDate(Instant nextProcessingDate) {
 		this.nextProcessingDate = nextProcessingDate;
 	}
 
 	@Override
-	public Date getDeadlineDate() {
+	public Instant getDeadlineDate() {
 		return deadlineDate;
 	}
 
-	public void setDeadlineDate(Date deadlineDate) {
+	public void setDeadlineDate(Instant deadlineDate) {
 		this.deadlineDate = deadlineDate;
 	}
 
 	@Override
-	public Date getCreatedDate() {
-		return createdDate;
+	public Instant getFirstProcessingDate() {
+		return firstProcessingDate;
 	}
 }
