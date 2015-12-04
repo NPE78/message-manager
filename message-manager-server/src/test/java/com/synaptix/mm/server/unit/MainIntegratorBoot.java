@@ -55,7 +55,7 @@ public class MainIntegratorBoot {
 			String trmt = p.getProperty("trmt_engine", "TRMT_LOCAL");
 
 			if (integratorTestModule != null) {
-				injector = Guice.createInjector(Modules.combine(new MMServerModule("trmt"), Modules.override(new DefaultTestMMServerModule()).with(integratorTestModule)));
+				injector = Guice.createInjector(Modules.override(Modules.combine(new MMServerModule("trmt"), new DefaultTestMMServerModule())).with(integratorTestModule));
 			} else {
 				injector = Guice.createInjector(Modules.combine(new MMServerModule("trmt"), new DefaultTestMMServerModule()));
 			}
