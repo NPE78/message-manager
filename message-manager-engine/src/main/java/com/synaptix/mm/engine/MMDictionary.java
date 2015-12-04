@@ -25,7 +25,7 @@ public final class MMDictionary extends SubDictionary {
 	 */
 	@Inject
 	public MMDictionary() {
-		super("MAIN", null);
+		super("MAIN", null); //$NON-NLS-1$
 
 		this.messageTypeMap = new HashMap<>();
 	}
@@ -57,7 +57,7 @@ public final class MMDictionary extends SubDictionary {
 
 	private void checkConflict(String messageTypeName) {
 		if (messageTypeMap.containsKey(messageTypeName)) {
-			throw new MessageTypeAlreadyDefinedException("The message type '" + messageTypeName + "' already exists!");
+			throw new MessageTypeAlreadyDefinedException("The message type '" + messageTypeName + "' already exists!"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -67,7 +67,7 @@ public final class MMDictionary extends SubDictionary {
 	public IMessageType getMessageType(String messageTypeName) {
 		IMessageType messageType = messageTypeMap.get(messageTypeName);
 		if (messageType == null) {
-			throw new UnknownMessageTypeException("The message type '" + messageTypeName + "' does not exist!");
+			throw new UnknownMessageTypeException("The message type '" + messageTypeName + "' does not exist!"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return messageType;
 	}

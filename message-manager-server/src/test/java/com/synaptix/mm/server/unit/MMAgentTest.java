@@ -159,6 +159,7 @@ public class MMAgentTest extends AbstractMMTest {
 			try {
 				getInstance(MyBugguedAgent.class).work(obj, null);
 			} catch (Exception e) {
+				LOG.trace("", e);
 			}
 			Assert.assertTrue(obj.ok);
 		}

@@ -37,7 +37,7 @@ import com.synaptix.toolkits.properties.PropertiesKit;
  * Launches an instance of the process manager
  * Created by NicolasP on 28/10/2015.
  */
-public class MMServer {
+public class MMServer implements ITestServer {
 
 	private static final Log LOG = LogFactory.getLog(MMServer.class);
 
@@ -88,6 +88,7 @@ public class MMServer {
 	/**
 	 * Launches the process manager
 	 */
+	@Override
 	public void start() {
 		LOG.info("START MMServer");
 
@@ -109,6 +110,7 @@ public class MMServer {
 	 * Use {@link #setTimeoutSeconds} to change the timeout (default is 2min)
 	 *
 	 */
+	@Override
 	public void stop() {
 		if (!started) {
 			LOG.error("MMServer is not launched");
@@ -174,6 +176,7 @@ public class MMServer {
 	/**
 	 * Returns true if there is at least one agent which is running
 	 */
+	@Override
 	public final boolean isRunning() {
 		Collection<ChannelSlot> channels = ProcessEngine.getInstance().getChannels();
 		for (ChannelSlot channelSlot : channels) {
@@ -191,6 +194,7 @@ public class MMServer {
 	/**
 	 * Returns a set of agents which are running at that moment
 	 */
+	@Override
 	public final Set<String> runningSet() {
 		Set<String> set = new HashSet<>();
 		Collection<ChannelSlot> channels = ProcessEngine.getInstance().getChannels();

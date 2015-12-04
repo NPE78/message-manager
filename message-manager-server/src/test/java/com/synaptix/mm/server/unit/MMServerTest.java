@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.synaptix.mm.server.MMServer;
 import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
 import com.synaptix.mm.server.it.AbstractMMTest;
 import com.synaptix.pmgr.core.apis.Engine;
@@ -31,7 +32,7 @@ public class MMServerTest extends AbstractMMTest {
 
 
 		//test timeout
-		getServer().setTimeoutSeconds(2);
+		((MMServer) getServer()).setTimeoutSeconds(2);
 		ProcessEngine.handle(SlowAgentTest.class.getSimpleName(), "message");
 
 		getServer().stop(); // will be stopped anyway, but this is to test the double stop

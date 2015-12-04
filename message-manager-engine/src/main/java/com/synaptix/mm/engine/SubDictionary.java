@@ -54,12 +54,12 @@ public class SubDictionary {
 	 * Get a subset dictionary from current. Use dots to get subset of a subset
 	 */
 	public final SubDictionary getSubsetDictionary(String dictionaryName) {
-		String[] keys = dictionaryName.split("\\.");
+		String[] keys = dictionaryName.split("\\."); //$NON-NLS-1$
 		SubDictionary dictionary = this;
 		for (String key : keys) {
 			dictionary = dictionary.subsetDictionaryMap.get(key);
 			if (dictionary == null) {
-				throw new UnknownDictionaryException("'" + key + "'" + getDictionaryExceptionString());
+				throw new UnknownDictionaryException("'" + key + "'" + getDictionaryExceptionString()); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		return dictionary;
@@ -72,7 +72,7 @@ public class SubDictionary {
 		if (subsetDictionaryMap.containsKey(dictionaryName)) {
 			throw new DictionaryAlreadyDefinedException(dictionaryName);
 		}
-		SubDictionary newDictionary = new SubDictionary(this.dictionaryName + "." + dictionaryName, this);
+		SubDictionary newDictionary = new SubDictionary(this.dictionaryName + "." + dictionaryName, this); //$NON-NLS-1$
 		subsetDictionaryMap.put(dictionaryName, newDictionary);
 		return newDictionary;
 	}
@@ -131,7 +131,7 @@ public class SubDictionary {
 			parent = parent.parentDictionary;
 		}
 		if (!parent.errorTypeMap.containsKey(messageTypeName)) {
-			throw new UnknownMessageTypeException("The message type '" + messageTypeName + "' does not exist!");
+			throw new UnknownMessageTypeException("The message type '" + messageTypeName + "' does not exist!"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -147,12 +147,12 @@ public class SubDictionary {
 		}
 		if (first == null || !first.isPresent()) {
 			if (parentDictionary == null) {
-				throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found for message type '" + messageTypeName + "'" + getDictionaryExceptionString());
+				throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found for message type '" + messageTypeName + "'" + getDictionaryExceptionString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			} else {
 				try {
 					return parentDictionary.getErrorType(messageTypeName, s);
 				} catch (UnknownErrorException e) {
-					throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found for message type '" + messageTypeName + "'" + getDictionaryExceptionString(), e);
+					throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found for message type '" + messageTypeName + "'" + getDictionaryExceptionString(), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
 		}
@@ -161,7 +161,7 @@ public class SubDictionary {
 
 	private String getDictionaryExceptionString() {
 		return " in dictionary '" + dictionaryName + "'";
-	}
+	} //$NON-NLS-1$ //$NON-NLS-2$
 
 	private void updateWorst(Worst worst, IErrorType errorType) {
 		worst.errorRecyclingKind = ErrorRecyclingKind.getWorst(errorType.getRecyclingKind(), worst.errorRecyclingKind);
