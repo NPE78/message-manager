@@ -31,7 +31,10 @@ public class MainIntegratorBoot {
 
 	public static void main(String[] args) {
 
-		launchServer(null, MMServer.class);
+		Injector injector = createInjector(null);
+
+		IServer server = injector.getInstance(MMServer.class);
+		server.start();
 
 		// MainIntegratorHelper.createJetty(new IJettyStarted() {
 		// @Override
@@ -44,7 +47,7 @@ public class MainIntegratorBoot {
 	 * @param integratorTestModule optional
 	 * @return the injector instance
 	 */
-	public static Injector launchServer(AbstractModule integratorTestModule, Class<? extends IServer> serverClass) {
+	public static Injector createInjector(AbstractModule integratorTestModule) {
 		Injector injector = null;
 		Properties p = new Properties();
 		try {
@@ -59,10 +62,6 @@ public class MainIntegratorBoot {
 			} else {
 				injector = Guice.createInjector(Modules.combine(new MMServerModule("trmt"), new DefaultTestMMServerModule()));
 			}
-			IServer server = injector.getInstance(serverClass);
-
-			server.start();
-
 		} catch (Exception e) {
 			LOG.error(e, e);
 		}

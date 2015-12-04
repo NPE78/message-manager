@@ -34,10 +34,18 @@ public class AbstractMMTest {
 	public void startIntegrator() {
 		injector = createInjector();
 		injector.injectMembers(this);
+
+		if (autoStartIntegrator()) {
+			getServer().start();
+		}
+	}
+
+	public boolean autoStartIntegrator() {
+		return true;
 	}
 
 	protected Injector createInjector() {
-		return MainIntegratorBoot.launchServer(buildIntegratorTestModule(), MMServer.class);
+		return MainIntegratorBoot.createInjector(buildIntegratorTestModule());
 	}
 
 	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
