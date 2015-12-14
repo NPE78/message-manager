@@ -1,6 +1,6 @@
 package com.synaptix.mm.shared.model;
 
-import java.util.Date;
+import java.time.Instant;
 
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 import com.synaptix.mm.shared.model.domain.ErrorStatus;
@@ -28,6 +28,6 @@ public interface IError {
 	/**
 	 * The error will ask the message to be recycled starting the given date (or after if another error has a superior next processing date) if the message has to be recycled automatically
 	 */
-	Date getNextProcessingDate();
+	Instant getNextProcessingDate();
 
 }
