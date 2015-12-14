@@ -37,7 +37,11 @@ public enum MessageStatus {
 	/**
 	 * The message has definitely been rejected
 	 */
-	REJECTED(4);
+	REJECTED(4),
+	/**
+	 * The message has been cancelled
+	 */
+	CANCELLED(4);
 
 	private final int step;
 
