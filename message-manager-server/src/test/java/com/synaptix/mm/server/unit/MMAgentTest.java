@@ -198,7 +198,7 @@ public class MMAgentTest extends AbstractMMTest {
 			String msg = (String) messageObject;
 			getProcessContext().setMsg(msg);
 			if (!"ACCEPT".equals(msg)) {
-				addError(msg, null, null);
+				addError(msg);
 			}
 		}
 
@@ -225,7 +225,11 @@ public class MMAgentTest extends AbstractMMTest {
 			TestCase testCase = (TestCase) messageObject;
 			List<IProcessError> processErrorList = testCase.getErrors();
 
-			processErrorList.forEach(processError -> addError(processError.getErrorCode(), processError.getAttribute(), processError.getValue()));
+			processErrorList.forEach(processError -> {
+				DefaultProcessError error = (DefaultProcessError) addError(processError.getErrorCode());
+				error.setAttribute("");
+				error.setValue("");
+			});
 		}
 
 		@Override
@@ -251,7 +255,11 @@ public class MMAgentTest extends AbstractMMTest {
 			TestCase testCase = (TestCase) messageObject;
 			List<IProcessError> processErrorList = testCase.getErrors();
 
-			processErrorList.forEach(processError -> addError(processError.getErrorCode(), processError.getAttribute(), processError.getValue()));
+			processErrorList.forEach(processError -> {
+				DefaultProcessError error = (DefaultProcessError) addError(processError.getErrorCode());
+				error.setAttribute("");
+				error.setValue("");
+			});
 		}
 
 		@Override
@@ -314,18 +322,11 @@ public class MMAgentTest extends AbstractMMTest {
 
 		private final ErrorRecyclingKind expectedErrorRecyclingKind;
 
-		private final String dictionaryName;
-
 		private TestCase(String name, List<IProcessError> processErrorList, IProcessingResult.State expectedState, ErrorRecyclingKind expectedErrorRecyclingKind) {
-			this(name, processErrorList, expectedState, expectedErrorRecyclingKind, null);
-		}
-
-		private TestCase(String name, List<IProcessError> processErrorList, IProcessingResult.State expectedState, ErrorRecyclingKind expectedErrorRecyclingKind, String dictionaryName) {
 				this.name = name;
 			this.processErrorList = Collections.unmodifiableList(new ArrayList<>(processErrorList));
 			this.expectedState = expectedState;
 			this.expectedErrorRecyclingKind = expectedErrorRecyclingKind;
-			this.dictionaryName = dictionaryName;
 		}
 
 		public List<IProcessError> getErrors() {

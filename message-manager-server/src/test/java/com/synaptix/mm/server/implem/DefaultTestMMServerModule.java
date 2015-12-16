@@ -1,5 +1,7 @@
 package com.synaptix.mm.server.implem;
 
+import com.synaptix.mm.engine.factory.IProcessErrorFactory;
+import com.synaptix.mm.engine.implem.DefaultProcessErrorFactory;
 import com.synaptix.mm.engine.it.DefaultTestMMModule;
 import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
 
@@ -8,9 +10,19 @@ import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
  */
 public class DefaultTestMMServerModule extends AbstractSynaptixIntegratorServletModule {
 
+	private final Class<? extends IProcessErrorFactory> processErrorFactoryClass;
+
+	public DefaultTestMMServerModule() {
+		this(DefaultProcessErrorFactory.class);
+	}
+
+	public DefaultTestMMServerModule(Class<? extends IProcessErrorFactory> processErrorFactoryClass) {
+		this.processErrorFactoryClass = processErrorFactoryClass;
+	}
+
 	@Override
 	protected final void configure() {
-		install(new DefaultTestMMModule());
+		install(new DefaultTestMMModule(processErrorFactoryClass));
 
 		configureTestModule();
 	}

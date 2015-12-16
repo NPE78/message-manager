@@ -60,7 +60,7 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 			doWork(messageObject);
 		} catch (Exception e) {
 			LOG.error(messageTypeName, e);
-			addError("UNKNOWN_ERROR", null, e.getLocalizedMessage());
+			addError("UNKNOWN_ERROR");
 			notifyMessageStatus(MessageStatus.TO_RECYCLE_MANUALLY);
 			reject();
 		}
@@ -113,8 +113,10 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 	/**
 	 * Add an error to the process
 	 */
-	protected final void addError(String errorCode, String attribute, String value) {
-		processContextThreadLocal.get().getProcessErrorList().add(processErrorFactory.createProcessError(errorCode, attribute, value));
+	protected final IProcessError addError(String errorCode) {
+		IProcessError processError = processErrorFactory.createProcessError(errorCode);
+		processContextThreadLocal.get().getProcessErrorList().add(processError);
+		return processError;
 	}
 
 	@Override

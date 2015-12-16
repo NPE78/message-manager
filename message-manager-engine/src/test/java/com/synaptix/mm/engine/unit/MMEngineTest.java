@@ -1,7 +1,7 @@
 package com.synaptix.mm.engine.unit;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
@@ -144,13 +144,12 @@ public class MMEngineTest {
 		@Override
 		public List<IProcessError> getProcessErrorList() {
 			DefaultProcessError error = new DefaultProcessError("AUTO", "", "");
-			return Arrays.asList(error);
+			return Collections.singletonList(error);
 		}
 
 		@Override
 		public String getMessageTypeName() {
 			return "test";
 		}
-
 	}
 }

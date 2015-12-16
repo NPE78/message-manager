@@ -11,10 +11,10 @@ import com.synaptix.mm.engine.SubDictionary;
 import com.synaptix.mm.engine.exception.UnknownDictionaryException;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
 import com.synaptix.mm.engine.exception.UnknownMessageTypeException;
-import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.implem.DefaultProcessErrorFactory;
 import com.synaptix.mm.engine.model.DefaultErrorType;
 import com.synaptix.mm.engine.model.DefaultMessageType;
+import com.synaptix.mm.engine.model.DefaultProcessError;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
@@ -67,7 +67,7 @@ public class DictionaryTest {
 			Assert.assertTrue(raised); // test unique
 		}
 
-		IProcessErrorFactory processErrorFactory = new DefaultProcessErrorFactory();
+		DefaultProcessErrorFactory processErrorFactory = new DefaultProcessErrorFactory();
 
 		List<IProcessError> errorList = new ArrayList<>();
 
@@ -76,7 +76,10 @@ public class DictionaryTest {
 			Assert.assertEquals(IProcessingResult.State.VALID, r1.getState());
 		}
 		{
-			errorList.add(processErrorFactory.createProcessError("ET1", "", ""));
+			DefaultProcessError et1 = processErrorFactory.createProcessError("ET1");
+			et1.setAttribute("");
+			et1.setValue("");
+			errorList.add(et1);
 			IProcessingResult r1 = dictionary.getProcessingResult("MT1", errorList);
 			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.AUTOMATIC, r1.getErrorRecyclingKind());
@@ -95,7 +98,10 @@ public class DictionaryTest {
 			Assert.assertNull(r1.getNextProcessingDate());
 		}
 		{
-			errorList.add(processErrorFactory.createProcessError("ET2", "", ""));
+			DefaultProcessError et2 = processErrorFactory.createProcessError("ET2");
+			et2.setAttribute("");
+			et2.setValue("");
+			errorList.add(et2);
 			IProcessingResult r1 = dictionary.getProcessingResult("MT3", errorList);
 			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.MANUAL, r1.getErrorRecyclingKind());
@@ -108,7 +114,10 @@ public class DictionaryTest {
 			Assert.assertNotNull(r1.getNextProcessingDate());
 		}
 		{
-			errorList.add(processErrorFactory.createProcessError("ET3", "", ""));
+			DefaultProcessError et3 = processErrorFactory.createProcessError("ET3");
+			et3.setAttribute("");
+			et3.setValue("");
+			errorList.add(et3);
 			IProcessingResult r1 = dictionary.getProcessingResult("MT3", errorList);
 			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.NOT_RECYCLABLE, r1.getErrorRecyclingKind());
@@ -157,7 +166,10 @@ public class DictionaryTest {
 		{
 			boolean exceptionRaised = false;
 			try {
-				errorList.add(processErrorFactory.createProcessError("unknownError", "", ""));
+				DefaultProcessError unknownError = processErrorFactory.createProcessError("unknownError");
+				unknownError.setAttribute("");
+				unknownError.setValue("");
+				errorList.add(unknownError);
 				dictionary.getSubsetDictionary("sub.ter").getProcessingResult("MT3", errorList);
 			} catch (UnknownErrorException e) {
 				exceptionRaised = true;
@@ -180,7 +192,10 @@ public class DictionaryTest {
 			Assert.assertEquals(IProcessingResult.State.VALID, r1.getState());
 		}
 		{
-			errorList.add(processErrorFactory.createProcessError("ET1", "", ""));
+			DefaultProcessError et1 = processErrorFactory.createProcessError("ET1");
+			et1.setAttribute("");
+			et1.setValue("");
+			errorList.add(et1);
 			IProcessingResult r1 = dictionary.getProcessingResult("MT1", errorList);
 			Assert.assertEquals(IProcessingResult.State.VALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.WARNING, r1.getErrorRecyclingKind());

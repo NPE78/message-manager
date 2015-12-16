@@ -2,7 +2,6 @@ package com.synaptix.mm.engine;
 
 import com.google.inject.Inject;
 import com.synaptix.mm.engine.exception.DictionaryAlreadyDefinedException;
-import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.shared.model.IMessageType;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
@@ -13,9 +12,6 @@ import com.synaptix.mm.shared.model.domain.MessageWay;
  * Created by NicolasP on 30/10/2015.
  */
 public final class MMEngine {
-
-	@Inject
-	private IProcessErrorFactory processErrorFactory;
 
 	@Inject
 	private MMDictionary dictionary;
