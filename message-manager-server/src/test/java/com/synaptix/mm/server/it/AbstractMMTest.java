@@ -95,7 +95,7 @@ public class AbstractMMTest {
 
 		try {
 			if (cdl.await(timeout, TimeUnit.SECONDS)) {
-				LOG.info("Stop called: stopped in time");
+				LOG.info("Stop called: waited in time");
 			} else {
 				LOG.info("Stop called: timeout");
 				LOG.info(server.runningSet().toString());
