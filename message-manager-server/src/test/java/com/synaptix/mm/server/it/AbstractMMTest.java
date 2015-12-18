@@ -32,7 +32,7 @@ public class AbstractMMTest {
 
 	@Before
 	public void startIntegrator() {
-		injector = createInjector();
+		createInjector();
 		injector.injectMembers(this);
 
 		if (autoStartIntegrator()) {
@@ -44,8 +44,8 @@ public class AbstractMMTest {
 		return true;
 	}
 
-	protected Injector createInjector() {
-		return MainIntegratorBoot.createInjector(buildIntegratorTestModule());
+	protected void createInjector() {
+		injector = MainIntegratorBoot.createInjector(buildIntegratorTestModule());
 	}
 
 	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
