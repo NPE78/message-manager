@@ -3,6 +3,7 @@ package com.synaptix.mm.engine.unit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -98,11 +99,11 @@ public class MMEngineTest {
 		}
 
 		@Override
-		public void reject() {
+		public void reject(Map<IProcessError, IErrorType> errorMap) {
 		}
 
 		@Override
-		public void accept() {
+		public void accept(Map<IProcessError, IErrorType> errorMap) {
 		}
 
 		@Override
@@ -128,12 +129,12 @@ public class MMEngineTest {
 		}
 
 		@Override
-		public void reject() {
+		public void reject(Map<IProcessError, IErrorType> errorMap) {
 			Assert.assertTrue(true);
 		}
 
 		@Override
-		public void accept() {
+		public void accept(Map<IProcessError, IErrorType> errorMap) {
 			Assert.assertTrue(false);
 		}
 

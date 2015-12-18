@@ -1,11 +1,15 @@
 package com.synaptix.mm.server.implem;
 
+import java.util.Map;
+
 import com.google.inject.Inject;
 import com.synaptix.component.factory.ComponentFactory;
 import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.SubDictionary;
 import com.synaptix.mm.engine.implem.DefaultMessage;
 import com.synaptix.mm.server.AbstractMMAgent;
+import com.synaptix.mm.shared.model.IErrorType;
+import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
 
 /**
@@ -48,12 +52,12 @@ public class DefaultMMAgent extends AbstractMMAgent<IDefaultProcessContext> {
 	}
 
 	@Override
-	public void reject() {
+	public void reject(Map<IProcessError, IErrorType> errorMap) {
 		// do stuff
 	}
 
 	@Override
-	public void accept() {
+	public void accept(Map<IProcessError, IErrorType> errorMap) {
 		// do stuff
 	}
 

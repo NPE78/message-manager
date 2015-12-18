@@ -62,7 +62,7 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 			LOG.error(messageTypeName, e);
 			addError("UNKNOWN_ERROR");
 			notifyMessageStatus(MessageStatus.TO_RECYCLE_MANUALLY);
-			reject();
+			reject(processingResult.getErrorMap());
 		}
 	}
 

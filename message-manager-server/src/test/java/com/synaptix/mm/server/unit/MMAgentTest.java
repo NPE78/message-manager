@@ -3,6 +3,7 @@ package com.synaptix.mm.server.unit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.junit.Assert;
@@ -203,12 +204,12 @@ public class MMAgentTest extends AbstractMMTest {
 		}
 
 		@Override
-		public void reject() {
+		public void reject(Map<IProcessError, IErrorType> errorMap) {
 			Assert.assertFalse(getProcessContext().getMsg().startsWith("ACCEPT"));
 		}
 
 		@Override
-		public void accept() {
+		public void accept(Map<IProcessError, IErrorType> errorMap) {
 			Assert.assertTrue(getProcessContext().getMsg().startsWith("ACCEPT"));
 		}
 	}
@@ -301,7 +302,7 @@ public class MMAgentTest extends AbstractMMTest {
 		}
 
 		@Override
-		public void reject() {
+		public void reject(Map<IProcessError, IErrorType> errorMap) {
 			obj.ok = true;
 		}
 	}

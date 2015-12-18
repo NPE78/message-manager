@@ -10,14 +10,4 @@ public interface IProcessError {
 	 */
 	String getErrorCode();
 
-	/**
-	 * The attribute of the error, which represents the reason why the error has been raised
-	 */
-	String getAttribute();
-
-	/**
-	 * The value of the error, which is associated to the attribute
-	 */
-	String getValue();
-
 }

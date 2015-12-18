@@ -1,7 +1,9 @@
 package com.synaptix.mm.engine;
 
 import java.util.List;
+import java.util.Map;
 
+import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
 
@@ -21,12 +23,12 @@ public interface IMMProcess {
 	/**
 	 * The process is in an invalid state, it has been rejected
 	 */
-	void reject();
+	void reject(Map<IProcessError, IErrorType> errorMap);
 
 	/**
 	 * The process is in a valid state, it has been accepted.
 	 */
-	void accept();
+	void accept(Map<IProcessError, IErrorType> errorMap);
 
 	/**
 	 * Called to notify the implementing class that the message status has to be changed.

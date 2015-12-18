@@ -39,9 +39,9 @@ public final class MMEngine {
 		IProcessingResult processingResult = subDictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
 
 		if (checkBlocking(processingResult, process)) {
-			process.reject();
+			process.reject(processingResult.getErrorMap());
 		} else {
-			process.accept();
+			process.accept(processingResult.getErrorMap());
 		}
 		return processingResult;
 	}
