@@ -69,6 +69,9 @@ public class SubDictionary {
 	 * Add a subset dictionary to the current dictionary. The name is unique, a {@link DictionaryAlreadyDefinedException} is raised
 	 */
 	public final SubDictionary addSubsetDictionary(String dictionaryName) {
+		if ("MAIN".equals(dictionaryName)) {
+			throw new DictionaryAlreadyDefinedException("MAIN is reserved");
+		}
 		if (subsetDictionaryMap.containsKey(dictionaryName)) {
 			throw new DictionaryAlreadyDefinedException(dictionaryName);
 		}
@@ -129,6 +132,16 @@ public class SubDictionary {
 	public void clear() {
 		errorTypeMap.clear();
 		subsetDictionaryMap.clear();
+	}
+
+	/**
+	 * Returns the name of the dictionary
+	 */
+	public final String getDictionaryName() {
+		if (parentDictionary == null) {
+			return dictionaryName;
+		}
+		return parentDictionary.getDictionaryName() + "." + dictionaryName;
 	}
 
 	private void checkMessageTypeExistence(String messageTypeName) {
