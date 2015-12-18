@@ -57,6 +57,9 @@ public class AbstractMMTest {
 	}
 
 	protected final IServer getServer() {
+		if (injector == null) {
+			return null;
+		}
 		return injector.getInstance(getServerClass());
 	}
 
