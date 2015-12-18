@@ -3,6 +3,7 @@ package com.synaptix.mm.engine;
 import java.util.List;
 import java.util.Map;
 
+import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
@@ -37,7 +38,7 @@ public interface IMMProcess {
 	void notifyMessageStatus(MessageStatus newMessageStatus);
 
 	/**
-	 * Get the list of errors raised
+	 * Get the list of errors raised. Used and enriched by the mm engine, see {@link IProcessingResult#getErrorMap()}.
 	 */
 	List<IProcessError> getProcessErrorList();
 
