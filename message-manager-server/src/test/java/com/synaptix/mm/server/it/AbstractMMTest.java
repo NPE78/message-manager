@@ -30,14 +30,24 @@ public class AbstractMMTest {
 
 	private Injector injector;
 
+	private boolean started;
+
 	@Before
-	public void startIntegrator() {
+	public void init() {
 		createInjector();
 		injector.injectMembers(this);
 
 		if (autoStartIntegrator()) {
-			getServer().start();
+			startIntegrator();
 		}
+	}
+
+	/**
+	 * Start the integrator
+	 */
+	protected final void startIntegrator() {
+		getServer().start();
+		this.started = true;
 	}
 
 	public boolean autoStartIntegrator() {
@@ -56,6 +66,9 @@ public class AbstractMMTest {
 		return MMServer.class;
 	}
 
+	/**
+	 * Start the integrator by using {@link #startIntegrator()}
+	 */
 	protected final IServer getServer() {
 		if (injector == null) {
 			return null;
@@ -69,9 +82,11 @@ public class AbstractMMTest {
 
 	@After
 	public void stopIntegrator() {
-		IServer server = getServer();
-		if (server != null) {
-			server.stop();
+		if (started) {
+			IServer server = getServer();
+			if (server != null) {
+				server.stop();
+			}
 		}
 	}
 
