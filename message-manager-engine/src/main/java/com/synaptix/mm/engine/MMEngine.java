@@ -49,7 +49,7 @@ public final class MMEngine {
 	/**
 	 * Of all the errors raised until here, are they blocking the process?
 	 */
-	private boolean checkBlocking(IProcessingResult processingResult, IMMProcess process) {
+	public boolean checkBlocking(IProcessingResult processingResult, IMMProcess process) {
 		IMessageType messageType = dictionary.getMessageType(process.getMessageTypeName());
 		if (processingResult.getState() == IProcessingResult.State.INVALID) {
 			switch (processingResult.getErrorRecyclingKind()) {

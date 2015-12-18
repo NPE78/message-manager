@@ -1,18 +1,22 @@
 package com.synaptix.mm.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.inject.Inject;
 import com.synaptix.mm.engine.IMMProcess;
+import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.MMEngine;
 import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.engine.model.ProcessingResultBuilder;
 import com.synaptix.mm.server.model.IProcessContext;
+import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
 import com.synaptix.pmgr.core.apis.Engine;
@@ -41,6 +45,9 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 	@Inject
 	private MMEngine engine;
 
+	@Inject
+	private MMDictionary dictionary;
+
 	/**
 	 * Create an agent with given name
 	 *
@@ -60,9 +67,10 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 			doWork(messageObject);
 		} catch (Exception e) {
 			LOG.error(messageTypeName, e);
-			addError("UNKNOWN_ERROR");
 			notifyMessageStatus(MessageStatus.TO_RECYCLE_MANUALLY);
-			reject(null);
+			Map<IProcessError, IErrorType> errorMap = new HashMap<>();
+			errorMap.put(addError("UNKNOWN_ERROR"), null);
+			reject(errorMap);
 		}
 	}
 
