@@ -1,7 +1,11 @@
 package com.synaptix.mm.engine.model;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.synaptix.mm.shared.model.IErrorType;
+import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
 /**
@@ -10,7 +14,10 @@ import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
  */
 public final class ProcessingResultBuilder {
 
+	private Map<IProcessError, IErrorType> errorMap;
+
 	private ProcessingResultBuilder() {
+		this.errorMap = new HashMap<>(0);
 	}
 
 	/**
@@ -23,35 +30,44 @@ public final class ProcessingResultBuilder {
 	/**
 	 * Mark the processing result as being accepted with a warning
 	 */
-	public static IProcessingResult acceptWithWarning() {
-		return new ProcessingResultBuilder().acceptResult(ErrorRecyclingKind.WARNING);
+	public static IProcessingResult acceptWithWarning(Map<IProcessError, IErrorType> errorMap) {
+		return new ProcessingResultBuilder().errors(errorMap).acceptResult(ErrorRecyclingKind.WARNING);
 	}
 
 	/**
 	 * Mark the processing result as being rejected with a manual recycling kind
 	 */
-	public static IProcessingResult rejectManually() {
-		return new ProcessingResultBuilder().rejectResult(ErrorRecyclingKind.MANUAL, null);
+	public static IProcessingResult rejectManually(Map<IProcessError, IErrorType> errorMap) {
+		return new ProcessingResultBuilder().errors(errorMap).rejectResult(ErrorRecyclingKind.MANUAL, null);
 	}
 
 	/**
 	 * Mark the processing result as being rejected with an automatic recycling kind
 	 */
-	public static IProcessingResult rejectAutomatically(Instant nextProcessingDate) {
-		return new ProcessingResultBuilder().rejectResult(ErrorRecyclingKind.AUTOMATIC, nextProcessingDate);
+	public static IProcessingResult rejectAutomatically(Instant nextProcessingDate, Map<IProcessError, IErrorType> errorMap) {
+		return new ProcessingResultBuilder().errors(errorMap).rejectResult(ErrorRecyclingKind.AUTOMATIC, nextProcessingDate);
 	}
 
 	/**
 	 * Mark the processing result as being rejected definitely
 	 */
-	public static IProcessingResult rejectDefinitely() {
-		return new ProcessingResultBuilder().rejectResult(ErrorRecyclingKind.NOT_RECYCLABLE, null);
+	public static IProcessingResult rejectDefinitely(Map<IProcessError, IErrorType> errorMap) {
+		return new ProcessingResultBuilder().errors(errorMap).rejectResult(ErrorRecyclingKind.NOT_RECYCLABLE, null);
+	}
+
+	/**
+	 * Add a map of errors associated to their type
+	 */
+	private ProcessingResultBuilder errors(Map<IProcessError, IErrorType> errorMap) {
+		this.errorMap = errorMap;
+		return this;
 	}
 
 	private IProcessingResult acceptResult(ErrorRecyclingKind errorRecyclingKind) {
 		ProcessingResult recyclingResult = new ProcessingResult();
 		recyclingResult.setState(IProcessingResult.State.VALID);
 		recyclingResult.setErrorRecyclingKind(errorRecyclingKind);
+		recyclingResult.setErrorMap(errorMap);
 		return recyclingResult;
 	}
 
@@ -60,6 +76,7 @@ public final class ProcessingResultBuilder {
 		recyclingResult.setState(IProcessingResult.State.INVALID);
 		recyclingResult.setErrorRecyclingKind(errorRecyclingKind);
 		recyclingResult.setNextProcessingDate(nextProcessingDate);
+		recyclingResult.setErrorMap(errorMap);
 		return recyclingResult;
 	}
 }

@@ -91,9 +91,15 @@ public class SubDictionary {
 
 		Worst worst = new Worst();
 
-		errorList.forEach(s -> updateWorst(worst, getErrorType(messageTypeName, s)));
+		Map<IProcessError, IErrorType> errorMap = new HashMap<>();
+		errorList.forEach(s -> {
+					IErrorType errorType = getErrorType(messageTypeName, s);
+					errorMap.put(s, errorType);
+					updateWorst(worst, errorType);
+				}
+		);
 
-		return buildProcessingResult(worst);
+		return buildProcessingResult(worst, errorMap);
 	}
 
 	/**
@@ -168,19 +174,19 @@ public class SubDictionary {
 		worst.delay = Math.max(errorType.getNextRecyclingDuration() != null ? errorType.getNextRecyclingDuration() : 0, worst.delay != null ? worst.delay : 0);
 	}
 
-	private IProcessingResult buildProcessingResult(Worst worst) {
+	private IProcessingResult buildProcessingResult(Worst worst, Map<IProcessError, IErrorType> errorMap) {
 		switch (worst.errorRecyclingKind) {
 			case AUTOMATIC:
 				Instant nextProcessingDate = Instant.now();
 				nextProcessingDate.plus(worst.delay, ChronoUnit.MINUTES);
-				return ProcessingResultBuilder.rejectAutomatically(nextProcessingDate);
+				return ProcessingResultBuilder.rejectAutomatically(nextProcessingDate, errorMap);
 			case MANUAL:
-				return ProcessingResultBuilder.rejectManually();
+				return ProcessingResultBuilder.rejectManually(errorMap);
 			case NOT_RECYCLABLE:
-				return ProcessingResultBuilder.rejectDefinitely();
+				return ProcessingResultBuilder.rejectDefinitely(errorMap);
 			default:
 				// case of the WARNING enum value
-				return ProcessingResultBuilder.acceptWithWarning();
+				return ProcessingResultBuilder.acceptWithWarning(errorMap);
 		}
 	}
 
