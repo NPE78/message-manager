@@ -27,6 +27,7 @@ import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
 public class MainIntegratorBoot {
 
 	private static final int INTEGRATOR_JETTY_PORT = 8000;
+
 	private static final Log LOG = LogFactory.getLog(MainIntegratorBoot.class);
 
 	public static void main(String[] args) {
@@ -52,14 +53,18 @@ public class MainIntegratorBoot {
 		Properties p = new Properties();
 		try {
 			if (properties != null) {
-				p.load(new FileReader(properties.getFile())); //$NON-NLS-1$
+				try {
+					p.load(new FileReader(properties.getFile())); //$NON-NLS-1$
+				} catch (Exception e) {
+					LOG.error("", e);
+				}
 			}
-			String trmt = p.getProperty("trmt_engine", "TRMT_LOCAL");
+			String trmt = p.getProperty("config.trmt_engine", "TRMT_LOCAL");
 
 			if (integratorTestModule != null) {
-				injector = Guice.createInjector(Modules.override(Modules.combine(new MMServerModule("trmt"), new DefaultTestMMServerModule())).with(integratorTestModule));
+				injector = Guice.createInjector(Modules.override(Modules.combine(new MMServerModule(trmt), new DefaultTestMMServerModule())).with(integratorTestModule));
 			} else {
-				injector = Guice.createInjector(Modules.combine(new MMServerModule("trmt"), new DefaultTestMMServerModule()));
+				injector = Guice.createInjector(Modules.combine(new MMServerModule(trmt), new DefaultTestMMServerModule()));
 			}
 		} catch (Exception e) {
 			LOG.error(e, e);
