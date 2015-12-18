@@ -31,7 +31,6 @@ public final class DefaultProcessError implements IProcessError {
 		return errorCode;
 	}
 
-	@Override
 	public String getAttribute() {
 		return attribute;
 	}
@@ -40,7 +39,6 @@ public final class DefaultProcessError implements IProcessError {
 		this.attribute = attribute;
 	}
 
-	@Override
 	public String getValue() {
 		return value;
 	}
