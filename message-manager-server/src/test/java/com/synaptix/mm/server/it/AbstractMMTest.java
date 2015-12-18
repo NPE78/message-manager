@@ -2,6 +2,7 @@ package com.synaptix.mm.server.it;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,7 +56,7 @@ public class AbstractMMTest {
 	}
 
 	protected void createInjector() {
-		injector = MainIntegratorBoot.createInjector(buildIntegratorTestModule());
+		injector = MainIntegratorBoot.createInjector(getPropertyUrl(), buildIntegratorTestModule());
 	}
 
 	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
@@ -139,5 +140,9 @@ public class AbstractMMTest {
 			LOG.error("IOException", e);
 		}
 		return content.toString();
+	}
+
+	protected URL getPropertyUrl() {
+		return this.getClass().getClassLoader().getResource("integrator.properties");
 	}
 }

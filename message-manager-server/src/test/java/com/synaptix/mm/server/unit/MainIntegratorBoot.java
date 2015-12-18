@@ -31,7 +31,7 @@ public class MainIntegratorBoot {
 
 	public static void main(String[] args) {
 
-		Injector injector = createInjector(null);
+		Injector injector = createInjector(MainIntegratorBoot.class.getClassLoader().getResource("integrator.properties"), null);
 
 		IServer server = injector.getInstance(MMServer.class);
 		server.start();
@@ -47,13 +47,12 @@ public class MainIntegratorBoot {
 	 * @param integratorTestModule optional
 	 * @return the injector instance
 	 */
-	public static Injector createInjector(AbstractModule integratorTestModule) {
+	public static Injector createInjector(URL properties, AbstractModule integratorTestModule) {
 		Injector injector = null;
 		Properties p = new Properties();
 		try {
-			URL resource = MainIntegratorBoot.class.getClassLoader().getResource("integrator.properties");
-			if (resource != null) {
-				p.load(new FileReader(resource.getFile())); //$NON-NLS-1$
+			if (properties != null) {
+				p.load(new FileReader(properties.getFile())); //$NON-NLS-1$
 			}
 			String trmt = p.getProperty("trmt_engine", "TRMT_LOCAL");
 
