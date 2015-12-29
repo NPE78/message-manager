@@ -1,8 +1,13 @@
 package com.synaptix.mm.engine;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.google.inject.Inject;
 import com.synaptix.mm.engine.exception.DictionaryAlreadyDefinedException;
+import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.model.IProcessingResult;
+import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
 import com.synaptix.mm.shared.model.domain.MessageWay;
 
@@ -12,8 +17,13 @@ import com.synaptix.mm.shared.model.domain.MessageWay;
  */
 public final class MMEngine {
 
+	private static final Log LOG = LogFactory.getLog(MMEngine.class);
+
 	@Inject
 	private MMDictionary dictionary;
+
+	@Inject
+	private IProcessErrorFactory processErrorFactory;
 
 	/**
 	 * Create the unique instance of the message manager engine
@@ -32,7 +42,13 @@ public final class MMEngine {
 
 	public IProcessingResult start(Object messageObject, IMMProcess process) {
 		process.notifyMessageStatus(MessageStatus.IN_PROGRESS);
-		process.process(messageObject);
+		try {
+			process.process(messageObject);
+		} catch (Exception e) {
+			LOG.error("UNKNOWN_ERROR", e);
+			IProcessError processError = processErrorFactory.createProcessError("UNKNOWN_ERROR");
+			process.getProcessErrorList().add(processError);
+		}
 
 		SubDictionary subDictionary = process.getValidationDictionary(dictionary);
 		IProcessingResult processingResult = subDictionary.getProcessingResult(process.getProcessErrorList());
