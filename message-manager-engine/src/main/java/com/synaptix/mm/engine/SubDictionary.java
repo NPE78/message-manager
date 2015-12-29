@@ -96,7 +96,7 @@ public class SubDictionary {
 	}
 
 	private void validateDictionaryName(String name) {
-		if ("MAIN".equals(dictionaryName)) { //$NON-NLS-1$
+		if ("MAIN".equals(name)) { //$NON-NLS-1$
 			throw new DictionaryAlreadyDefinedException("MAIN is reserved");
 		}
 		if (StringUtils.isBlank(name)) {
