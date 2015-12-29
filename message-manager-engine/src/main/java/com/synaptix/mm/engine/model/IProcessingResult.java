@@ -3,8 +3,8 @@ package com.synaptix.mm.engine.model;
 import java.time.Instant;
 import java.util.Map;
 
-import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
+import com.synaptix.mm.shared.model.domain.ErrorImpact;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
 /**
@@ -33,7 +33,7 @@ public interface IProcessingResult {
 	/**
 	 * A map of errors returned by the process associated to their type
 	 */
-	Map<IProcessError, IErrorType> getErrorMap();
+	Map<IProcessError, ErrorImpact> getErrorMap();
 
 	enum State {
 

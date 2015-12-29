@@ -9,6 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>message-manager-test-dependencies</artifactId>
+    <name>Message Manager Dependencies for Tests</name>
     <packaging>pom</packaging>
     <dependencies>
         <dependency>

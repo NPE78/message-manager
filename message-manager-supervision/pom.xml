@@ -8,6 +8,24 @@
     </parent>
     <artifactId>message-manager-supervision</artifactId>
     <name>Message Manager Supervision</name>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
     <dependencies>
         <dependency>
             <groupId>com.synaptix</groupId>
@@ -22,4 +40,17 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>PROD_ENV</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <filters>
+                    <filter>src/main/filters/NORMAL.properties</filter>
+                </filters>
+            </build>
+        </profile>
+    </profiles>
 </project>

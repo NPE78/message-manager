@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.synaptix.mm.engine.model.IProcessingResult;
-import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
+import com.synaptix.mm.shared.model.domain.ErrorImpact;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
+import com.synaptix.mm.shared.model.domain.MessageWay;
 
 /**
  * Created by NicolasP on 30/10/2015.
@@ -24,12 +25,12 @@ public interface IMMProcess {
 	/**
 	 * The process is in an invalid state, it has been rejected
 	 */
-	void reject(Map<IProcessError, IErrorType> errorMap);
+	void reject(Map<IProcessError, ErrorImpact> errorMap);
 
 	/**
 	 * The process is in a valid state, it has been accepted.
 	 */
-	void accept(Map<IProcessError, IErrorType> errorMap);
+	void accept(Map<IProcessError, ErrorImpact> errorMap);
 
 	/**
 	 * Called to notify the implementing class that the message status has to be changed.
@@ -54,4 +55,10 @@ public interface IMMProcess {
 	default SubDictionary getValidationDictionary(MMDictionary rootDictionary) {
 		return rootDictionary;
 	}
+
+	/**
+	 * The way of the message: IN or OUT
+	 */
+	MessageWay getMessageWay();
+
 }

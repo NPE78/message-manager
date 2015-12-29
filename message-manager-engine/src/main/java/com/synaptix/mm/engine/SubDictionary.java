@@ -9,16 +9,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.synaptix.mm.engine.exception.DictionaryAlreadyDefinedException;
-import com.synaptix.mm.engine.exception.InvalidDictionaryNameException;
 import com.synaptix.mm.engine.exception.InvalidDictionaryOperationException;
 import com.synaptix.mm.engine.exception.UnknownDictionaryException;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
-import com.synaptix.mm.engine.exception.UnknownMessageTypeException;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.engine.model.ProcessingResultBuilder;
 import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
+import com.synaptix.mm.shared.model.domain.ErrorImpact;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
 /**
@@ -29,9 +30,9 @@ import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 public class SubDictionary {
 
 	/**
-	 * Key is the name of the message type, Value is the list of errors known for the message type
+	 * list of known errors for current dictionary
 	 */
-	protected final Map<String, List<IErrorType>> errorTypeMap;
+	protected final List<IErrorType> errorTypeList;
 
 	private final String dictionaryName;
 
@@ -48,7 +49,7 @@ public class SubDictionary {
 		this.dictionaryName = name;
 		this.parentDictionary = parentDictionary;
 
-		this.errorTypeMap = new HashMap<>();
+		this.errorTypeList = new ArrayList<>();
 		this.subsetDictionaryMap = new HashMap<>();
 	}
 
@@ -69,21 +70,33 @@ public class SubDictionary {
 
 	/**
 	 * Add a subset dictionary to the current dictionary. The name is unique, a {@link DictionaryAlreadyDefinedException} is raised.<br/>
-	 * The dictionary name cannot contain a dot. If it does, a {@link InvalidDictionaryNameException} is raised.
+	 * The dictionary name cannot be blank. If it is, a {@link InvalidDictionaryOperationException} is raised.
 	 */
 	public final SubDictionary addSubsetDictionary(String dictionaryName) {
 		if ("MAIN".equals(dictionaryName)) { //$NON-NLS-1$
 			throw new DictionaryAlreadyDefinedException("MAIN is reserved");
 		}
-		if (dictionaryName.contains(".")) { //$NON-NLS-1$
-			throw new InvalidDictionaryNameException(dictionaryName + " is an invalid dictionary name!");
+		if (StringUtils.isBlank(dictionaryName)) {
+			throw new InvalidDictionaryOperationException("addSubsetDictionary with blank name");
 		}
-		if (subsetDictionaryMap.containsKey(dictionaryName)) {
-			throw new DictionaryAlreadyDefinedException(dictionaryName);
+		int idx = dictionaryName.indexOf("."); //$NON-NLS-1$
+		if (idx > -1) {
+			String name = dictionaryName.substring(0, idx);
+			if (StringUtils.isBlank(name)) {
+				throw new InvalidDictionaryOperationException("addSubsetDictionary with blank name");
+			}
+			SubDictionary newDictionary = new SubDictionary(this.dictionaryName + "." + name, this); //$NON-NLS-1$
+			SubDictionary childDictionary = newDictionary.addSubsetDictionary(StringUtils.substring(dictionaryName, idx + 1));
+			subsetDictionaryMap.put(name, newDictionary);
+			return childDictionary;
+		} else {
+			if (subsetDictionaryMap.containsKey(dictionaryName)) {
+				throw new DictionaryAlreadyDefinedException(dictionaryName);
+			}
+			SubDictionary newDictionary = new SubDictionary(this.dictionaryName + "." + dictionaryName, this); //$NON-NLS-1$
+			subsetDictionaryMap.put(dictionaryName, newDictionary);
+			return newDictionary;
 		}
-		SubDictionary newDictionary = new SubDictionary(this.dictionaryName + "." + dictionaryName, this); //$NON-NLS-1$
-		subsetDictionaryMap.put(dictionaryName, newDictionary);
-		return newDictionary;
 	}
 
 	/**
@@ -93,12 +106,12 @@ public class SubDictionary {
 		if (parentDictionary == null) {
 			throw new InvalidDictionaryOperationException("Cannot destroy the main dictionary");
 		}
-		subsetDictionaryMap.clear();
+		clear();
 		return parentDictionary.unregister(dictionaryName.replaceAll("^(.+)\\.", ""));
 	}
 
 	private boolean unregister(String dictionaryName) {
-		return subsetDictionaryMap.remove(dictionaryName) != null ? true : false;
+		return subsetDictionaryMap.remove(dictionaryName) != null;
 	}
 
 	/**
@@ -106,20 +119,18 @@ public class SubDictionary {
 	 * It uses the dictionnary to determine whether the process is valid or invalid, computes the recycling kind according to the configuration and if needed a next processing date
 	 * If an error is unknown for the message type in the current dictionary or in a parent one, an {@link UnknownErrorException} is raised
 	 */
-	public final IProcessingResult getProcessingResult(String messageTypeName, List<IProcessError> errorList) {
-		checkMessageTypeExistence(messageTypeName);
-
+	public final IProcessingResult getProcessingResult(List<IProcessError> errorList) {
 		if (errorList == null || errorList.isEmpty()) {
 			return ProcessingResultBuilder.accept();
 		}
 
 		Worst worst = new Worst();
 
-		Map<IProcessError, IErrorType> errorMap = new HashMap<>();
+		Map<IProcessError, ErrorImpact> errorMap = new HashMap<>();
 		errorList.forEach(s -> {
-					IErrorType errorType = getErrorType(messageTypeName, s);
-					errorMap.put(s, errorType);
-					updateWorst(worst, errorType);
+					ErrorImpact errorImpact = computeErrorImpact(s.getErrorCode());
+					errorMap.put(s, errorImpact);
+					updateWorst(worst, errorImpact);
 				}
 		);
 
@@ -127,16 +138,9 @@ public class SubDictionary {
 	}
 
 	/**
-	 * Changes the definition of an error or adds a definition of an error in the current dictionary, for given message type
+	 * Defines an error by adding or updating its definition of an error in the current dictionary
 	 */
-	public final void fixError(String messageTypeName, IErrorType errorType) {
-		checkMessageTypeExistence(messageTypeName);
-
-		List<IErrorType> errorTypeList = errorTypeMap.get(messageTypeName);
-		if (errorTypeList == null) {
-			errorTypeList = new ArrayList<>();
-			errorTypeMap.put(messageTypeName, errorTypeList);
-		}
+	public final void defineError(IErrorType errorType) {
 		Iterator<IErrorType> ite = errorTypeList.iterator();
 		while (ite.hasNext()) {
 			IErrorType e = ite.next();
@@ -151,61 +155,47 @@ public class SubDictionary {
 	 * Clear the dictionary from all errors and subset dictionaries
 	 */
 	public void clear() {
-		errorTypeMap.clear();
+		errorTypeList.clear();
 		subsetDictionaryMap.clear();
-	}
-
-	/**
-	 * Returns the name of the dictionary
-	 */
-	public final String getDictionaryName() {
-		return dictionaryName;
-	}
-
-	private void checkMessageTypeExistence(String messageTypeName) {
-		SubDictionary parent = this;
-		while (parent.parentDictionary != null) {
-			parent = parent.parentDictionary;
-		}
-		if (!parent.errorTypeMap.containsKey(messageTypeName)) {
-			throw new UnknownMessageTypeException("The message type '" + messageTypeName + "' does not exist!"); //$NON-NLS-1$ //$NON-NLS-2$
-		}
 	}
 
 	/**
 	 * Find the error type in the current dictionary or in a parent. If not found at all, an {@link UnknownErrorException} is raised
 	 */
-	private IErrorType getErrorType(String messageTypeName, IProcessError s) {
-		List<IErrorType> errorTypeList = errorTypeMap.get(messageTypeName);
-
+	private ErrorImpact computeErrorImpact(String errorCode) {
+		ErrorImpact errorImpact = null;
 		Optional<IErrorType> first = null;
 		if (errorTypeList != null) {
-			first = errorTypeList.stream().filter(errorType -> errorType.getCode().equals(s.getErrorCode())).findFirst();
+			first = errorTypeList.stream().filter(errorType -> errorType.getCode().equals(errorCode)).findFirst();
 		}
 		if (first == null || !first.isPresent()) {
 			if (parentDictionary == null) {
-				throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found for message type '" + messageTypeName + "'" + getDictionaryExceptionString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				throw new UnknownErrorException("Error code '" + errorCode + "' not found " + getDictionaryExceptionString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			} else {
 				try {
-					return parentDictionary.getErrorType(messageTypeName, s);
+					return parentDictionary.computeErrorImpact(errorCode);
 				} catch (UnknownErrorException e) {
-					throw new UnknownErrorException("Error code '" + s.getErrorCode() + "' not found for message type '" + messageTypeName + "'" + getDictionaryExceptionString(), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					throw new UnknownErrorException("Error code '" + errorCode + "' not found" + getDictionaryExceptionString(), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
 		}
-		return first.get();
+		IErrorType errorType = first.get();
+		if (errorType != null) {
+			errorImpact = new ErrorImpact(errorType.getRecyclingKind(), errorType.getNextRecyclingDuration(), dictionaryName);
+		}
+		return errorImpact;
 	}
 
 	private String getDictionaryExceptionString() {
 		return " in dictionary '" + dictionaryName + "'";
 	} //$NON-NLS-1$ //$NON-NLS-2$
 
-	private void updateWorst(Worst worst, IErrorType errorType) {
-		worst.errorRecyclingKind = ErrorRecyclingKind.getWorst(errorType.getRecyclingKind(), worst.errorRecyclingKind);
-		worst.delay = Math.max(errorType.getNextRecyclingDuration() != null ? errorType.getNextRecyclingDuration() : 0, worst.delay != null ? worst.delay : 0);
+	private void updateWorst(Worst worst, ErrorImpact errorImpact) {
+		worst.errorRecyclingKind = ErrorRecyclingKind.getWorst(errorImpact.getRecyclingKind(), worst.errorRecyclingKind);
+		worst.delay = Math.max(errorImpact.getNextRecyclingDuration() != null ? errorImpact.getNextRecyclingDuration() : 0, worst.delay != null ? worst.delay : 0);
 	}
 
-	private IProcessingResult buildProcessingResult(Worst worst, Map<IProcessError, IErrorType> errorMap) {
+	private IProcessingResult buildProcessingResult(Worst worst, Map<IProcessError, ErrorImpact> errorMap) {
 		switch (worst.errorRecyclingKind) {
 			case AUTOMATIC:
 				Instant nextProcessingDate = Instant.now();

@@ -9,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.synaptix.mm.engine.MMDictionary;
-import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.server.implem.DefaultMMAgent;
 import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
 import com.synaptix.mm.server.it.AbstractMMTest;
@@ -26,8 +25,6 @@ public class SupervisionUtilsTest extends AbstractMMTest {
 	public void testGetAgentInfo() throws Exception {
 
 		MMDictionary dictionary = getInstance(MMDictionary.class);
-		dictionary.addMessageType(new DefaultMessageType("MyMMAgent"));
-		dictionary.addMessageType(new DefaultMessageType("MySingletonMMAgent"));
 
 		List<AgentInfoDto> agentInfoDtoList = SupervisionUtils.getAgentInfo(null);
 		Assert.assertEquals(3, agentInfoDtoList.size()); // with RetryAgent
