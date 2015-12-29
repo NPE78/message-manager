@@ -29,7 +29,7 @@ test_sonar_preview_job:
   except:
     - master
   script:
-    - mvn --batch-mode verify org.codehaus.mojo:sonar-maven-plugin:2.7.1:sonar -Dsonar.host.url=$SONAR_URL -Dsonar.analysis.mode=incremental
+    - mvn --batch-mode verify org.codehaus.mojo:sonar-maven-plugin:2.7.1:sonar -Dsonar.host.url=$SONAR_URL -Dsonar.analysis.mode=preview
   tags:
     - docker
 
