@@ -73,18 +73,14 @@ public class SubDictionary {
 	 * The dictionary name cannot be blank. If it is, a {@link InvalidDictionaryOperationException} is raised.
 	 */
 	public final SubDictionary addSubsetDictionary(String dictionaryName) {
-		if ("MAIN".equals(dictionaryName)) { //$NON-NLS-1$
-			throw new DictionaryAlreadyDefinedException("MAIN is reserved");
-		}
-		if (StringUtils.isBlank(dictionaryName)) {
-			throw new InvalidDictionaryOperationException("addSubsetDictionary with blank name");
-		}
+		validateDictionaryName(dictionaryName);
+
 		int idx = dictionaryName.indexOf("."); //$NON-NLS-1$
 		if (idx > -1) {
 			String name = dictionaryName.substring(0, idx);
-			if (StringUtils.isBlank(name)) {
-				throw new InvalidDictionaryOperationException("addSubsetDictionary with blank name");
-			}
+
+			validateDictionaryName(name);
+
 			SubDictionary newDictionary = new SubDictionary(this.dictionaryName + "." + name, this); //$NON-NLS-1$
 			SubDictionary childDictionary = newDictionary.addSubsetDictionary(StringUtils.substring(dictionaryName, idx + 1));
 			subsetDictionaryMap.put(name, newDictionary);
@@ -96,6 +92,15 @@ public class SubDictionary {
 			SubDictionary newDictionary = new SubDictionary(this.dictionaryName + "." + dictionaryName, this); //$NON-NLS-1$
 			subsetDictionaryMap.put(dictionaryName, newDictionary);
 			return newDictionary;
+		}
+	}
+
+	private void validateDictionaryName(String name) {
+		if ("MAIN".equals(dictionaryName)) { //$NON-NLS-1$
+			throw new DictionaryAlreadyDefinedException("MAIN is reserved");
+		}
+		if (StringUtils.isBlank(name)) {
+			throw new InvalidDictionaryOperationException("addSubsetDictionary with blank name");
 		}
 	}
 
