@@ -40,4 +40,17 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>PROD_ENV</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <filters>
+                    <filter>src/main/filters/NORMAL.properties</filter>
+                </filters>
+            </build>
+        </profile>
+    </profiles>
 </project>
