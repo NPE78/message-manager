@@ -15,6 +15,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Stage;
 import com.google.inject.util.Modules;
 import com.synaptix.mm.server.IServer;
 import com.synaptix.mm.server.MMServer;
@@ -24,7 +25,7 @@ import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
 /**
  * Created by NicolasP on 21/10/2015.
  */
-public class MainIntegratorBoot {
+public final class MainIntegratorBoot {
 
 	private static final int INTEGRATOR_JETTY_PORT = 8000;
 
@@ -62,9 +63,9 @@ public class MainIntegratorBoot {
 			String trmt = p.getProperty("config.trmt_engine", "TRMT_LOCAL");
 
 			if (integratorTestModule != null) {
-				injector = Guice.createInjector(Modules.override(Modules.combine(new MMServerModule(trmt), new DefaultTestMMServerModule())).with(integratorTestModule));
+				injector = Guice.createInjector(getInjectorStage(), Modules.override(Modules.combine(new MMServerModule(trmt), new DefaultTestMMServerModule())).with(integratorTestModule));
 			} else {
-				injector = Guice.createInjector(Modules.combine(new MMServerModule(trmt), new DefaultTestMMServerModule()));
+				injector = Guice.createInjector(getInjectorStage(), Modules.combine(new MMServerModule(trmt), new DefaultTestMMServerModule()));
 			}
 		} catch (Exception e) {
 			LOG.error(e, e);
@@ -113,6 +114,10 @@ public class MainIntegratorBoot {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static Stage getInjectorStage() {
+		return Stage.DEVELOPMENT;
 	}
 
 	private interface IJettyStarted {

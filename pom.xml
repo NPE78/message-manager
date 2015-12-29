@@ -62,7 +62,6 @@
     <modules>
         <module>message-manager-shared</module>
         <module>message-manager-engine</module>
-        <module>message-manager-example</module>
         <module>message-manager-server</module>
         <module>message-manager-supervision</module>
         <module>message-manager-test-dependencies</module>

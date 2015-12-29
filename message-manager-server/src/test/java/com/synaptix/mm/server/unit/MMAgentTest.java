@@ -15,15 +15,14 @@ import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.SubDictionary;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
 import com.synaptix.mm.engine.model.DefaultErrorType;
-import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.engine.model.DefaultProcessError;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.server.AbstractMMAgent;
 import com.synaptix.mm.server.implem.DefaultMMAgent;
 import com.synaptix.mm.server.it.AbstractMMTest;
 import com.synaptix.mm.server.model.IProcessContext;
-import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
+import com.synaptix.mm.shared.model.domain.ErrorImpact;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
 import com.synaptix.mm.shared.model.domain.MessageWay;
@@ -35,11 +34,11 @@ public class MMAgentTest extends AbstractMMTest {
 
 	@Test
 	public void testMMAgent() throws Exception {
-		List<IErrorType> errorTypeList = getInstance(MMDictionary.class).addMessageType(new DefaultMessageType("TEST"));
-		errorTypeList.add(new DefaultErrorType("ACCEPT_WARN", ErrorRecyclingKind.WARNING));
-		errorTypeList.add(new DefaultErrorType("REJECT_AUTO", ErrorRecyclingKind.AUTOMATIC));
-		errorTypeList.add(new DefaultErrorType("REJECT_MAN", ErrorRecyclingKind.MANUAL));
-		errorTypeList.add(new DefaultErrorType("REJECT_DEF", ErrorRecyclingKind.NOT_RECYCLABLE));
+		MMDictionary dictionary = getInstance(MMDictionary.class);
+		dictionary.defineError(new DefaultErrorType("ACCEPT_WARN", ErrorRecyclingKind.WARNING));
+		dictionary.defineError(new DefaultErrorType("REJECT_AUTO", ErrorRecyclingKind.AUTOMATIC));
+		dictionary.defineError(new DefaultErrorType("REJECT_MAN", ErrorRecyclingKind.MANUAL));
+		dictionary.defineError(new DefaultErrorType("REJECT_DEF", ErrorRecyclingKind.NOT_RECYCLABLE));
 
 		{
 			IProcessingResult processingResult = getInstance(MyMMAgent.class).doWork("ACCEPT");
@@ -76,8 +75,6 @@ public class MMAgentTest extends AbstractMMTest {
 	@Test
 	public void testMMAgent2() throws Exception {
 		MMDictionary dictionary = getInstance(MMDictionary.class);
-		SubDictionary subDictionary = dictionary.addSubsetDictionary("sub");
-		subDictionary = subDictionary.addSubsetDictionary("ter");
 
 		List<TestCase> testCaseList = new ArrayList<>();
 		List<IProcessError> processErrorList = new ArrayList<>();
@@ -102,21 +99,18 @@ public class MMAgentTest extends AbstractMMTest {
 			testCaseList.add(new TestCase("Rejected case", processErrorList, IProcessingResult.State.INVALID, ErrorRecyclingKind.NOT_RECYCLABLE));
 		}
 
-		{
-			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("TEST_AGENT_IMPORT"));
-			errorTypeList.add(new DefaultErrorType("WARN", ErrorRecyclingKind.WARNING));
-			errorTypeList.add(new DefaultErrorType("AUTO", ErrorRecyclingKind.AUTOMATIC));
-			errorTypeList.add(new DefaultErrorType("MAN", ErrorRecyclingKind.MANUAL));
-			errorTypeList.add(new DefaultErrorType("REJ", ErrorRecyclingKind.NOT_RECYCLABLE));
+		dictionary.defineError(new DefaultErrorType("WARN", ErrorRecyclingKind.WARNING));
+		dictionary.defineError(new DefaultErrorType("AUTO", ErrorRecyclingKind.AUTOMATIC));
+		dictionary.defineError(new DefaultErrorType("MAN", ErrorRecyclingKind.MANUAL));
+		dictionary.defineError(new DefaultErrorType("REJ", ErrorRecyclingKind.NOT_RECYCLABLE));
 
-			subDictionary.fixError("TEST_AGENT_IMPORT", new DefaultErrorType("TER", ErrorRecyclingKind.AUTOMATIC, 60));
+		{
+			SubDictionary importDictionary = dictionary.addSubsetDictionary("import");
+
+			importDictionary.defineError(new DefaultErrorType("TER", ErrorRecyclingKind.AUTOMATIC, 60));
 		}
 		{
-			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("TEST_AGENT_EXPORT", MessageWay.OUT));
-			errorTypeList.add(new DefaultErrorType("WARN", ErrorRecyclingKind.WARNING));
-			errorTypeList.add(new DefaultErrorType("AUTO", ErrorRecyclingKind.AUTOMATIC));
-			errorTypeList.add(new DefaultErrorType("MAN", ErrorRecyclingKind.MANUAL));
-			errorTypeList.add(new DefaultErrorType("REJ", ErrorRecyclingKind.NOT_RECYCLABLE));
+			dictionary.addSubsetDictionary("export");
 		}
 
 		testCaseList.forEach(testCase -> {
@@ -185,6 +179,11 @@ public class MMAgentTest extends AbstractMMTest {
 		}
 
 		@Override
+		public MessageWay getMessageWay() {
+			return MessageWay.IN;
+		}
+
+		@Override
 		protected boolean isConcerned(Object messageObject) {
 			return messageObject instanceof String;
 		}
@@ -204,12 +203,12 @@ public class MMAgentTest extends AbstractMMTest {
 		}
 
 		@Override
-		public void reject(Map<IProcessError, IErrorType> errorMap) {
+		public void reject(Map<IProcessError, ErrorImpact> errorMap) {
 			Assert.assertFalse(getProcessContext().getMsg().startsWith("ACCEPT"));
 		}
 
 		@Override
-		public void accept(Map<IProcessError, IErrorType> errorMap) {
+		public void accept(Map<IProcessError, ErrorImpact> errorMap) {
 			Assert.assertTrue(getProcessContext().getMsg().startsWith("ACCEPT"));
 		}
 	}
@@ -239,8 +238,13 @@ public class MMAgentTest extends AbstractMMTest {
 		}
 
 		@Override
+		public MessageWay getMessageWay() {
+			return MessageWay.IN;
+		}
+
+		@Override
 		public SubDictionary getValidationDictionary(MMDictionary rootDictionary) {
-			return rootDictionary.getSubsetDictionary("sub.ter");
+			return rootDictionary.getSubsetDictionary("import");
 		}
 	}
 
@@ -267,6 +271,16 @@ public class MMAgentTest extends AbstractMMTest {
 		protected boolean isConcerned(Object messageObject) {
 			return messageObject instanceof TestCase;
 		}
+
+		@Override
+		public MessageWay getMessageWay() {
+			return MessageWay.OUT;
+		}
+
+		@Override
+		public SubDictionary getValidationDictionary(MMDictionary rootDictionary) {
+			return rootDictionary.getSubsetDictionary("export");
+		}
 	}
 
 	private static class MyForeignAgent extends DefaultMMAgent {
@@ -278,6 +292,11 @@ public class MMAgentTest extends AbstractMMTest {
 
 		@Override
 		public void process(Object messageObject) {
+		}
+
+		@Override
+		public MessageWay getMessageWay() {
+			return MessageWay.IN;
 		}
 
 		@Override
@@ -302,8 +321,13 @@ public class MMAgentTest extends AbstractMMTest {
 		}
 
 		@Override
-		public void reject(Map<IProcessError, IErrorType> errorMap) {
+		public void reject(Map<IProcessError, ErrorImpact> errorMap) {
 			obj.ok = true;
+		}
+
+		@Override
+		public MessageWay getMessageWay() {
+			return MessageWay.IN;
 		}
 	}
 

@@ -7,7 +7,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>message-manager-server</artifactId>
-    <name>Message Manager server</name>
+    <name>Message Manager Server</name>
     <build>
         <plugins>
             <plugin>

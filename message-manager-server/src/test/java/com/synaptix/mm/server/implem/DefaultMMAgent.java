@@ -8,9 +8,10 @@ import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.SubDictionary;
 import com.synaptix.mm.engine.implem.DefaultMessage;
 import com.synaptix.mm.server.AbstractMMAgent;
-import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
+import com.synaptix.mm.shared.model.domain.ErrorImpact;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
+import com.synaptix.mm.shared.model.domain.MessageWay;
 
 /**
  * Created by NicolasP on 26/10/2015.
@@ -52,17 +53,22 @@ public class DefaultMMAgent extends AbstractMMAgent<IDefaultProcessContext> {
 	}
 
 	@Override
-	public void reject(Map<IProcessError, IErrorType> errorMap) {
+	public void reject(Map<IProcessError, ErrorImpact> errorMap) {
 		// do stuff
 	}
 
 	@Override
-	public void accept(Map<IProcessError, IErrorType> errorMap) {
+	public void accept(Map<IProcessError, ErrorImpact> errorMap) {
 		// do stuff
 	}
 
 	@Override
 	public SubDictionary getValidationDictionary(MMDictionary rootDictionary) {
 		return rootDictionary;
+	}
+
+	@Override
+	public MessageWay getMessageWay() {
+		return MessageWay.IN;
 	}
 }

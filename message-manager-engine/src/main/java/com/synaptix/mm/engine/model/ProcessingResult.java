@@ -3,8 +3,8 @@ package com.synaptix.mm.engine.model;
 import java.time.Instant;
 import java.util.Map;
 
-import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
+import com.synaptix.mm.shared.model.domain.ErrorImpact;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
 /**
@@ -21,7 +21,7 @@ final class ProcessingResult implements IProcessingResult {
 
 	private Instant nextProcessingDate;
 
-	private Map<IProcessError, IErrorType> errorMap;
+	private Map<IProcessError, ErrorImpact> errorMap;
 
 	ProcessingResult() {
 	}
@@ -54,11 +54,11 @@ final class ProcessingResult implements IProcessingResult {
 	}
 
 	@Override
-	public Map<IProcessError, IErrorType> getErrorMap() {
+	public Map<IProcessError, ErrorImpact> getErrorMap() {
 		return errorMap;
 	}
 
-	public void setErrorMap(Map<IProcessError, IErrorType> errorMap) {
+	public void setErrorMap(Map<IProcessError, ErrorImpact> errorMap) {
 		this.errorMap = errorMap;
 	}
 }

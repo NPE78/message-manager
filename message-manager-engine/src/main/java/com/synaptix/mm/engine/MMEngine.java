@@ -3,7 +3,6 @@ package com.synaptix.mm.engine;
 import com.google.inject.Inject;
 import com.synaptix.mm.engine.exception.DictionaryAlreadyDefinedException;
 import com.synaptix.mm.engine.model.IProcessingResult;
-import com.synaptix.mm.shared.model.IMessageType;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
 import com.synaptix.mm.shared.model.domain.MessageWay;
 
@@ -36,7 +35,7 @@ public final class MMEngine {
 		process.process(messageObject);
 
 		SubDictionary subDictionary = process.getValidationDictionary(dictionary);
-		IProcessingResult processingResult = subDictionary.getProcessingResult(process.getMessageTypeName(), process.getProcessErrorList());
+		IProcessingResult processingResult = subDictionary.getProcessingResult(process.getProcessErrorList());
 
 		if (checkBlocking(processingResult, process)) {
 			process.reject(processingResult.getErrorMap());
@@ -50,7 +49,6 @@ public final class MMEngine {
 	 * Of all the errors raised until here, are they blocking the process?
 	 */
 	public boolean checkBlocking(IProcessingResult processingResult, IMMProcess process) {
-		IMessageType messageType = dictionary.getMessageType(process.getMessageTypeName());
 		if (processingResult.getState() == IProcessingResult.State.INVALID) {
 			switch (processingResult.getErrorRecyclingKind()) {
 				case AUTOMATIC:
@@ -65,7 +63,7 @@ public final class MMEngine {
 				default:
 					throw new IllegalStateException("Status is INVALID but errorRecyclingKind is " + processingResult.getErrorRecyclingKind());
 			}
-		} else if (messageType.getMessageWay() == MessageWay.OUT) {
+		} else if (process.getMessageWay() == MessageWay.OUT) {
 			process.notifyMessageStatus(MessageStatus.SENT);
 		} else {
 			process.notifyMessageStatus(MessageStatus.INTEGRATED);

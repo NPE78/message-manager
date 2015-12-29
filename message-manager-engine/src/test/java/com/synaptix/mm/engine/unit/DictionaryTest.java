@@ -8,17 +8,13 @@ import org.junit.Test;
 
 import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.SubDictionary;
-import com.synaptix.mm.engine.exception.InvalidDictionaryNameException;
 import com.synaptix.mm.engine.exception.InvalidDictionaryOperationException;
 import com.synaptix.mm.engine.exception.UnknownDictionaryException;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
-import com.synaptix.mm.engine.exception.UnknownMessageTypeException;
 import com.synaptix.mm.engine.implem.DefaultProcessErrorFactory;
 import com.synaptix.mm.engine.model.DefaultErrorType;
-import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.engine.model.DefaultProcessError;
 import com.synaptix.mm.engine.model.IProcessingResult;
-import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
@@ -30,43 +26,26 @@ public class DictionaryTest {
 	@Test
 	public void testRecycling() throws Exception {
 		MMDictionary dictionary = new MMDictionary();
-		SubDictionary subDictionary = dictionary.addSubsetDictionary("sub");
-		SubDictionary terDictionary = subDictionary.addSubsetDictionary("ter");
+		SubDictionary mt1Dictionary = dictionary.addSubsetDictionary("MT1");
+		SubDictionary mt2Dictionary = dictionary.addSubsetDictionary("MT2");
+		SubDictionary mt3Dictionary = dictionary.addSubsetDictionary("MT3");
 
 		{
-			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("MT1"));
-			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.AUTOMATIC));
-			errorTypeList.add(new DefaultErrorType("ET2", ErrorRecyclingKind.MANUAL));
+			mt1Dictionary.defineError(new DefaultErrorType("ET1", ErrorRecyclingKind.AUTOMATIC));
+			mt1Dictionary.defineError(new DefaultErrorType("ET2", ErrorRecyclingKind.MANUAL));
 
-			subDictionary.fixError("MT1", new DefaultErrorType("ET2", ErrorRecyclingKind.WARNING, 60));
-			subDictionary.fixError("MT1", new DefaultErrorType("ET2", ErrorRecyclingKind.AUTOMATIC, 60));
+			mt1Dictionary.defineError(new DefaultErrorType("ET2", ErrorRecyclingKind.WARNING, 60));
+			mt1Dictionary.defineError(new DefaultErrorType("ET2", ErrorRecyclingKind.AUTOMATIC, 60));
 
-			Assert.assertNotNull(dictionary.getMessageType("MT1"));
+			mt1Dictionary.addSubsetDictionary("sub.ter");
 		}
 		{
-			List<IErrorType> errorTypeList = new ArrayList<>();
-			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.WARNING));
-			dictionary.addMessageType(new DefaultMessageType("MT2"), errorTypeList);
-
-			Assert.assertNotNull(dictionary.getMessageType("MT2"));
+			mt2Dictionary.defineError(new DefaultErrorType("ET1", ErrorRecyclingKind.WARNING));
 		}
 		{
-			dictionary.addMessageType(new DefaultMessageType("MT3"), null);
-			dictionary.fixError("MT3",new DefaultErrorType("ET1", ErrorRecyclingKind.MANUAL));
-			dictionary.fixError("MT3",new DefaultErrorType("ET2", ErrorRecyclingKind.WARNING));
-			dictionary.fixError("MT3",new DefaultErrorType("ET3", ErrorRecyclingKind.NOT_RECYCLABLE));
-
-			Assert.assertNotNull(dictionary.getMessageType("MT3"));
-		}
-
-		{
-			boolean raised = false;
-			try {
-				dictionary.addMessageType(new DefaultMessageType("MT1"), new ArrayList<>());
-			} catch (Exception e) {
-				raised = true;
-			}
-			Assert.assertTrue(raised); // test unique
+			mt3Dictionary.defineError(new DefaultErrorType("ET1", ErrorRecyclingKind.MANUAL));
+			mt3Dictionary.defineError(new DefaultErrorType("ET2", ErrorRecyclingKind.WARNING));
+			mt3Dictionary.defineError(new DefaultErrorType("ET3", ErrorRecyclingKind.NOT_RECYCLABLE));
 		}
 
 		DefaultProcessErrorFactory processErrorFactory = new DefaultProcessErrorFactory();
@@ -74,7 +53,7 @@ public class DictionaryTest {
 		List<IProcessError> errorList = new ArrayList<>();
 
 		{
-			IProcessingResult r1 = dictionary.getProcessingResult("MT1", errorList);
+			IProcessingResult r1 = mt1Dictionary.getProcessingResult(errorList);
 			Assert.assertEquals(IProcessingResult.State.VALID, r1.getState());
 		}
 		{
@@ -82,19 +61,19 @@ public class DictionaryTest {
 			et1.setAttribute("");
 			et1.setValue("");
 			errorList.add(et1);
-			IProcessingResult r1 = dictionary.getProcessingResult("MT1", errorList);
+			IProcessingResult r1 = mt1Dictionary.getProcessingResult(errorList);
 			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.AUTOMATIC, r1.getErrorRecyclingKind());
 			Assert.assertNotNull(r1.getNextProcessingDate());
 		}
 		{
-			IProcessingResult r1 = dictionary.getSubsetDictionary("sub").getProcessingResult("MT1", errorList);
+			IProcessingResult r1 = mt1Dictionary.getSubsetDictionary("sub").getProcessingResult(errorList);
 			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.AUTOMATIC, r1.getErrorRecyclingKind());
 			Assert.assertNotNull(r1.getNextProcessingDate());
 		}
 		{
-			IProcessingResult r1 = dictionary.getProcessingResult("MT2", errorList);
+			IProcessingResult r1 = mt2Dictionary.getProcessingResult(errorList);
 			Assert.assertEquals(IProcessingResult.State.VALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.WARNING, r1.getErrorRecyclingKind());
 			Assert.assertNull(r1.getNextProcessingDate());
@@ -104,13 +83,13 @@ public class DictionaryTest {
 			et2.setAttribute("");
 			et2.setValue("");
 			errorList.add(et2);
-			IProcessingResult r1 = dictionary.getProcessingResult("MT3", errorList);
+			IProcessingResult r1 = mt3Dictionary.getProcessingResult(errorList);
 			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.MANUAL, r1.getErrorRecyclingKind());
 			Assert.assertNull(r1.getNextProcessingDate());
 		}
 		{
-			IProcessingResult r1 = dictionary.getSubsetDictionary("sub").getProcessingResult("MT1", errorList);
+			IProcessingResult r1 = mt1Dictionary.getSubsetDictionary("sub").getProcessingResult(errorList);
 			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.AUTOMATIC, r1.getErrorRecyclingKind());
 			Assert.assertNotNull(r1.getNextProcessingDate());
@@ -120,7 +99,7 @@ public class DictionaryTest {
 			et3.setAttribute("");
 			et3.setValue("");
 			errorList.add(et3);
-			IProcessingResult r1 = dictionary.getProcessingResult("MT3", errorList);
+			IProcessingResult r1 = mt3Dictionary.getProcessingResult(errorList);
 			Assert.assertEquals(IProcessingResult.State.INVALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.NOT_RECYCLABLE, r1.getErrorRecyclingKind());
 			Assert.assertNull(r1.getNextProcessingDate());
@@ -128,7 +107,7 @@ public class DictionaryTest {
 		{
 			boolean exceptionRaised = false;
 			try {
-				dictionary.getProcessingResult("MT1", errorList);
+				mt1Dictionary.getProcessingResult(errorList);
 			} catch (UnknownErrorException e) {
 				exceptionRaised = true;
 			} finally {
@@ -148,31 +127,11 @@ public class DictionaryTest {
 		{
 			boolean exceptionRaised = false;
 			try {
-				dictionary.getProcessingResult("unknownMessageType", errorList);
-			} catch (UnknownMessageTypeException e) {
-				exceptionRaised = true;
-			} finally {
-				Assert.assertTrue(exceptionRaised);
-			}
-		}
-		{
-			boolean exceptionRaised = false;
-			try {
-				dictionary.getMessageType("unknownMessageType");
-			} catch (UnknownMessageTypeException e) {
-				exceptionRaised = true;
-			} finally {
-				Assert.assertTrue(exceptionRaised);
-			}
-		}
-		{
-			boolean exceptionRaised = false;
-			try {
 				DefaultProcessError unknownError = processErrorFactory.createProcessError("unknownError");
 				unknownError.setAttribute("");
 				unknownError.setValue("");
 				errorList.add(unknownError);
-				dictionary.getSubsetDictionary("sub.ter").getProcessingResult("MT3", errorList);
+				mt1Dictionary.getSubsetDictionary("sub").getProcessingResult(errorList);
 			} catch (UnknownErrorException e) {
 				exceptionRaised = true;
 			} finally {
@@ -183,15 +142,26 @@ public class DictionaryTest {
 		{
 			boolean exceptionRaised = false;
 			try {
-				dictionary.addSubsetDictionary("test.sub");
-			} catch (InvalidDictionaryNameException e) {
+				dictionary.addSubsetDictionary("test.sub.");
+			} catch (InvalidDictionaryOperationException e) {
 				exceptionRaised = true;
 			} finally {
 				Assert.assertTrue(exceptionRaised);
 			}
 		}
 
-		Assert.assertTrue(dictionary.getSubsetDictionary("sub.ter").destroy());
+		{
+			boolean exceptionRaised = false;
+			try {
+				dictionary.addSubsetDictionary(".test.sub");
+			} catch (InvalidDictionaryOperationException e) {
+				exceptionRaised = true;
+			} finally {
+				Assert.assertTrue(exceptionRaised);
+			}
+		}
+
+		Assert.assertTrue(dictionary.getSubsetDictionary("MT1.sub.ter").destroy());
 
 		{
 			boolean exceptionRaised = false;
@@ -205,16 +175,14 @@ public class DictionaryTest {
 		}
 
 		dictionary.clear();
+		mt1Dictionary = dictionary.addSubsetDictionary("MT1");
 		errorList.clear();
 		{
-			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("MT1"));
-			errorTypeList.add(new DefaultErrorType("ET1", ErrorRecyclingKind.WARNING));
-			errorTypeList.add(new DefaultErrorType("ET2", ErrorRecyclingKind.MANUAL));
-
-			Assert.assertNotNull(dictionary.getMessageType("MT1"));
+			mt1Dictionary.defineError(new DefaultErrorType("ET1", ErrorRecyclingKind.WARNING));
+			mt1Dictionary.defineError(new DefaultErrorType("ET2", ErrorRecyclingKind.MANUAL));
 		}
 		{
-			IProcessingResult r1 = dictionary.getProcessingResult("MT1", errorList);
+			IProcessingResult r1 = mt1Dictionary.getProcessingResult(errorList);
 			Assert.assertEquals(IProcessingResult.State.VALID, r1.getState());
 		}
 		{
@@ -222,7 +190,7 @@ public class DictionaryTest {
 			et1.setAttribute("");
 			et1.setValue("");
 			errorList.add(et1);
-			IProcessingResult r1 = dictionary.getProcessingResult("MT1", errorList);
+			IProcessingResult r1 = mt1Dictionary.getProcessingResult(errorList);
 			Assert.assertEquals(IProcessingResult.State.VALID, r1.getState());
 			Assert.assertEquals(ErrorRecyclingKind.WARNING, r1.getErrorRecyclingKind());
 			Assert.assertNull(r1.getNextProcessingDate());

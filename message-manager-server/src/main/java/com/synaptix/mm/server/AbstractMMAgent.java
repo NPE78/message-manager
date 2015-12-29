@@ -16,8 +16,8 @@ import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.engine.model.ProcessingResultBuilder;
 import com.synaptix.mm.server.model.IProcessContext;
-import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
+import com.synaptix.mm.shared.model.domain.ErrorImpact;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
 import com.synaptix.pmgr.core.apis.Engine;
 import com.synaptix.pmgr.core.lib.ProcessEngine;
@@ -68,7 +68,7 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 		} catch (Exception e) {
 			LOG.error(messageTypeName, e);
 			notifyMessageStatus(MessageStatus.TO_RECYCLE_MANUALLY);
-			Map<IProcessError, IErrorType> errorMap = new HashMap<>();
+			Map<IProcessError, ErrorImpact> errorMap = new HashMap<>();
 			errorMap.put(addError("UNKNOWN_ERROR"), null);
 			reject(errorMap);
 		}

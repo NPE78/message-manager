@@ -12,13 +12,13 @@ import com.synaptix.mm.engine.IMMProcess;
 import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.MMEngine;
 import com.synaptix.mm.engine.model.DefaultErrorType;
-import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.engine.model.DefaultProcessError;
 import com.synaptix.mm.engine.model.IProcessingResult;
-import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
+import com.synaptix.mm.shared.model.domain.ErrorImpact;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 import com.synaptix.mm.shared.model.domain.MessageStatus;
+import com.synaptix.mm.shared.model.domain.MessageWay;
 
 /**
  * Created by NicolasP on 30/10/2015.
@@ -32,8 +32,7 @@ public class MMEngineTest {
 		engine.setDictionary(dictionary);
 
 		{
-			List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("test"));
-			errorTypeList.add(new DefaultErrorType("AUTO", ErrorRecyclingKind.AUTOMATIC));
+			dictionary.defineError(new DefaultErrorType("AUTO", ErrorRecyclingKind.AUTOMATIC));
 		}
 
 		engine.start(null, new MyProcess());
@@ -45,11 +44,10 @@ public class MMEngineTest {
 		MMDictionary dictionary = new MMDictionary();
 		engine.setDictionary(dictionary);
 
-		List<IErrorType> errorTypeList = dictionary.addMessageType(new DefaultMessageType("TEST"));
-		errorTypeList.add(new DefaultErrorType("ACCEPT_WARN", ErrorRecyclingKind.WARNING));
-		errorTypeList.add(new DefaultErrorType("REJECT_AUTO", ErrorRecyclingKind.AUTOMATIC));
-		errorTypeList.add(new DefaultErrorType("REJECT_MAN", ErrorRecyclingKind.MANUAL));
-		errorTypeList.add(new DefaultErrorType("REJECT_DEF", ErrorRecyclingKind.NOT_RECYCLABLE));
+		dictionary.defineError(new DefaultErrorType("ACCEPT_WARN", ErrorRecyclingKind.WARNING));
+		dictionary.defineError(new DefaultErrorType("REJECT_AUTO", ErrorRecyclingKind.AUTOMATIC));
+		dictionary.defineError(new DefaultErrorType("REJECT_MAN", ErrorRecyclingKind.MANUAL));
+		dictionary.defineError(new DefaultErrorType("REJECT_DEF", ErrorRecyclingKind.NOT_RECYCLABLE));
 
 		MyMMProcess process = new MyMMProcess();
 		{
@@ -99,11 +97,11 @@ public class MMEngineTest {
 		}
 
 		@Override
-		public void reject(Map<IProcessError, IErrorType> errorMap) {
+		public void reject(Map<IProcessError, ErrorImpact> errorMap) {
 		}
 
 		@Override
-		public void accept(Map<IProcessError, IErrorType> errorMap) {
+		public void accept(Map<IProcessError, ErrorImpact> errorMap) {
 		}
 
 		@Override
@@ -120,6 +118,11 @@ public class MMEngineTest {
 			return "TEST";
 		}
 
+		@Override
+		public MessageWay getMessageWay() {
+			return MessageWay.IN;
+		}
+
 	}
 
 	private class MyProcess implements IMMProcess {
@@ -129,12 +132,12 @@ public class MMEngineTest {
 		}
 
 		@Override
-		public void reject(Map<IProcessError, IErrorType> errorMap) {
+		public void reject(Map<IProcessError, ErrorImpact> errorMap) {
 			Assert.assertTrue(true);
 		}
 
 		@Override
-		public void accept(Map<IProcessError, IErrorType> errorMap) {
+		public void accept(Map<IProcessError, ErrorImpact> errorMap) {
 			Assert.assertTrue(false);
 		}
 
@@ -151,6 +154,11 @@ public class MMEngineTest {
 		@Override
 		public String getMessageTypeName() {
 			return "test";
+		}
+
+		@Override
+		public MessageWay getMessageWay() {
+			return MessageWay.IN;
 		}
 	}
 }

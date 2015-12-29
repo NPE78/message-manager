@@ -4,8 +4,8 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
+import com.synaptix.mm.shared.model.domain.ErrorImpact;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
 /**
@@ -14,7 +14,7 @@ import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
  */
 public final class ProcessingResultBuilder {
 
-	private Map<IProcessError, IErrorType> errorMap;
+	private Map<IProcessError, ErrorImpact> errorMap;
 
 	private ProcessingResultBuilder() {
 		this.errorMap = new HashMap<>(0);
@@ -30,35 +30,35 @@ public final class ProcessingResultBuilder {
 	/**
 	 * Mark the processing result as being accepted with a warning
 	 */
-	public static IProcessingResult acceptWithWarning(Map<IProcessError, IErrorType> errorMap) {
+	public static IProcessingResult acceptWithWarning(Map<IProcessError, ErrorImpact> errorMap) {
 		return new ProcessingResultBuilder().errors(errorMap).acceptResult(ErrorRecyclingKind.WARNING);
 	}
 
 	/**
 	 * Mark the processing result as being rejected with a manual recycling kind
 	 */
-	public static IProcessingResult rejectManually(Map<IProcessError, IErrorType> errorMap) {
+	public static IProcessingResult rejectManually(Map<IProcessError, ErrorImpact> errorMap) {
 		return new ProcessingResultBuilder().errors(errorMap).rejectResult(ErrorRecyclingKind.MANUAL, null);
 	}
 
 	/**
 	 * Mark the processing result as being rejected with an automatic recycling kind
 	 */
-	public static IProcessingResult rejectAutomatically(Instant nextProcessingDate, Map<IProcessError, IErrorType> errorMap) {
+	public static IProcessingResult rejectAutomatically(Instant nextProcessingDate, Map<IProcessError, ErrorImpact> errorMap) {
 		return new ProcessingResultBuilder().errors(errorMap).rejectResult(ErrorRecyclingKind.AUTOMATIC, nextProcessingDate);
 	}
 
 	/**
 	 * Mark the processing result as being rejected definitely
 	 */
-	public static IProcessingResult rejectDefinitely(Map<IProcessError, IErrorType> errorMap) {
+	public static IProcessingResult rejectDefinitely(Map<IProcessError, ErrorImpact> errorMap) {
 		return new ProcessingResultBuilder().errors(errorMap).rejectResult(ErrorRecyclingKind.NOT_RECYCLABLE, null);
 	}
 
 	/**
 	 * Add a map of errors associated to their type
 	 */
-	private ProcessingResultBuilder errors(Map<IProcessError, IErrorType> errorMap) {
+	private ProcessingResultBuilder errors(Map<IProcessError, ErrorImpact> errorMap) {
 		this.errorMap = errorMap;
 		return this;
 	}
