@@ -8,6 +8,8 @@ import org.junit.Test;
 
 import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.SubDictionary;
+import com.synaptix.mm.engine.exception.InvalidDictionaryNameException;
+import com.synaptix.mm.engine.exception.InvalidDictionaryOperationException;
 import com.synaptix.mm.engine.exception.UnknownDictionaryException;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
 import com.synaptix.mm.engine.exception.UnknownMessageTypeException;
@@ -172,6 +174,30 @@ public class DictionaryTest {
 				errorList.add(unknownError);
 				dictionary.getSubsetDictionary("sub.ter").getProcessingResult("MT3", errorList);
 			} catch (UnknownErrorException e) {
+				exceptionRaised = true;
+			} finally {
+				Assert.assertTrue(exceptionRaised);
+			}
+		}
+
+		{
+			boolean exceptionRaised = false;
+			try {
+				dictionary.addSubsetDictionary("test.sub");
+			} catch (InvalidDictionaryNameException e) {
+				exceptionRaised = true;
+			} finally {
+				Assert.assertTrue(exceptionRaised);
+			}
+		}
+
+		Assert.assertTrue(dictionary.getSubsetDictionary("sub.ter").destroy());
+
+		{
+			boolean exceptionRaised = false;
+			try {
+				dictionary.destroy();
+			} catch (InvalidDictionaryOperationException e) {
 				exceptionRaised = true;
 			} finally {
 				Assert.assertTrue(exceptionRaised);

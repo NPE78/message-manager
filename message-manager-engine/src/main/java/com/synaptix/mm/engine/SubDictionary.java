@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.synaptix.mm.engine.exception.DictionaryAlreadyDefinedException;
+import com.synaptix.mm.engine.exception.InvalidDictionaryNameException;
+import com.synaptix.mm.engine.exception.InvalidDictionaryOperationException;
 import com.synaptix.mm.engine.exception.UnknownDictionaryException;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
 import com.synaptix.mm.engine.exception.UnknownMessageTypeException;
@@ -66,11 +68,15 @@ public class SubDictionary {
 	}
 
 	/**
-	 * Add a subset dictionary to the current dictionary. The name is unique, a {@link DictionaryAlreadyDefinedException} is raised
+	 * Add a subset dictionary to the current dictionary. The name is unique, a {@link DictionaryAlreadyDefinedException} is raised.<br/>
+	 * The dictionary name cannot contain a dot. If it does, a {@link InvalidDictionaryNameException} is raised.
 	 */
 	public final SubDictionary addSubsetDictionary(String dictionaryName) {
-		if ("MAIN".equals(dictionaryName)) {
+		if ("MAIN".equals(dictionaryName)) { //$NON-NLS-1$
 			throw new DictionaryAlreadyDefinedException("MAIN is reserved");
+		}
+		if (dictionaryName.contains(".")) { //$NON-NLS-1$
+			throw new InvalidDictionaryNameException(dictionaryName + " is an invalid dictionary name!");
 		}
 		if (subsetDictionaryMap.containsKey(dictionaryName)) {
 			throw new DictionaryAlreadyDefinedException(dictionaryName);
@@ -78,6 +84,21 @@ public class SubDictionary {
 		SubDictionary newDictionary = new SubDictionary(this.dictionaryName + "." + dictionaryName, this); //$NON-NLS-1$
 		subsetDictionaryMap.put(dictionaryName, newDictionary);
 		return newDictionary;
+	}
+
+	/**
+	 * Destroy a dictionary, so that it cannot be used anymore
+	 */
+	public final boolean destroy() {
+		if (parentDictionary == null) {
+			throw new InvalidDictionaryOperationException("Cannot destroy the main dictionary");
+		}
+		subsetDictionaryMap.clear();
+		return parentDictionary.unregister(dictionaryName.replaceAll("^(.+)\\.", ""));
+	}
+
+	private boolean unregister(String dictionaryName) {
+		return subsetDictionaryMap.remove(dictionaryName) != null ? true : false;
 	}
 
 	/**
@@ -138,10 +159,7 @@ public class SubDictionary {
 	 * Returns the name of the dictionary
 	 */
 	public final String getDictionaryName() {
-		if (parentDictionary == null) {
-			return dictionaryName;
-		}
-		return parentDictionary.getDictionaryName() + "." + dictionaryName;
+		return dictionaryName;
 	}
 
 	private void checkMessageTypeExistence(String messageTypeName) {
