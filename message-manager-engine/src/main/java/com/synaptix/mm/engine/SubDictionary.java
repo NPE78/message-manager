@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
+import com.synaptix.java.lambda.Try;
 import com.synaptix.mm.engine.exception.DictionaryAlreadyDefinedException;
 import com.synaptix.mm.engine.exception.InvalidDictionaryOperationException;
 import com.synaptix.mm.engine.exception.UnknownDictionaryException;
@@ -56,7 +58,7 @@ public class SubDictionary {
 	/**
 	 * Get a subset dictionary from current. Use dots to get subset of a subset
 	 */
-	public final SubDictionary getSubsetDictionary(String dictionaryName) {
+	public final SubDictionary getSubsetDictionary(String dictionaryName) throws UnknownDictionaryException {
 		String[] keys = dictionaryName.split("\\."); //$NON-NLS-1$
 		SubDictionary dictionary = this;
 		for (String key : keys) {
@@ -72,7 +74,7 @@ public class SubDictionary {
 	 * Add a subset dictionary to the current dictionary. The name is unique, a {@link DictionaryAlreadyDefinedException} is raised.<br/>
 	 * The dictionary name cannot be blank. If it is, a {@link InvalidDictionaryOperationException} is raised.
 	 */
-	public final SubDictionary addSubsetDictionary(String dictionaryName) {
+	public final SubDictionary addSubsetDictionary(String dictionaryName) throws DictionaryAlreadyDefinedException, InvalidDictionaryOperationException {
 		validateDictionaryName(dictionaryName);
 
 		int idx = dictionaryName.indexOf("."); //$NON-NLS-1$
@@ -95,7 +97,7 @@ public class SubDictionary {
 		}
 	}
 
-	private void validateDictionaryName(String name) {
+	private void validateDictionaryName(String name) throws DictionaryAlreadyDefinedException, InvalidDictionaryOperationException {
 		if ("MAIN".equals(name)) { //$NON-NLS-1$
 			throw new DictionaryAlreadyDefinedException("MAIN is reserved");
 		}
@@ -107,7 +109,7 @@ public class SubDictionary {
 	/**
 	 * Destroy a dictionary, so that it cannot be used anymore
 	 */
-	public final boolean destroy() {
+	public final boolean destroy() throws InvalidDictionaryOperationException {
 		if (parentDictionary == null) {
 			throw new InvalidDictionaryOperationException("Cannot destroy the main dictionary");
 		}
@@ -132,14 +134,24 @@ public class SubDictionary {
 		Worst worst = new Worst();
 
 		Map<IProcessError, ErrorImpact> errorMap = new HashMap<>();
-		errorList.forEach(s -> {
-					ErrorImpact errorImpact = computeErrorImpact(s.getErrorCode());
-					errorMap.put(s, errorImpact);
-					updateWorst(worst, errorImpact);
-				}
-		);
+		Try<List<Pair<IProcessError, ErrorImpact>>> collect = errorList.stream().map(Try.lazyOf(this::add).andThen(trySupplier -> {
+			Try<Pair<IProcessError, ErrorImpact>> pairTry = trySupplier.get();
+			if (pairTry.isSuccess()) {
+				Pair<IProcessError, ErrorImpact> pair = pairTry.asSuccess().getResult();
+				errorMap.put(pair.getKey(), pair.getValue());
+				updateWorst(worst, pair.getValue());
+			}
+			return trySupplier;
+		})).collect(Try.collect());
+		Exception e = null;
+		if (collect.isFailure()) {
+			e = collect.asFailure().getException();
+		}
+		return buildProcessingResult(worst, errorMap, e);
+	}
 
-		return buildProcessingResult(worst, errorMap);
+	private Pair<IProcessError, ErrorImpact> add(IProcessError processError) throws UnknownErrorException {
+		return Pair.of(processError, computeErrorImpact(processError.getErrorCode()));
 	}
 
 	/**
@@ -167,7 +179,7 @@ public class SubDictionary {
 	/**
 	 * Find the error type in the current dictionary or in a parent. If not found at all, an {@link UnknownErrorException} is raised
 	 */
-	private ErrorImpact computeErrorImpact(String errorCode) {
+	private ErrorImpact computeErrorImpact(String errorCode) throws UnknownErrorException {
 		ErrorImpact errorImpact = null;
 		Optional<IErrorType> first = null;
 		if (errorTypeList != null) {
@@ -200,19 +212,19 @@ public class SubDictionary {
 		worst.delay = Math.max(errorImpact.getNextRecyclingDuration() != null ? errorImpact.getNextRecyclingDuration() : 0, worst.delay != null ? worst.delay : 0);
 	}
 
-	private IProcessingResult buildProcessingResult(Worst worst, Map<IProcessError, ErrorImpact> errorMap) {
+	private IProcessingResult buildProcessingResult(Worst worst, Map<IProcessError, ErrorImpact> errorMap, Exception e) {
 		switch (worst.errorRecyclingKind) {
 			case AUTOMATIC:
 				Instant nextProcessingDate = Instant.now();
 				nextProcessingDate.plus(worst.delay, ChronoUnit.MINUTES);
-				return ProcessingResultBuilder.rejectAutomatically(nextProcessingDate, errorMap);
+				return ProcessingResultBuilder.rejectAutomatically(nextProcessingDate, errorMap, e);
 			case MANUAL:
-				return ProcessingResultBuilder.rejectManually(errorMap);
+				return ProcessingResultBuilder.rejectManually(errorMap, e);
 			case NOT_RECYCLABLE:
-				return ProcessingResultBuilder.rejectDefinitely(errorMap);
+				return ProcessingResultBuilder.rejectDefinitely(errorMap, e);
 			default:
 				// case of the WARNING enum value
-				return ProcessingResultBuilder.acceptWithWarning(errorMap);
+				return ProcessingResultBuilder.acceptWithWarning(errorMap, e);
 		}
 	}
 

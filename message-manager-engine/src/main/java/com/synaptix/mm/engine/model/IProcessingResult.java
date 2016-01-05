@@ -35,6 +35,11 @@ public interface IProcessingResult {
 	 */
 	Map<IProcessError, ErrorImpact> getErrorMap();
 
+	/**
+	 * If the process had an exception when building this result, it can be used with this method
+	 */
+	Exception getException();
+
 	enum State {
 
 		/**

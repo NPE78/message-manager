@@ -21,23 +21,23 @@ public class ProcessingResultBuilderTest {
 		Assert.assertEquals(IProcessingResult.State.VALID, processingResult.getState());
 		Assert.assertNull(processingResult.getNextProcessingDate());
 
-		processingResult = ProcessingResultBuilder.acceptWithWarning(null);
+		processingResult = ProcessingResultBuilder.acceptWithWarning(null, null);
 		Assert.assertEquals(IProcessingResult.State.VALID, processingResult.getState());
 		Assert.assertEquals(ErrorRecyclingKind.WARNING, processingResult.getErrorRecyclingKind());
 		Assert.assertNull(processingResult.getNextProcessingDate());
 
 		Instant now = Instant.now();
-		processingResult = ProcessingResultBuilder.rejectAutomatically(now, null);
+		processingResult = ProcessingResultBuilder.rejectAutomatically(now, null, null);
 		Assert.assertEquals(IProcessingResult.State.INVALID, processingResult.getState());
 		Assert.assertEquals(ErrorRecyclingKind.AUTOMATIC, processingResult.getErrorRecyclingKind());
 		Assert.assertEquals(now, processingResult.getNextProcessingDate());
 
-		processingResult = ProcessingResultBuilder.rejectManually(null);
+		processingResult = ProcessingResultBuilder.rejectManually(null, null);
 		Assert.assertEquals(IProcessingResult.State.INVALID, processingResult.getState());
 		Assert.assertEquals(ErrorRecyclingKind.MANUAL, processingResult.getErrorRecyclingKind());
 		Assert.assertNull(processingResult.getNextProcessingDate());
 
-		processingResult = ProcessingResultBuilder.rejectDefinitely(null);
+		processingResult = ProcessingResultBuilder.rejectDefinitely(null, null);
 		Assert.assertEquals(IProcessingResult.State.INVALID, processingResult.getState());
 		Assert.assertEquals(ErrorRecyclingKind.NOT_RECYCLABLE, processingResult.getErrorRecyclingKind());
 		Assert.assertNull(processingResult.getNextProcessingDate());

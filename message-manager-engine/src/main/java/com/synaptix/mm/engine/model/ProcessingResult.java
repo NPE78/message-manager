@@ -23,6 +23,8 @@ final class ProcessingResult implements IProcessingResult {
 
 	private Map<IProcessError, ErrorImpact> errorMap;
 
+	private Exception exception;
+
 	ProcessingResult() {
 	}
 
@@ -60,5 +62,14 @@ final class ProcessingResult implements IProcessingResult {
 
 	public void setErrorMap(Map<IProcessError, ErrorImpact> errorMap) {
 		this.errorMap = errorMap;
+	}
+
+	@Override
+	public Exception getException() {
+		return exception;
+	}
+
+	public void setException(Exception exception) {
+		this.exception = exception;
 	}
 }

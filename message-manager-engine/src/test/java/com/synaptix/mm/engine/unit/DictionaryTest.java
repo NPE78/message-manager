@@ -106,13 +106,11 @@ public class DictionaryTest {
 		}
 		{
 			boolean exceptionRaised = false;
-			try {
-				mt1Dictionary.getProcessingResult(errorList);
-			} catch (UnknownErrorException e) {
+			IProcessingResult processingResult = mt1Dictionary.getProcessingResult(errorList);
+			if (processingResult.getException() instanceof UnknownErrorException) {
 				exceptionRaised = true;
-			} finally {
-				Assert.assertTrue(exceptionRaised);
 			}
+			Assert.assertTrue(exceptionRaised);
 		}
 		{
 			boolean exceptionRaised = false;
@@ -126,17 +124,15 @@ public class DictionaryTest {
 		}
 		{
 			boolean exceptionRaised = false;
-			try {
-				DefaultProcessError unknownError = processErrorFactory.createProcessError("unknownError");
-				unknownError.setAttribute("");
-				unknownError.setValue("");
-				errorList.add(unknownError);
-				mt1Dictionary.getSubsetDictionary("sub").getProcessingResult(errorList);
-			} catch (UnknownErrorException e) {
+			DefaultProcessError unknownError = processErrorFactory.createProcessError("unknownError");
+			unknownError.setAttribute("");
+			unknownError.setValue("");
+			errorList.add(unknownError);
+			IProcessingResult processingResult = mt1Dictionary.getSubsetDictionary("sub").getProcessingResult(errorList);
+			if (processingResult.getException() instanceof UnknownErrorException) {
 				exceptionRaised = true;
-			} finally {
-				Assert.assertTrue(exceptionRaised);
 			}
+			Assert.assertTrue(exceptionRaised);
 		}
 
 		{

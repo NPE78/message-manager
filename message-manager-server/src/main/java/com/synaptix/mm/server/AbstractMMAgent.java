@@ -85,7 +85,7 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 			processContext.setProcessErrorList(new ArrayList<>());
 			return engine.start(messageObject, this);
 		}
-		return ProcessingResultBuilder.rejectDefinitely(null); // if the message does not concern this agent, we reject it
+		return ProcessingResultBuilder.rejectDefinitely(null, null); // if the message does not concern this agent, we reject it
 	}
 
 	/**

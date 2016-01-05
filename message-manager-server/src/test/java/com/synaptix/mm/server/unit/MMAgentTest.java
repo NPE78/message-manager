@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import com.synaptix.component.factory.ComponentFactory;
 import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.SubDictionary;
+import com.synaptix.mm.engine.exception.UnknownDictionaryException;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
 import com.synaptix.mm.engine.model.DefaultErrorType;
 import com.synaptix.mm.engine.model.DefaultProcessError;
@@ -124,10 +125,9 @@ public class MMAgentTest extends AbstractMMTest {
 			processErrorList.add(new DefaultProcessError("UNKNOWN", "Unknown error", "Test"));
 			TestCase testCase = new TestCase("Unknown error case", processErrorList, IProcessingResult.State.INVALID, ErrorRecyclingKind.MANUAL);
 			boolean raised = false;
-			try {
 				LOG.info("Testing " + testCase.name);
-				getInstance(MyImportAgent.class).doWork(testCase);
-			} catch (UnknownErrorException e) {
+				IProcessingResult processingResult = getInstance(MyImportAgent.class).doWork(testCase);
+			if (processingResult.getException() instanceof UnknownErrorException) {
 				raised = true;
 			}
 			Assert.assertTrue(raised);
@@ -244,7 +244,11 @@ public class MMAgentTest extends AbstractMMTest {
 
 		@Override
 		public SubDictionary getValidationDictionary(MMDictionary rootDictionary) {
-			return rootDictionary.getSubsetDictionary("import");
+			try {
+				return rootDictionary.getSubsetDictionary("import");
+			} catch (UnknownDictionaryException e) {
+				return rootDictionary;
+			}
 		}
 	}
 
@@ -279,7 +283,11 @@ public class MMAgentTest extends AbstractMMTest {
 
 		@Override
 		public SubDictionary getValidationDictionary(MMDictionary rootDictionary) {
-			return rootDictionary.getSubsetDictionary("export");
+			try {
+				return rootDictionary.getSubsetDictionary("export");
+			} catch (UnknownDictionaryException e) {
+				return rootDictionary;
+			}
 		}
 	}
 

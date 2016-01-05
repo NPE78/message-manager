@@ -359,6 +359,11 @@
             <artifactId>SynaptixComponent</artifactId>
             <version>${synaptixlibs.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.synaptix</groupId>
+            <artifactId>try</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
     <distributionManagement>
         <repository>

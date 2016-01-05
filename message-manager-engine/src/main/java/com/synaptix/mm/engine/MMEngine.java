@@ -20,10 +20,9 @@ public final class MMEngine {
 	private static final Log LOG = LogFactory.getLog(MMEngine.class);
 
 	@Inject
-	private MMDictionary dictionary;
-
-	@Inject
 	private IProcessErrorFactory processErrorFactory;
+
+	private MMDictionary dictionary;
 
 	/**
 	 * Create the unique instance of the message manager engine
@@ -33,7 +32,8 @@ public final class MMEngine {
 		super();
 	}
 
-	public void setDictionary(MMDictionary dictionary) {
+	@Inject
+	public void setDictionary(MMDictionary dictionary) throws DictionaryAlreadyDefinedException {
 		if (this.dictionary != null) {
 			throw new DictionaryAlreadyDefinedException("A main dictionary has already been defined");
 		}

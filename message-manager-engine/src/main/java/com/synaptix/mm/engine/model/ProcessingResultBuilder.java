@@ -16,6 +16,8 @@ public final class ProcessingResultBuilder {
 
 	private Map<IProcessError, ErrorImpact> errorMap;
 
+	private Exception exception;
+
 	private ProcessingResultBuilder() {
 		this.errorMap = new HashMap<>(0);
 	}
@@ -30,53 +32,63 @@ public final class ProcessingResultBuilder {
 	/**
 	 * Mark the processing result as being accepted with a warning
 	 */
-	public static IProcessingResult acceptWithWarning(Map<IProcessError, ErrorImpact> errorMap) {
-		return new ProcessingResultBuilder().errors(errorMap).acceptResult(ErrorRecyclingKind.WARNING);
+	public static IProcessingResult acceptWithWarning(Map<IProcessError, ErrorImpact> errorMap, Exception exception) {
+		return new ProcessingResultBuilder().errors(errorMap).exception(exception).acceptResult(ErrorRecyclingKind.WARNING);
 	}
 
 	/**
 	 * Mark the processing result as being rejected with a manual recycling kind
 	 */
-	public static IProcessingResult rejectManually(Map<IProcessError, ErrorImpact> errorMap) {
-		return new ProcessingResultBuilder().errors(errorMap).rejectResult(ErrorRecyclingKind.MANUAL, null);
+	public static IProcessingResult rejectManually(Map<IProcessError, ErrorImpact> errorMap, Exception exception) {
+		return new ProcessingResultBuilder().errors(errorMap).exception(exception).rejectResult(ErrorRecyclingKind.MANUAL, null);
 	}
 
 	/**
 	 * Mark the processing result as being rejected with an automatic recycling kind
 	 */
-	public static IProcessingResult rejectAutomatically(Instant nextProcessingDate, Map<IProcessError, ErrorImpact> errorMap) {
-		return new ProcessingResultBuilder().errors(errorMap).rejectResult(ErrorRecyclingKind.AUTOMATIC, nextProcessingDate);
+	public static IProcessingResult rejectAutomatically(Instant nextProcessingDate, Map<IProcessError, ErrorImpact> errorMap, Exception exception) {
+		return new ProcessingResultBuilder().errors(errorMap).exception(exception).rejectResult(ErrorRecyclingKind.AUTOMATIC, nextProcessingDate);
 	}
 
 	/**
 	 * Mark the processing result as being rejected definitely
 	 */
-	public static IProcessingResult rejectDefinitely(Map<IProcessError, ErrorImpact> errorMap) {
-		return new ProcessingResultBuilder().errors(errorMap).rejectResult(ErrorRecyclingKind.NOT_RECYCLABLE, null);
+	public static IProcessingResult rejectDefinitely(Map<IProcessError, ErrorImpact> errorMap, Exception exception) {
+		return new ProcessingResultBuilder().errors(errorMap).exception(exception).rejectResult(ErrorRecyclingKind.NOT_RECYCLABLE, null);
 	}
 
 	/**
-	 * Add a map of errors associated to their type
+	 * Defines the map of errors associated to their impact
 	 */
 	private ProcessingResultBuilder errors(Map<IProcessError, ErrorImpact> errorMap) {
 		this.errorMap = errorMap;
 		return this;
 	}
 
+	/**
+	 * Defines the exception, null if none has been raised
+	 */
+	private ProcessingResultBuilder exception(Exception exception) {
+		this.exception = exception;
+		return this;
+	}
+
 	private IProcessingResult acceptResult(ErrorRecyclingKind errorRecyclingKind) {
-		ProcessingResult recyclingResult = new ProcessingResult();
-		recyclingResult.setState(IProcessingResult.State.VALID);
-		recyclingResult.setErrorRecyclingKind(errorRecyclingKind);
-		recyclingResult.setErrorMap(errorMap);
-		return recyclingResult;
+		ProcessingResult processingResult = new ProcessingResult();
+		processingResult.setState(IProcessingResult.State.VALID);
+		processingResult.setErrorRecyclingKind(errorRecyclingKind);
+		processingResult.setErrorMap(errorMap);
+		processingResult.setException(exception);
+		return processingResult;
 	}
 
 	private IProcessingResult rejectResult(ErrorRecyclingKind errorRecyclingKind, Instant nextProcessingDate) {
-		ProcessingResult recyclingResult = new ProcessingResult();
-		recyclingResult.setState(IProcessingResult.State.INVALID);
-		recyclingResult.setErrorRecyclingKind(errorRecyclingKind);
-		recyclingResult.setNextProcessingDate(nextProcessingDate);
-		recyclingResult.setErrorMap(errorMap);
-		return recyclingResult;
+		ProcessingResult processingResult = new ProcessingResult();
+		processingResult.setState(IProcessingResult.State.INVALID);
+		processingResult.setErrorRecyclingKind(errorRecyclingKind);
+		processingResult.setNextProcessingDate(nextProcessingDate);
+		processingResult.setErrorMap(errorMap);
+		processingResult.setException(exception);
+		return processingResult;
 	}
 }
