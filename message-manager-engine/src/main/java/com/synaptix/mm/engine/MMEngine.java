@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.inject.Inject;
-import com.synaptix.mm.engine.exception.DictionaryAlreadyDefinedException;
+import com.synaptix.mm.engine.exception.InvalidDictionaryOperationException;
 import com.synaptix.mm.engine.factory.IProcessErrorFactory;
 import com.synaptix.mm.engine.model.IProcessingResult;
 import com.synaptix.mm.shared.model.IProcessError;
@@ -33,9 +33,9 @@ public final class MMEngine {
 	}
 
 	@Inject
-	public void setDictionary(MMDictionary dictionary) throws DictionaryAlreadyDefinedException {
+	public void setDictionary(MMDictionary dictionary) throws InvalidDictionaryOperationException {
 		if (this.dictionary != null) {
-			throw new DictionaryAlreadyDefinedException("A main dictionary has already been defined");
+			throw new InvalidDictionaryOperationException("A main dictionary has already been defined");
 		}
 		this.dictionary = dictionary;
 	}

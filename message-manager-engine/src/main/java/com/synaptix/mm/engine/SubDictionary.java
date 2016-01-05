@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.synaptix.java.lambda.Try;
-import com.synaptix.mm.engine.exception.DictionaryAlreadyDefinedException;
 import com.synaptix.mm.engine.exception.InvalidDictionaryOperationException;
 import com.synaptix.mm.engine.exception.UnknownDictionaryException;
 import com.synaptix.mm.engine.exception.UnknownErrorException;
@@ -71,10 +70,10 @@ public class SubDictionary {
 	}
 
 	/**
-	 * Add a subset dictionary to the current dictionary. The name is unique, a {@link DictionaryAlreadyDefinedException} is raised.<br/>
+	 * Add a subset dictionary to the current dictionary. The name is unique, a {@link InvalidDictionaryOperationException} is raised.<br/>
 	 * The dictionary name cannot be blank. If it is, a {@link InvalidDictionaryOperationException} is raised.
 	 */
-	public final SubDictionary addSubsetDictionary(String dictionaryName) throws DictionaryAlreadyDefinedException, InvalidDictionaryOperationException {
+	public final SubDictionary addSubsetDictionary(String dictionaryName) throws InvalidDictionaryOperationException {
 		validateDictionaryName(dictionaryName);
 
 		int idx = dictionaryName.indexOf("."); //$NON-NLS-1$
@@ -89,7 +88,7 @@ public class SubDictionary {
 			return childDictionary;
 		} else {
 			if (subsetDictionaryMap.containsKey(dictionaryName)) {
-				throw new DictionaryAlreadyDefinedException(dictionaryName);
+				throw new InvalidDictionaryOperationException(dictionaryName + " is already defined");
 			}
 			SubDictionary newDictionary = new SubDictionary(this.dictionaryName + "." + dictionaryName, this); //$NON-NLS-1$
 			subsetDictionaryMap.put(dictionaryName, newDictionary);
@@ -97,9 +96,9 @@ public class SubDictionary {
 		}
 	}
 
-	private void validateDictionaryName(String name) throws DictionaryAlreadyDefinedException, InvalidDictionaryOperationException {
+	private void validateDictionaryName(String name) throws InvalidDictionaryOperationException {
 		if ("MAIN".equals(name)) { //$NON-NLS-1$
-			throw new DictionaryAlreadyDefinedException("MAIN is reserved");
+			throw new InvalidDictionaryOperationException("MAIN is reserved");
 		}
 		if (StringUtils.isBlank(name)) {
 			throw new InvalidDictionaryOperationException("addSubsetDictionary with blank name");
