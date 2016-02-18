@@ -74,6 +74,20 @@ public class SubDictionary {
 	 * The dictionary name cannot be blank. If it is, a {@link InvalidDictionaryOperationException} is raised.
 	 */
 	public final SubDictionary addSubsetDictionary(String dictionaryName) throws InvalidDictionaryOperationException {
+		return getOrCreateSubsetDictionary(dictionaryName, true);
+	}
+
+	/**
+	 * Add a subset dictionary to the current dictionary. If it already exists, it returns the current subset dictionary<br/>
+	 */
+	public final SubDictionary getOrCreateSubsetDictionary(String dictionaryName) throws InvalidDictionaryOperationException {
+		return getOrCreateSubsetDictionary(dictionaryName, false);
+	}
+
+	/**
+	 * checkUnique is true if an exception should be raised if the dictionary already exists
+	 */
+	private SubDictionary getOrCreateSubsetDictionary(String dictionaryName, boolean checkUnique) throws InvalidDictionaryOperationException {
 		validateDictionaryName(dictionaryName);
 
 		int idx = dictionaryName.indexOf("."); //$NON-NLS-1$
@@ -82,16 +96,22 @@ public class SubDictionary {
 
 			validateDictionaryName(name);
 
-			SubDictionary newDictionary = new SubDictionary(this.dictionaryName + "." + name, this); //$NON-NLS-1$
-			SubDictionary childDictionary = newDictionary.addSubsetDictionary(StringUtils.substring(dictionaryName, idx + 1));
-			subsetDictionaryMap.put(name, newDictionary);
-			return childDictionary;
-		} else {
-			if (subsetDictionaryMap.containsKey(dictionaryName)) {
-				throw new InvalidDictionaryOperationException(dictionaryName + " is already defined");
+			SubDictionary newDictionary = subsetDictionaryMap.get(name);
+			if (newDictionary == null) {
+				newDictionary = new SubDictionary(this.dictionaryName + "." + name, this); //$NON-NLS-1$
+				subsetDictionaryMap.put(name, newDictionary);
 			}
-			SubDictionary newDictionary = new SubDictionary(this.dictionaryName + "." + dictionaryName, this); //$NON-NLS-1$
-			subsetDictionaryMap.put(dictionaryName, newDictionary);
+			return newDictionary.getOrCreateSubsetDictionary(StringUtils.substring(dictionaryName, idx + 1), checkUnique);
+		} else {
+			SubDictionary newDictionary = subsetDictionaryMap.get(dictionaryName);
+			if (newDictionary != null) {
+				if (checkUnique) {
+					throw new InvalidDictionaryOperationException(dictionaryName + " is already defined");
+				}
+			} else {
+				newDictionary = new SubDictionary(this.dictionaryName + "." + dictionaryName, this); //$NON-NLS-1$
+				subsetDictionaryMap.put(dictionaryName, newDictionary);
+			}
 			return newDictionary;
 		}
 	}

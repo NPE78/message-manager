@@ -191,5 +191,20 @@ public class DictionaryTest {
 			Assert.assertEquals(ErrorRecyclingKind.WARNING, r1.getErrorRecyclingKind());
 			Assert.assertNull(r1.getNextProcessingDate());
 		}
+
+		{
+			boolean errorRaised = false;
+			SubDictionary dictionary1 = dictionary.addSubsetDictionary("SUB.TER");
+
+			try {
+				dictionary.addSubsetDictionary("SUB.TER");
+			} catch (InvalidDictionaryOperationException e) {
+				errorRaised = true;
+			}
+			Assert.assertTrue(errorRaised);
+
+			SubDictionary dictionary2 = dictionary.getOrCreateSubsetDictionary("SUB.TER");
+			Assert.assertEquals(dictionary1, dictionary2);
+		}
 	}
 }
