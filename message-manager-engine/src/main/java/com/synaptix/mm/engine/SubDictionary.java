@@ -154,17 +154,21 @@ public class SubDictionary {
 	}
 
 	/**
-	 * Defines an error by adding or updating its definition of an error in the current dictionary
+	 * Defines an error by adding or updating its definition of an error in the current dictionary<br/>
+	 * Returns true if the error has been overwritten, false otherwise
 	 */
-	public final void defineError(IErrorType errorType) {
+	public final boolean defineError(IErrorType errorType) {
+		boolean overwritten = false;
 		Iterator<IErrorType> ite = errorTypeList.iterator();
 		while (ite.hasNext()) {
 			IErrorType e = ite.next();
 			if (e.getCode().equals(errorType.getCode())) {
+				overwritten = true;
 				ite.remove();
 			}
 		}
 		errorTypeList.add(errorType);
+		return overwritten;
 	}
 
 	/**
