@@ -206,5 +206,16 @@ public class DictionaryTest {
 			SubDictionary dictionary2 = dictionary.getOrCreateSubsetDictionary("SUB.TER");
 			Assert.assertEquals(dictionary1, dictionary2);
 		}
+
+		{
+			boolean errorRaised = false;
+			try {
+				dictionary.getSubsetDictionary(" ");
+			} catch (UnknownDictionaryException e) {
+				errorRaised = true;
+			}
+
+			Assert.assertTrue(errorRaised);
+		}
 	}
 }

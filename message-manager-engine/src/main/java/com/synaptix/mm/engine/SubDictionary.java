@@ -55,9 +55,13 @@ public class SubDictionary {
 	}
 
 	/**
-	 * Get a subset dictionary from current. Use dots to get subset of a subset
+	 * Get a subset dictionary from current. Use dots to get subset of a subset<br/>
+	 * An {@link UnknownDictionaryException} is thrown if the dictionary is unknown
 	 */
 	public final SubDictionary getSubsetDictionary(String dictionaryName) throws UnknownDictionaryException {
+		if (StringUtils.isBlank(dictionaryName)) {
+			throw new UnknownDictionaryException("Dictionary name is null or blank");
+		}
 		String[] keys = dictionaryName.split("\\."); //$NON-NLS-1$
 		SubDictionary dictionary = this;
 		for (String key : keys) {
