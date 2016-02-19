@@ -124,8 +124,8 @@ public class SubDictionary {
 		if ("MAIN".equals(name)) { //$NON-NLS-1$
 			throw new InvalidDictionaryOperationException("MAIN is reserved");
 		}
-		if (StringUtils.isBlank(name)) {
-			throw new InvalidDictionaryOperationException("addSubsetDictionary with blank name");
+		if (StringUtils.isBlank(name) || name.matches(".*\\s.*")) {
+			throw new InvalidDictionaryOperationException("Cannot add subset dictionary with blank(s) in name");
 		}
 	}
 
