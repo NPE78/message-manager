@@ -129,6 +129,19 @@ public class SubDictionary {
 		}
 	}
 
+	public final Map<String, IErrorType> getErrorMap() {
+		Map<String, IErrorType> errorMap = new HashMap<>();
+		errorTypeList.forEach(errorType -> {
+			errorMap.put(errorType.getCode(), errorType);
+		});
+		subsetDictionaryMap.forEach((s, subDictionary) -> {
+			subDictionary.getErrorMap().forEach((s1, errorType) -> {
+				errorMap.put(s + "." + s1, errorType);
+			});
+		});
+		return errorMap;
+	}
+
 	/**
 	 * Destroy a dictionary, so that it cannot be used anymore
 	 */

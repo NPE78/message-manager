@@ -2,6 +2,7 @@ package com.synaptix.mm.engine.unit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import com.synaptix.mm.engine.implem.DefaultProcessErrorFactory;
 import com.synaptix.mm.engine.model.DefaultErrorType;
 import com.synaptix.mm.engine.model.DefaultProcessError;
 import com.synaptix.mm.engine.model.IProcessingResult;
+import com.synaptix.mm.shared.model.IErrorType;
 import com.synaptix.mm.shared.model.IProcessError;
 import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
 
@@ -30,8 +32,9 @@ public class DictionaryTest {
 		SubDictionary mt2Dictionary = dictionary.addSubsetDictionary("MT2");
 		SubDictionary mt3Dictionary = dictionary.addSubsetDictionary("MT3");
 
+		DefaultErrorType mt1et1 = new DefaultErrorType("ET1", ErrorRecyclingKind.AUTOMATIC);
 		{
-			mt1Dictionary.defineError(new DefaultErrorType("ET1", ErrorRecyclingKind.AUTOMATIC));
+			mt1Dictionary.defineError(mt1et1);
 			mt1Dictionary.defineError(new DefaultErrorType("ET2", ErrorRecyclingKind.MANUAL));
 
 			mt1Dictionary.defineError(new DefaultErrorType("ET2", ErrorRecyclingKind.WARNING, 60));
@@ -170,11 +173,16 @@ public class DictionaryTest {
 			}
 		}
 
+		Map<String, IErrorType> errorMap = dictionary.getErrorMap();
+		Assert.assertEquals(mt1et1, errorMap.get("MT1.ET1"));
+		Assert.assertEquals(ErrorRecyclingKind.AUTOMATIC, errorMap.get("MT1.ET1").getRecyclingKind());
+
 		dictionary.clear();
 		mt1Dictionary = dictionary.addSubsetDictionary("MT1");
 		errorList.clear();
+		mt1et1 = new DefaultErrorType("ET1", ErrorRecyclingKind.WARNING);
 		{
-			mt1Dictionary.defineError(new DefaultErrorType("ET1", ErrorRecyclingKind.WARNING));
+			mt1Dictionary.defineError(mt1et1);
 			mt1Dictionary.defineError(new DefaultErrorType("ET2", ErrorRecyclingKind.MANUAL));
 		}
 		{
@@ -217,5 +225,9 @@ public class DictionaryTest {
 
 			Assert.assertTrue(errorRaised);
 		}
+
+		errorMap = dictionary.getErrorMap();
+		Assert.assertEquals(mt1et1, errorMap.get("MT1.ET1"));
+		Assert.assertEquals(ErrorRecyclingKind.WARNING, errorMap.get("MT1.ET1").getRecyclingKind());
 	}
 }
