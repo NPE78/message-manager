@@ -242,6 +242,15 @@ public class DictionaryTest {
 			}
 			Assert.assertTrue(errorRaised);
 		}
+		{
+			boolean errorRaised = false;
+			try {
+				dictionary.getOrCreateSubsetDictionary("MAIN");
+			} catch (InvalidDictionaryOperationException e) {
+				errorRaised = true;
+			}
+			Assert.assertTrue(errorRaised);
+		}
 
 		errorMap = dictionary.getErrorMap();
 		Assert.assertEquals(mt1et1, errorMap.get("MT1.ET1"));
