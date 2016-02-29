@@ -43,7 +43,7 @@
         <sonar.jacoco.itReportPath>target/coverage-reports/jacoco-it.exec</sonar.jacoco.itReportPath>
         <sonar.jacoco.reportPath>target/coverage-reports/jacoco-ut.exec</sonar.jacoco.reportPath>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
-        <sonar.exclusions>**/message-manager-example/**/*</sonar.exclusions>
+        <sonar.exclusions>**/pom.xml</sonar.exclusions>
 
         <jetty.version>6.1.26</jetty.version>
     </properties>
