@@ -222,7 +222,24 @@ public class DictionaryTest {
 			} catch (UnknownDictionaryException e) {
 				errorRaised = true;
 			}
-
+			Assert.assertTrue(errorRaised);
+		}
+		{
+			boolean errorRaised = false;
+			try {
+				dictionary.getOrCreateSubsetDictionary("test dic");
+			} catch (InvalidDictionaryOperationException e) {
+				errorRaised = true;
+			}
+			Assert.assertTrue(errorRaised);
+		}
+		{
+			boolean errorRaised = false;
+			try {
+				dictionary.getOrCreateSubsetDictionary(" ");
+			} catch (InvalidDictionaryOperationException e) {
+				errorRaised = true;
+			}
 			Assert.assertTrue(errorRaised);
 		}
 
