@@ -177,6 +177,9 @@ public class SubDictionary {
 		if (collect.isFailure()) {
 			e = collect.asFailure().getException();
 		}
+		if (worst.errorRecyclingKind == null) {
+			worst.errorRecyclingKind = ErrorRecyclingKind.MANUAL;
+		}
 		return buildProcessingResult(worst, errorMap, e);
 	}
 
