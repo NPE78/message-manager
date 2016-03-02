@@ -139,7 +139,7 @@ public class MMServer implements IServer {
 
 		ProcessEngine.shutdown();
 
-		LOG.info("Stop called: stopped, waiting for processes to finish, " + timeoutSeconds " seconds max");
+		LOG.info("Stop called: stopped, waiting for processes to finish, " + timeoutSeconds + " seconds max");
 
 		waitForStop();
 
