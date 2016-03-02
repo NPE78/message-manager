@@ -30,7 +30,6 @@ public class MMServerTest extends AbstractMMTest {
 		randomInt = new Random().nextInt();
 		getInstance(AgentTest.class).work(randomInt, ProcessEngine.getInstance());
 
-
 		//test timeout
 		((MMServer) getServer()).setTimeoutSeconds(2);
 		ProcessEngine.handle(SlowAgentTest.class.getSimpleName(), "message");

@@ -55,6 +55,8 @@ public class MMServer implements IServer {
 	public MMServer(@Named("trmt") String trmt) {
 		super();
 
+		LOG.info("New server: " + trmt);
+
 		this.trmt = trmt;
 
 		this.timeoutSeconds = 2 * 60;
