@@ -125,8 +125,8 @@ public class MMAgentTest extends AbstractMMTest {
 			processErrorList.add(new DefaultProcessError("UNKNOWN", "Unknown error", "Test"));
 			TestCase testCase = new TestCase("Unknown error case", processErrorList, IProcessingResult.State.INVALID, ErrorRecyclingKind.MANUAL);
 			boolean raised = false;
-				LOG.info("Testing " + testCase.name);
-				IProcessingResult processingResult = getInstance(MyImportAgent.class).doWork(testCase);
+			LOG.info("Testing " + testCase.name);
+			IProcessingResult processingResult = getInstance(MyImportAgent.class).doWork(testCase);
 			if (processingResult.getException() instanceof UnknownErrorException) {
 				raised = true;
 			}
@@ -365,7 +365,7 @@ public class MMAgentTest extends AbstractMMTest {
 		private final ErrorRecyclingKind expectedErrorRecyclingKind;
 
 		private TestCase(String name, List<IProcessError> processErrorList, IProcessingResult.State expectedState, ErrorRecyclingKind expectedErrorRecyclingKind) {
-				this.name = name;
+			this.name = name;
 			this.processErrorList = Collections.unmodifiableList(new ArrayList<>(processErrorList));
 			this.expectedState = expectedState;
 			this.expectedErrorRecyclingKind = expectedErrorRecyclingKind;

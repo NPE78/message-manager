@@ -57,11 +57,6 @@ public class MMServer implements IServer {
 		super();
 
 		LOG.info("New server: " + trmt);
-		try {
-			throw new RuntimeException();
-		} catch (Exception e) {
-			LOG.error("test", e);
-		}
 
 		this.trmt = trmt;
 

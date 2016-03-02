@@ -170,6 +170,13 @@ public class SubDictionary {
 				Pair<IProcessError, ErrorImpact> pair = pairTry.asSuccess().getResult();
 				errorMap.put(pair.getKey(), pair.getValue());
 				updateWorst(worst, pair.getValue());
+			} else if (pairTry.isFailure()) {
+				if (pairTry.asFailure().getException() instanceof UnknownErrorException) {
+					IProcessError processError = ((UnknownErrorException) pairTry.asFailure().getException()).getProcessError();
+					ErrorImpact errorImpact = new ErrorImpact(ErrorRecyclingKind.MANUAL, null, dictionaryName);
+					errorMap.put(processError, errorImpact);
+					updateWorst(worst, errorImpact);
+				}
 			}
 			return trySupplier;
 		})).collect(Try.collect());
@@ -177,14 +184,11 @@ public class SubDictionary {
 		if (collect.isFailure()) {
 			e = collect.asFailure().getException();
 		}
-		if (worst.errorRecyclingKind == null) {
-			worst.errorRecyclingKind = ErrorRecyclingKind.MANUAL;
-		}
 		return buildProcessingResult(worst, errorMap, e);
 	}
 
 	private Pair<IProcessError, ErrorImpact> add(IProcessError processError) throws UnknownErrorException {
-		return Pair.of(processError, computeErrorImpact(processError.getErrorCode()));
+		return Pair.of(processError, computeErrorImpact(processError));
 	}
 
 	/**
@@ -216,7 +220,8 @@ public class SubDictionary {
 	/**
 	 * Find the error type in the current dictionary or in a parent. If not found at all, an {@link UnknownErrorException} is raised
 	 */
-	private ErrorImpact computeErrorImpact(String errorCode) throws UnknownErrorException {
+	private ErrorImpact computeErrorImpact(IProcessError processError) throws UnknownErrorException {
+		String errorCode = processError.getErrorCode();
 		ErrorImpact errorImpact = null;
 		Optional<IErrorType> first = null;
 		if (errorTypeList != null) {
@@ -224,12 +229,12 @@ public class SubDictionary {
 		}
 		if (first == null || !first.isPresent()) {
 			if (parentDictionary == null) {
-				throw new UnknownErrorException("Error code '" + errorCode + "' not found " + getDictionaryExceptionString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				throw new UnknownErrorException(processError, "Error code '" + errorCode + "' not found " + getDictionaryExceptionString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			} else {
 				try {
-					return parentDictionary.computeErrorImpact(errorCode);
+					return parentDictionary.computeErrorImpact(processError);
 				} catch (UnknownErrorException e) {
-					throw new UnknownErrorException("Error code '" + errorCode + "' not found" + getDictionaryExceptionString(), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					throw new UnknownErrorException(processError, "Error code '" + errorCode + "' not found" + getDictionaryExceptionString(), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
 		}

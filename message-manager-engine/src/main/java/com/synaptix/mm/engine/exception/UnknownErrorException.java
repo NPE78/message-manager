@@ -1,6 +1,7 @@
 package com.synaptix.mm.engine.exception;
 
 import com.synaptix.mm.engine.MMDictionary;
+import com.synaptix.mm.shared.model.IProcessError;
 
 /**
  * This exception is raised when an error was expected for a message type but has not been found
@@ -9,11 +10,27 @@ import com.synaptix.mm.engine.MMDictionary;
  */
 public final class UnknownErrorException extends Exception {
 
+	private final IProcessError processError;
+
 	public UnknownErrorException(String message) {
-		super(message);
+		this(message, null);
 	}
 
 	public UnknownErrorException(String message, Throwable cause) {
+		this(null, message, cause);
+	}
+
+	public UnknownErrorException(IProcessError processError, String message) {
+		this(processError, message, null);
+	}
+
+	public UnknownErrorException(IProcessError processError, String message, Throwable cause) {
 		super(message, cause);
+
+		this.processError = processError;
+	}
+
+	public IProcessError getProcessError() {
+		return processError;
 	}
 }
