@@ -170,13 +170,11 @@ public class SubDictionary {
 				Pair<IProcessError, ErrorImpact> pair = pairTry.asSuccess().getResult();
 				errorMap.put(pair.getKey(), pair.getValue());
 				updateWorst(worst, pair.getValue());
-			} else if (pairTry.isFailure()) {
-				if (pairTry.asFailure().getException() instanceof UnknownErrorException) {
+			} else if (pairTry.isFailure() && pairTry.asFailure().getException() instanceof UnknownErrorException) {
 					IProcessError processError = ((UnknownErrorException) pairTry.asFailure().getException()).getProcessError();
 					ErrorImpact errorImpact = new ErrorImpact(ErrorRecyclingKind.MANUAL, null, dictionaryName);
 					errorMap.put(processError, errorImpact);
 					updateWorst(worst, errorImpact);
-				}
 			}
 			return trySupplier;
 		})).collect(Try.collect());
