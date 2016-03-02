@@ -49,6 +49,7 @@ public class MMServer implements IServer {
 
 	/**
 	 * Use Guice to create this class.
+	 *
 	 * @param trmt This is the id of the process manager to create
 	 */
 	@Inject
@@ -56,6 +57,11 @@ public class MMServer implements IServer {
 		super();
 
 		LOG.info("New server: " + trmt);
+		try {
+			throw new RuntimeException();
+		} catch (Exception e) {
+			LOG.error("test", e);
+		}
 
 		this.trmt = trmt;
 
@@ -73,6 +79,7 @@ public class MMServer implements IServer {
 
 	/**
 	 * Changes the timeout, meaning the duration to wait for the agents to finish properly before killing the process manager
+	 *
 	 * @param timeoutSeconds timeout in seconds, implem is 2min
 	 */
 	public void setTimeoutSeconds(int timeoutSeconds) {
@@ -110,7 +117,6 @@ public class MMServer implements IServer {
 	/**
 	 * Stop the process manager and wait for all agents to finish.
 	 * Use {@link #setTimeoutSeconds} to change the timeout (default is 2min)
-	 *
 	 */
 	@Override
 	public void stop() {
