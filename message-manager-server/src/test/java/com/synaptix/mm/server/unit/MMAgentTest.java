@@ -157,6 +157,7 @@ public class MMAgentTest extends AbstractMMTest {
 				LOG.trace("", e);
 			}
 			Assert.assertTrue(obj.ok);
+			Assert.assertTrue(obj.unknownError);
 		}
 	}
 
@@ -331,6 +332,12 @@ public class MMAgentTest extends AbstractMMTest {
 		@Override
 		public void reject(Map<IProcessError, ErrorImpact> errorMap) {
 			obj.ok = true;
+			boolean contained = false;
+			errorMap.keySet().forEach(processError -> {
+				if ("UNKNOWN_ERROR".equals(processError.getErrorCode())) {
+					obj.unknownError = true;
+				}
+			});
 		}
 
 		@Override
@@ -342,6 +349,8 @@ public class MMAgentTest extends AbstractMMTest {
 	private class MyObject {
 
 		boolean ok;
+
+		boolean unknownError;
 
 	}
 
