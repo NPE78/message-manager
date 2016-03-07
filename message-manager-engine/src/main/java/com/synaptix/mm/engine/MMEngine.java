@@ -22,6 +22,7 @@ public final class MMEngine {
 	@Inject
 	private IProcessErrorFactory processErrorFactory;
 
+	// injected later
 	private MMDictionary dictionary;
 
 	/**
@@ -42,29 +43,41 @@ public final class MMEngine {
 
 	public IProcessingResult start(Object messageObject, IMMProcess process) {
 		process.notifyMessageStatus(MessageStatus.IN_PROGRESS);
+
+		process.start(); // notify the start of the process (for super transaction for instance)
+
 		try {
 			process.process(messageObject);
 		} catch (Exception e) {
-			LOG.error("UNKNOWN_ERROR", e);
-			IProcessError processError = processErrorFactory.createProcessError("UNKNOWN_ERROR");
+			LOG.error("UNKNOWN_ERROR", e); //$NON-NLS-1$
+			IProcessError processError = processErrorFactory.createProcessError("UNKNOWN_ERROR"); //$NON-NLS-1$
 			process.getProcessErrorList().add(processError);
 		}
 
 		SubDictionary subDictionary = process.getValidationDictionary(dictionary);
 		IProcessingResult processingResult = subDictionary.getProcessingResult(process.getProcessErrorList());
 
-		if (checkBlocking(processingResult, process)) {
+		boolean blocking = checkBlocking(processingResult);
+		process.close(!blocking); // notify the end of the process (for super transaction for instance)
+
+		if (blocking) {
 			process.reject(processingResult.getErrorMap());
 		} else {
 			process.accept(processingResult.getErrorMap());
 		}
+
+		notifyMessageResult(processingResult, process);
 		return processingResult;
 	}
 
 	/**
 	 * Of all the errors raised until here, are they blocking the process?
 	 */
-	public boolean checkBlocking(IProcessingResult processingResult, IMMProcess process) {
+	private boolean checkBlocking(IProcessingResult processingResult) {
+		return processingResult.getErrorRecyclingKind() != null && processingResult.getErrorRecyclingKind().getCriticity() > 0;
+	}
+
+	private void notifyMessageResult(IProcessingResult processingResult, IMMProcess process) {
 		if (processingResult.getState() == IProcessingResult.State.INVALID) {
 			switch (processingResult.getErrorRecyclingKind()) {
 				case AUTOMATIC:
@@ -84,7 +97,5 @@ public final class MMEngine {
 		} else {
 			process.notifyMessageStatus(MessageStatus.INTEGRATED);
 		}
-
-		return processingResult.getErrorRecyclingKind() != null && processingResult.getErrorRecyclingKind().getCriticity() > 0;
 	}
 }

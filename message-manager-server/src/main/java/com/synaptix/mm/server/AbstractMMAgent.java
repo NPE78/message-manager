@@ -72,8 +72,6 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 			Map<IProcessError, ErrorImpact> errorMap = new HashMap<>();
 			errorMap.put(addError("UNKNOWN_ERROR"), new ErrorImpact(ErrorRecyclingKind.MANUAL, null, null));
 			reject(errorMap);
-		} finally {
-			close();
 		}
 	}
 
@@ -88,9 +86,6 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 			return engine.start(messageObject, this);
 		}
 		return ProcessingResultBuilder.rejectDefinitely(null, null); // if the message does not concern this agent, we reject it
-	}
-
-	protected void close() {
 	}
 
 	/**

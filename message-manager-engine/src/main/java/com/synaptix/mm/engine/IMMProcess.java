@@ -15,12 +15,25 @@ import com.synaptix.mm.shared.model.domain.MessageWay;
 public interface IMMProcess {
 
 	/**
+	 * The process is being initialized
+	 */
+	default void start() {
+	}
+
+	/**
 	 * Core method of an agent, this method processes the message object.
 	 * It can raise errors during the process. Those errors will be matched to the dictionary to adapt the behavior of the process accordingly
 	 *
 	 * @param messageObject The message object received from an Handle
 	 */
 	void process(Object messageObject);
+
+	/**
+	 * Close the process finished
+	 * @param accepted indicates if the process is being accepted or rejected
+	 */
+	default void close(boolean accepted) {
+	}
 
 	/**
 	 * The process is in an invalid state, it has been rejected
