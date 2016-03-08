@@ -11,6 +11,8 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.synaptix.java.lambda.Try;
 import com.synaptix.mm.engine.exception.InvalidDictionaryOperationException;
@@ -30,6 +32,8 @@ import com.synaptix.mm.shared.model.domain.ErrorRecyclingKind;
  */
 public class SubDictionary {
 
+	private static final Log LOG = LogFactory.getLog(SubDictionary.class);
+
 	/**
 	 * list of known errors for current dictionary
 	 */
@@ -40,6 +44,8 @@ public class SubDictionary {
 	private final Map<String, SubDictionary> subsetDictionaryMap;
 
 	private final SubDictionary parentDictionary;
+
+	private boolean burnAfterUse;
 
 	/**
 	 * Add a sub dictionary using {@link MMDictionary#addSubsetDictionary(String)}
@@ -52,6 +58,27 @@ public class SubDictionary {
 
 		this.errorTypeList = new ArrayList<>();
 		this.subsetDictionaryMap = new HashMap<>();
+	}
+
+	/**
+	 * If set to true, this dictionary will be destroyed after the {@link #getProcessingResult} method has been called
+	 */
+	public final void setBurnAfterUse(boolean burnAfterUse) {
+		this.burnAfterUse = burnAfterUse;
+	}
+
+	/**
+	 * Returns the name of the dictionary
+	 */
+	public final String getDictionaryName() {
+		return StringUtils.substring(dictionaryName, dictionaryName.lastIndexOf(".") + 1);
+	}
+
+	/**
+	 * Returns true if the given dictionary exists in the current sub dictionary. For performances issues, doesn't check dots to get subset of a subset
+	 */
+	public final boolean existsSubsetDictionary(String dictionaryName) {
+		return subsetDictionaryMap.keySet().contains(dictionaryName);
 	}
 
 	/**
@@ -157,32 +184,45 @@ public class SubDictionary {
 	 * If an error is unknown for the message type in the current dictionary or in a parent one, an {@link UnknownErrorException} is raised
 	 */
 	public final IProcessingResult getProcessingResult(List<IProcessError> errorList) {
+		IProcessingResult processingResult;
 		if (errorList == null || errorList.isEmpty()) {
-			return ProcessingResultBuilder.accept();
-		}
+			processingResult = ProcessingResultBuilder.accept();
+		} else {
 
-		Worst worst = new Worst();
+			Worst worst = new Worst();
 
-		Map<IProcessError, ErrorImpact> errorMap = new HashMap<>();
-		Try<List<Pair<IProcessError, ErrorImpact>>> collect = errorList.stream().map(Try.lazyOf(this::add).andThen(trySupplier -> {
-			Try<Pair<IProcessError, ErrorImpact>> pairTry = trySupplier.get();
-			if (pairTry.isSuccess()) {
-				Pair<IProcessError, ErrorImpact> pair = pairTry.asSuccess().getResult();
-				errorMap.put(pair.getKey(), pair.getValue());
-				updateWorst(worst, pair.getValue());
-			} else if (pairTry.isFailure() && pairTry.asFailure().getException() instanceof UnknownErrorException) {
+			Map<IProcessError, ErrorImpact> errorMap = new HashMap<>();
+			Try<List<Pair<IProcessError, ErrorImpact>>> collect = errorList.stream().map(Try.lazyOf(this::add).andThen(trySupplier -> {
+				Try<Pair<IProcessError, ErrorImpact>> pairTry = trySupplier.get();
+				if (pairTry.isSuccess()) {
+					Pair<IProcessError, ErrorImpact> pair = pairTry.asSuccess().getResult();
+					errorMap.put(pair.getKey(), pair.getValue());
+					updateWorst(worst, pair.getValue());
+				} else if (pairTry.isFailure() && pairTry.asFailure().getException() instanceof UnknownErrorException) {
 					IProcessError processError = ((UnknownErrorException) pairTry.asFailure().getException()).getProcessError();
 					ErrorImpact errorImpact = new ErrorImpact(ErrorRecyclingKind.MANUAL, null, dictionaryName);
 					errorMap.put(processError, errorImpact);
 					updateWorst(worst, errorImpact);
+				}
+				return trySupplier;
+			})).collect(Try.collect());
+			Exception e = null;
+			if (collect.isFailure()) {
+				e = collect.asFailure().getException();
 			}
-			return trySupplier;
-		})).collect(Try.collect());
-		Exception e = null;
-		if (collect.isFailure()) {
-			e = collect.asFailure().getException();
+
+			processingResult = buildProcessingResult(worst, errorMap, e);
 		}
-		return buildProcessingResult(worst, errorMap, e);
+
+		if (burnAfterUse) {
+			try {
+				destroy();
+			} catch (InvalidDictionaryOperationException ex) {
+				LOG.error("Couldn't destroy after use", ex);
+			}
+		}
+
+		return processingResult;
 	}
 
 	private Pair<IProcessError, ErrorImpact> add(IProcessError processError) throws UnknownErrorException {

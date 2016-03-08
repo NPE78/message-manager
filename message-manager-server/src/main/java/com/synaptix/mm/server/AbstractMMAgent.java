@@ -68,10 +68,10 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 			doWork(messageObject);
 		} catch (Exception e) {
 			LOG.error(messageTypeName, e);
-			notifyMessageStatus(MessageStatus.TO_RECYCLE_MANUALLY);
 			Map<IProcessError, ErrorImpact> errorMap = new HashMap<>();
 			errorMap.put(addError("UNKNOWN_ERROR"), new ErrorImpact(ErrorRecyclingKind.MANUAL, null, null));
 			reject(errorMap);
+			notifyMessageStatus(MessageStatus.TO_RECYCLE_MANUALLY);
 		}
 	}
 

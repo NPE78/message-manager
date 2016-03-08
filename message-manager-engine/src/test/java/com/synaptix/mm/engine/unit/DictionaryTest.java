@@ -27,7 +27,7 @@ public class DictionaryTest {
 
 	@Test
 	public void testRecycling() throws Exception {
-		MMDictionary dictionary = new MMDictionary();
+		final MMDictionary dictionary = new MMDictionary();
 		SubDictionary mt1Dictionary = dictionary.addSubsetDictionary("MT1");
 		SubDictionary mt2Dictionary = dictionary.addSubsetDictionary("MT2");
 		SubDictionary mt3Dictionary = dictionary.addSubsetDictionary("MT3");
@@ -160,6 +160,9 @@ public class DictionaryTest {
 			}
 		}
 
+
+		Assert.assertTrue(dictionary.getSubsetDictionary("MT1.sub").existsSubsetDictionary("ter"));
+		Assert.assertEquals("ter", dictionary.getSubsetDictionary("MT1.sub.ter").getDictionaryName());
 		Assert.assertTrue(dictionary.getSubsetDictionary("MT1.sub.ter").destroy());
 
 		{
@@ -178,6 +181,7 @@ public class DictionaryTest {
 		Assert.assertEquals(ErrorRecyclingKind.AUTOMATIC, errorMap.get("MT1.ET1").getRecyclingKind());
 
 		dictionary.clear();
+		Assert.assertFalse(dictionary.existsSubsetDictionary("MT1"));
 		mt1Dictionary = dictionary.addSubsetDictionary("MT1");
 		errorList.clear();
 		mt1et1 = new DefaultErrorType("ET1", ErrorRecyclingKind.WARNING);
@@ -255,5 +259,13 @@ public class DictionaryTest {
 		errorMap = dictionary.getErrorMap();
 		Assert.assertEquals(mt1et1, errorMap.get("MT1.ET1"));
 		Assert.assertEquals(ErrorRecyclingKind.WARNING, errorMap.get("MT1.ET1").getRecyclingKind());
+
+		Assert.assertTrue(dictionary.existsSubsetDictionary("MT1"));
+		Assert.assertEquals("MAIN", dictionary.getDictionaryName());
+		Assert.assertEquals("MT1", dictionary.getSubsetDictionary("MT1").getDictionaryName());
+
+		mt1Dictionary.setBurnAfterUse(true);
+		mt1Dictionary.getProcessingResult(new ArrayList<>());
+		Assert.assertFalse(dictionary.existsSubsetDictionary("MT1"));
 	}
 }
