@@ -12,4 +12,10 @@ public interface IProcessError extends Serializable {
 	 */
 	String getErrorCode();
 
+	/**
+	 * Returns true if the process error matches the error type. Default implementation is to check the errorCode only.
+	 */
+	default boolean matches(IErrorType errorType) {
+		return getErrorCode().equals(errorType.getCode());
+	}
 }
