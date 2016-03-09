@@ -11,6 +11,7 @@ import org.junit.Test;
 import com.synaptix.mm.engine.IMMProcess;
 import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.engine.MMEngine;
+import com.synaptix.mm.engine.implem.DefaultProcessErrorFactory;
 import com.synaptix.mm.engine.model.DefaultErrorType;
 import com.synaptix.mm.engine.model.DefaultProcessError;
 import com.synaptix.mm.engine.model.IProcessingResult;
@@ -82,6 +83,30 @@ public class MMEngineTest {
 		}
 	}
 
+	@Test
+	public void testException() throws Exception {
+		MMEngine engine = new MMEngine();
+		MMDictionary dictionary = new MMDictionary();
+		engine.setDictionary(dictionary);
+		engine.setProcessErrorFactory(new DefaultProcessErrorFactory());
+
+		{
+			dictionary.defineError(new DefaultErrorType("AUTO", ErrorRecyclingKind.AUTOMATIC));
+		}
+
+		IProcessingResult processingResult = engine.start(null, new MyExceptionProcess());
+
+		Assert.assertEquals(ErrorRecyclingKind.MANUAL, processingResult.getErrorRecyclingKind());
+		boolean hasUnknownError = false;
+		for (Map.Entry<IProcessError, ErrorImpact> entry : processingResult.getErrorMap().entrySet()) {
+			if ("UNKNOWN_ERROR".equals(entry.getKey().getErrorCode())) {
+				hasUnknownError = true;
+				Assert.assertEquals(ErrorRecyclingKind.MANUAL, entry.getValue().getRecyclingKind());
+			}
+		}
+		Assert.assertTrue(hasUnknownError);
+	}
+
 	private class MyMMProcess implements IMMProcess {
 
 		private List<IProcessError> processErrorList = new ArrayList<>();
@@ -122,7 +147,6 @@ public class MMEngineTest {
 		public MessageWay getMessageWay() {
 			return MessageWay.IN;
 		}
-
 	}
 
 	private class MyProcess implements IMMProcess {
@@ -154,6 +178,45 @@ public class MMEngineTest {
 		@Override
 		public String getMessageTypeName() {
 			return "test";
+		}
+
+		@Override
+		public MessageWay getMessageWay() {
+			return MessageWay.IN;
+		}
+	}
+
+	private class MyExceptionProcess implements IMMProcess {
+
+		private List<IProcessError> processErrorList = new ArrayList<>(); // should be threadlocal
+
+		@Override
+		public void process(Object messageObject) {
+			throw new RuntimeException("exception test");
+		}
+
+		@Override
+		public void reject(Map<IProcessError, ErrorImpact> errorMap) {
+			Assert.assertTrue(true);
+		}
+
+		@Override
+		public void accept(Map<IProcessError, ErrorImpact> errorMap) {
+			Assert.assertTrue(false);
+		}
+
+		@Override
+		public void notifyMessageStatus(MessageStatus newMessageStatus) {
+		}
+
+		@Override
+		public List<IProcessError> getProcessErrorList() {
+			return processErrorList;
+		}
+
+		@Override
+		public String getMessageTypeName() {
+			return "exception";
 		}
 
 		@Override

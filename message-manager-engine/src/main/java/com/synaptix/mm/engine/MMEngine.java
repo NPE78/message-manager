@@ -19,7 +19,7 @@ public final class MMEngine {
 
 	private static final Log LOG = LogFactory.getLog(MMEngine.class);
 
-	@Inject
+	// injected later
 	private IProcessErrorFactory processErrorFactory;
 
 	// injected later
@@ -39,6 +39,11 @@ public final class MMEngine {
 			throw new InvalidDictionaryOperationException("A main dictionary has already been defined");
 		}
 		this.dictionary = dictionary;
+	}
+
+	@Inject
+	public void setProcessErrorFactory(IProcessErrorFactory processErrorFactory) {
+		this.processErrorFactory = processErrorFactory;
 	}
 
 	public IProcessingResult start(Object messageObject, IMMProcess process) {

@@ -52,5 +52,4 @@ public interface IProcessingResult {
 		INVALID
 
 	}
-
 }
