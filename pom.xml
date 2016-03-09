@@ -6,8 +6,8 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <organization>
-        <name>Synaptix-Labs</name>
-        <url>http://www.synaptix-labs.com</url>
+        <name>TalanLabs</name>
+        <url>http://www.talanlabs.com</url>
     </organization>
     <properties>
         <root-directory>${project.basedir}</root-directory>
@@ -48,16 +48,16 @@
         <jetty.version>6.1.26</jetty.version>
     </properties>
     <scm>
-        <url>https://gitlab.synaptix-labs.com/nicolas-poste/message-manager</url>
-        <connection>scm:git:https://gitlab.synaptix-labs.com/nicolas-poste/message-manager.git</connection>
+        <url>https://gitlab.talanlabs.com/nicolas-poste/message-manager</url>
+        <connection>scm:git:https://gitlab.talanlabs.com/nicolas-poste/message-manager.git</connection>
     </scm>
     <ciManagement>
         <system>gitlab-ci</system>
-        <url>https://gitlab.synaptix-labs.com/ci/projects/7</url>
+        <url>https://gitlab.talanlabs.com/ci/projects/7</url>
     </ciManagement>
     <issueManagement>
         <system>gitlab</system>
-        <url>https://gitlab.synaptix-labs.com/nicolas-poste/message-manager/issues</url>
+        <url>https://gitlab.talanlabs.com/nicolas-poste/message-manager/issues</url>
     </issueManagement>
     <modules>
         <module>message-manager-shared</module>
@@ -264,24 +264,24 @@
     </build>
     <repositories>
         <repository>
-            <id>synaptix-releases-repository</id>
+            <id>talanlabs-releases-repository</id>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <url>http://nexus.synaptix-labs.com/content/groups/public_release</url>
+            <url>http://nexus.talanlabs.com/content/groups/public_release</url>
         </repository>
         <repository>
-            <id>synaptix-snapshots-repository</id>
+            <id>talanlabs-snapshots-repository</id>
             <releases>
                 <enabled>false</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-            <url>http://nexus.synaptix-labs.com/content/groups/public_snapshots</url>
+            <url>http://nexus.talanlabs.com/content/groups/public_snapshots</url>
         </repository>
     </repositories>
     <pluginRepositories>
@@ -293,7 +293,7 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <url>http://nexus.synaptix-labs.com/content/groups/public_release</url>
+            <url>http://nexus.talanlabs.com/content/groups/public_release</url>
         </pluginRepository>
         <pluginRepository>
             <id>synaptix-snapshots-repository</id>
@@ -303,7 +303,7 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-            <url>http://nexus.synaptix-labs.com/content/groups/public_snapshots</url>
+            <url>http://nexus.talanlabs.com/content/groups/public_snapshots</url>
         </pluginRepository>
     </pluginRepositories>
     <dependencyManagement>
@@ -367,12 +367,12 @@
     </dependencies>
     <distributionManagement>
         <repository>
-            <id>synaptix-releases-repository</id>
-            <url>http://nexus.synaptix-labs.com/content/repositories/releases/</url>
+            <id>talanlabs-releases-repository</id>
+            <url>http://nexus.talanlabs.com/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
-            <id>synaptix-snapshots-repository</id>
-            <url>http://nexus.synaptix-labs.com/content/repositories/snapshots/</url>
+            <id>talanlabs-snapshots-repository</id>
+            <url>http://nexus.talanlabs.com/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
