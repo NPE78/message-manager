@@ -34,6 +34,8 @@ A pour dépendance le process manager de Synaptix, et propose une implémentatio
 
 [Cf documentation sur le wiki](https://gitlab.talanlabs.com/nicolas-poste/message-manager/wikis/home#workflow-dun-agent)
 
+![mmagent](/uploads/51304f04824113232e751a2ff6972386/mmagent.png)
+
 ## Projet message-manager-supervision
 
 A pour dépendance le projet *server*
