@@ -10,6 +10,9 @@ Le message manager a pour but de faciliter le cycle de vie des messages reçus o
 Lors de l'intégration ou de la constitution d'un message, il arrive que des erreurs soient remontées.
 Afin de traiter chaque erreur, il dispose d'un dictionnaire d'erreurs où chaque type d'erreur est associée à une [typologie de recyclage](https://gitlab.talanlabs.com/nicolas-poste/message-manager/wikis/home#typologie-des-types-de-recyclage-induites-par-une-erreur).
 
+# Vocabulaire
+
+[Voir wiki](https://gitlab.talanlabs.com/nicolas-poste/message-manager/wikis/home#d%C3%A9finitions)
 
 # Architecture
 
@@ -54,7 +57,7 @@ Rajoute jetty, ainsi que les dépendances *test-jar* du serveur et du moteur. A 
 
 # Documentation
 
-[Voir le wiki](https://gitlab.talanlabs.com/nicolas-poste/message-manager/wikis/home)
+[Voir wiki](https://gitlab.talanlabs.com/nicolas-poste/message-manager/wikis/home)
 
 # Faire une release
 
