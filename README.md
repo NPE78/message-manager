@@ -54,7 +54,7 @@ Rajoute jetty, ainsi que les dépendances *test-jar* du serveur et du moteur. A 
 
 # Documentation
 
-(Voir le wiki)[https://gitlab.talanlabs.com/nicolas-poste/message-manager/wikis/home]
+[Voir le wiki](https://gitlab.talanlabs.com/nicolas-poste/message-manager/wikis/home)
 
 # Faire une release
 
