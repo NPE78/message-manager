@@ -40,7 +40,7 @@ A pour dépendance le process manager de Synaptix, et propose une implémentatio
 
 A pour dépendance le projet *server*
 
-Rajoute au serveur une classe pour superviser (`SupervisionUtils`), qui retourne la liste des channels et de leur occupation.
+Rajoute au serveur une classe pour superviser (`SupervisionUtils`), qui retourne la liste des channels et de leur état/occupation.
 
 ## Projet message-manager-test-dependencies
 
