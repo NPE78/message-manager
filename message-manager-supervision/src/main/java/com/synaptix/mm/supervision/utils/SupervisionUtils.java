@@ -48,9 +48,7 @@ public final class SupervisionUtils {
 	}
 
 	private static void sortAgentInfo(List<AgentInfoDto> agentInfoDtos) {
-		Comparator<AgentInfoDto> comparator = (o1, o2) -> {
-			return computeBusy(o1).compareTo(computeBusy(o2)) * (-1);
-		};
+		Comparator<AgentInfoDto> comparator = (o1, o2) -> computeBusy(o1).compareTo(computeBusy(o2)) * (-1);
 		Collections.sort(agentInfoDtos, comparator);
 	}
 
