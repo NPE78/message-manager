@@ -49,10 +49,12 @@ public final class SupervisionUtils {
 
 	private static void sortAgentInfo(List<AgentInfoDto> agentInfoDtos) {
 		Comparator<AgentInfoDto> comparator = (o1, o2) -> {
-			Integer n1 = (o1.getNbWaiting() != null ? o1.getNbWaiting() : 0) + (o1.getNbWorking() != null ? o1.getNbWorking() : 0);
-			Integer n2 = (o2.getNbWaiting() != null ? o2.getNbWaiting() : 0) + (o2.getNbWorking() != null ? o2.getNbWorking() : 0);
-			return n1.compareTo(n2) * (-1);
+			return computeBusy(o1).compareTo(computeBusy(o2)) * (-1);
 		};
 		Collections.sort(agentInfoDtos, comparator);
+	}
+
+	private static Integer computeBusy(AgentInfoDto a) {
+		return (a.getNbWaiting() != null ? a.getNbWaiting() : 0) + (a.getNbWorking() != null ? a.getNbWorking() : 0);
 	}
 }
