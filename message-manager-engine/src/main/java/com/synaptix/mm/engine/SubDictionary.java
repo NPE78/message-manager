@@ -263,7 +263,7 @@ public class SubDictionary {
 		ErrorImpact errorImpact = null;
 		Optional<IErrorType> first = null;
 		if (errorTypeList != null) {
-			first = errorTypeList.stream().filter(errorType -> processError.matches(errorType)).findFirst();
+			first = errorTypeList.stream().filter(processError::matches).findFirst();
 		}
 		if (first == null || !first.isPresent()) {
 			if (parentDictionary == null) {

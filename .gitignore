@@ -27,4 +27,4 @@ build/
 *.log
 
 # Integrator
-*/${config.engine.errorpath}
+*/flux

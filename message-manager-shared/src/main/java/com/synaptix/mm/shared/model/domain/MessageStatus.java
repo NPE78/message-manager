@@ -45,7 +45,7 @@ public enum MessageStatus {
 
 	private final int step;
 
-	private MessageStatus(int step) {
+	MessageStatus(int step) {
 		this.step = step;
 	}
 

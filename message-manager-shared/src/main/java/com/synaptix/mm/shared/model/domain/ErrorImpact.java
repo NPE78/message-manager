@@ -33,7 +33,6 @@ public class ErrorImpact {
 
 	/**
 	 * The dictionary used to compute the impact of this error
-	 * @return
 	 */
 	public String getDictionaryName() {
 		return dictionaryName;
