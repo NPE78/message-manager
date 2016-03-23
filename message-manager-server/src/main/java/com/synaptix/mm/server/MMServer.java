@@ -43,6 +43,8 @@ public class MMServer implements IServer {
 
 	private final String trmt;
 
+	private final GuicePluginManager guicePluginManager;
+
 	private int timeoutSeconds;
 
 	private boolean started;
@@ -53,12 +55,13 @@ public class MMServer implements IServer {
 	 * @param trmt This is the id of the process manager to create
 	 */
 	@Inject
-	public MMServer(@Named("trmt") String trmt) {
+	public MMServer(@Named("trmt") String trmt, GuicePluginManager guicePluginManager) {
 		super();
 
 		LOG.info("New server: " + trmt);
 
 		this.trmt = trmt;
+		this.guicePluginManager = guicePluginManager;
 
 		this.timeoutSeconds = 2 * 60;
 
@@ -104,7 +107,7 @@ public class MMServer implements IServer {
 
 	private void launchEngine() {
 		Properties properties = PropertiesKit.load("process_engine.properties", ProcessEngine.class, true);
-		GuicePluginManager.initProcessManager(LOG, trmt, properties);
+		guicePluginManager.initProcessManager(LOG, trmt, properties);
 
 		this.started = true;
 	}
@@ -140,7 +143,7 @@ public class MMServer implements IServer {
 
 		started = false;
 
-		ProcessEngine.shutdown();
+		guicePluginManager.shutdown();
 
 		LOG.info("Stop called: stopped, waiting for processes to finish, " + timeoutSeconds + " seconds max");
 
