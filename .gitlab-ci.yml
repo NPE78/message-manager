@@ -50,3 +50,19 @@ deploy_job:
     - mvn --batch-mode deploy -DskipTests=true -Djacoco.skip=true
   tags:
     - docker
+  artifacts:
+    paths:
+    - target/*.war
+
+deploy_tags_job:
+  stage: deploy
+  only:
+    - tags
+  script:
+    - mvn --batch-mode org.codehaus.mojo:versions-maven-plugin:2.1:set -DnewVersion=$CI_BUILD_REF_NAME -DgenerateBackupPoms=false
+    - mvn --batch-mode deploy -DskipTests=true -Djacoco.skip=true
+  tags:
+    - docker
+  artifacts:
+    paths:
+    - target/*.war
