@@ -20,4 +20,9 @@ public interface IIntegConfig {
 	 */
 	int getIntegPort();
 
+	/**
+	 * The name of the application (on tomcat for instance)
+	 */
+	String getIntegApplicationName();
+
 }
