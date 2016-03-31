@@ -21,6 +21,7 @@ import com.synaptix.mm.server.IServer;
 import com.synaptix.mm.server.MMServer;
 import com.synaptix.mm.server.guice.MMServerModule;
 import com.synaptix.mm.server.helper.FSHelper;
+import com.synaptix.mm.server.helper.ServerHelper;
 import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
 
 /**
@@ -33,6 +34,8 @@ public final class MainIntegratorBoot {
 	private static final Log LOG = LogFactory.getLog(MainIntegratorBoot.class);
 
 	public static void main(String[] args) {
+
+		ServerHelper.configureServer();
 
 		Injector injector = createInjector(MainIntegratorBoot.class.getClassLoader().getResource("integrator.properties"), null);
 

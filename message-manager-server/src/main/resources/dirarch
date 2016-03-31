@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# Realise l'archivage des flux
+# Prend en parametre un fichier de configuration listant les repertoires
+# dans lesquels realiser l'archivage.
+
+# Variables
+KEEP=720
+UNCOMP=2
+LOGFILE="./log/dirarch.log"
+
+log() {
+    echo "`date +"%b %e %H:%M:%S"` dirarch[$$]:" $* | tee -a $LOGFILE
+}
+
+if [ "$#" -lt 1 ] ; then
+    log "ERROR" "Usage: $0 <filerep> [servlet]"
+    exit 1
+fi
+
+REP="$1"
+
+log "INFO" "Archiving ${REP}"
+[ -d "${REP}" ] || {
+    log "WARNING" "Directory not found"
+    continue
+}
+
+for I in `seq 1440 1440 28800` ; do
+    SUBFOLDER=`date -d "${I} minutes ago" "+%Y%m%d%H00"`
+    NEWDIR=$REP/$SUBFOLDER
+    if [ -f "${NEWDIR}.tgz" ]
+            then
+                continue
+            fi
+    mkdir -p "$NEWDIR" || {
+                           log "ERROR" "Unable to create $NEWDIR, skipping archiving for this day."
+                           continue
+            }
+    find $REP -mindepth 1 -maxdepth 1 -type f -mmin -${I} \
+                           \( -name "*.tgz" -prune -o -print0 \) \
+                            | xargs -I '{}' -0 mv '{}' ${NEWDIR}/
+    FILES=$(find ${NEWDIR} -mindepth 1 -maxdepth 1 -type f -printf ",%f")
+    if [ -n "${FILES}" -a -n $2 ]
+        then
+            wget --post-data="param=${SUBFOLDER}${FILES}" $2
+            echo param=${SUBFOLDER}${FILES}
+        fi
+done
+
+# COMPRESSION
+log "INFO" "Compressing archives in $REP"
+find ${REP} -maxdepth 1 -name "20*" -type d -print | sort | head --lines=-$UNCOMP | \
+while read TGZDIR
+do
+            [ -d "$TGZDIR" ] || {
+                            continue
+            }
+            NAMEDIR=`basename ${TGZDIR}`
+            tar czf ${TGZDIR}.tgz -C $REP $NAMEDIR || {
+                           log "WARNING" "Unable to create $TGZDIR.tgz"
+                           continue
+            }
+            rm -rf ${TGZDIR} || log "WARNING" "Unable to remove $TGZDIR"
+done
+
+# CLEANING
+log "INFO" "Cleaning $REP"
+ls ${REP}/20*.tgz | sort | head --lines=-$KEEP | xargs rm -vf || log "WARNING" "Unable to remove some directories."
+log "INFO" "End of $REP archiving"
+
+exit $?

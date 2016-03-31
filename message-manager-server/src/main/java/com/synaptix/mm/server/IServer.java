@@ -7,6 +7,10 @@ import java.util.Set;
  */
 public interface IServer {
 
+	String HEARTBEAT = "heartbeat"; //$NON-NLS-1$
+
+	String DISABLED = "disabled"; //$NON-NLS-1$
+
 	/**
 	 * Starts the server
 	 */

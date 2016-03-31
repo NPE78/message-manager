@@ -62,6 +62,12 @@ public abstract class AbstractMMAgent<C extends IProcessContext> implements Proc
 		this.processContextThreadLocal = new ThreadLocal<>();
 	}
 
+	/**
+	 * Register the agent to the system
+	 */
+	public void identificate() {
+	}
+
 	@Override
 	public final void work(Object messageObject, Engine engine) {
 		try {

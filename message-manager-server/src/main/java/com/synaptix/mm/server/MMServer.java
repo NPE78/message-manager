@@ -1,12 +1,12 @@
 package com.synaptix.mm.server;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Locale;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -15,20 +15,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
-import org.joda.time.DateTimeZone;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.synaptix.component.factory.ComponentFactory;
-import com.synaptix.component.factory.DefaultComputedFactory;
-import com.synaptix.entity.extension.BusinessComponentExtensionProcessor;
-import com.synaptix.entity.extension.CacheComponentExtensionProcessor;
-import com.synaptix.entity.extension.DatabaseComponentExtensionProcessor;
-import com.synaptix.entity.extension.IBusinessComponentExtension;
-import com.synaptix.entity.extension.ICacheComponentExtension;
-import com.synaptix.entity.extension.IDatabaseComponentExtension;
 import com.synaptix.pmgr.core.apis.ChannelSlot;
 import com.synaptix.pmgr.core.apis.PluggableChannel;
+import com.synaptix.pmgr.core.lib.BaseEngine;
 import com.synaptix.pmgr.core.lib.ProcessEngine;
 import com.synaptix.pmgr.core.lib.ProcessingChannel;
 import com.synaptix.pmgr.core.lib.ProcessingChannel.Agent;
@@ -68,15 +60,6 @@ public class MMServer implements IServer {
 		this.guicePluginManager = guicePluginManager;
 
 		this.timeoutSeconds = 2 * 60;
-
-		Locale.setDefault(Locale.FRANCE);
-		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-		DateTimeZone.setDefault(DateTimeZone.forID("UTC"));
-
-		ComponentFactory.getInstance().addExtension(IDatabaseComponentExtension.class, new DatabaseComponentExtensionProcessor());
-		ComponentFactory.getInstance().addExtension(IBusinessComponentExtension.class, new BusinessComponentExtensionProcessor());
-		ComponentFactory.getInstance().addExtension(ICacheComponentExtension.class, new CacheComponentExtensionProcessor());
-		ComponentFactory.getInstance().setComputedFactory(new DefaultComputedFactory());
 	}
 
 	/**
@@ -125,7 +108,58 @@ public class MMServer implements IServer {
 		Properties properties = PropertiesKit.load("process_engine.properties", ProcessEngine.class, true);
 		guicePluginManager.initProcessManager(LOG, trmt, properties);
 
+		initAgents();
+
+		initGates();
+
 		this.started = true;
+	}
+
+	private void initAgents() {
+		List<AbstractMMAgent<?>> agentList = new ArrayList<>();
+		Set<Class<?>> channelSet = new HashSet<>();
+		ProcessEngine.getInstance().getChannels().stream().filter(channelSlot -> BaseEngine.ChannelSlotImpl.class.isAssignableFrom(channelSlot.getClass())).forEach(channelSlot -> {
+			BaseEngine.ChannelSlotImpl channelSlotImpl = (BaseEngine.ChannelSlotImpl) channelSlot;
+			if (ProcessingChannel.class.isAssignableFrom(channelSlotImpl.getPluggedChannel().getClass())) {
+				ProcessingChannel processingChannel = (ProcessingChannel) channelSlotImpl.getPluggedChannel();
+				Class<? extends ProcessingChannel.Agent> clazz = processingChannel.getAgent().getClass();
+				if (AbstractMMAgent.class.isAssignableFrom(clazz) && !channelSet.contains(clazz)) {
+					channelSet.add(clazz);
+					agentList.add((AbstractMMAgent<?>) processingChannel.getAgent());
+				}
+			}
+		});
+		final CountDownLatch cdl = new CountDownLatch(agentList.size());
+		List<Thread> threadList = new ArrayList<>();
+		for (final AbstractMMAgent<?> agentProcess : agentList) {
+			Thread thread = new Thread(() -> {
+				try {
+					LOG.info(String.format("Sending identification message to %s", agentProcess.getClass().getSimpleName()));
+					agentProcess.identificate();
+				} finally {
+					cdl.countDown();
+				}
+			});
+			threadList.add(thread);
+		}
+
+		threadList.forEach(Thread::start);
+		try {
+			cdl.await();
+		} catch (InterruptedException e) {
+			LOG.error("Interrupted", e);
+		}
+
+		LOG.info("End of identification");
+	}
+
+	private void initGates() {
+		guicePluginManager.initGates(LOG);
+
+		String heartbeat = System.getProperty(HEARTBEAT);
+		if (heartbeat != DISABLED) {
+			guicePluginManager.initHeartbeats();
+		}
 	}
 
 	/**

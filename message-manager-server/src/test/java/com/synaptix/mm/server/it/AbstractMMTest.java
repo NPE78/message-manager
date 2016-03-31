@@ -19,6 +19,7 @@ import com.google.inject.Injector;
 import com.synaptix.mm.server.IServer;
 import com.synaptix.mm.server.MMServer;
 import com.synaptix.mm.server.helper.FSHelper;
+import com.synaptix.mm.server.helper.ServerHelper;
 import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
 import com.synaptix.mm.server.unit.MainIntegratorBoot;
 import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
@@ -36,6 +37,8 @@ public class AbstractMMTest {
 
 	@Before
 	public void init() {
+		ServerHelper.configureServer();
+
 		createInjector();
 		injector.injectMembers(this);
 
