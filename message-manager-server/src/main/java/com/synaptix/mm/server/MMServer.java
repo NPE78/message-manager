@@ -18,6 +18,7 @@ import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.synaptix.mm.server.constants.MMServerConstants;
 import com.synaptix.pmgr.core.apis.ChannelSlot;
 import com.synaptix.pmgr.core.apis.PluggableChannel;
 import com.synaptix.pmgr.core.lib.BaseEngine;
@@ -156,8 +157,8 @@ public class MMServer implements IServer {
 	private void initGates() {
 		guicePluginManager.initGates(LOG);
 
-		String heartbeat = System.getProperty(HEARTBEAT);
-		if (heartbeat != DISABLED) {
+		String heartbeat = System.getProperty(MMServerConstants.HEARTBEAT);
+		if (heartbeat != MMServerConstants.DISABLED) {
 			guicePluginManager.initHeartbeats();
 		}
 	}
