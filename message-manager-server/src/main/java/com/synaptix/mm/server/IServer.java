@@ -10,7 +10,7 @@ public interface IServer {
 	/**
 	 * Starts the server
 	 */
-	void start();
+	void start(String integFolder);
 
 	/**
 	 * Stops the server

@@ -18,6 +18,7 @@ import org.junit.Before;
 import com.google.inject.Injector;
 import com.synaptix.mm.server.IServer;
 import com.synaptix.mm.server.MMServer;
+import com.synaptix.mm.server.helper.FSHelper;
 import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
 import com.synaptix.mm.server.unit.MainIntegratorBoot;
 import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
@@ -47,7 +48,7 @@ public class AbstractMMTest {
 	 * Start the integrator
 	 */
 	protected final void startIntegrator() {
-		getServer().start();
+		getServer().start(FSHelper.getIntegFolder());
 		this.started = true;
 	}
 

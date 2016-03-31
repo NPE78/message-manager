@@ -1,5 +1,6 @@
 package com.synaptix.mm.server;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -11,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.VFS;
+import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.joda.time.DateTimeZone;
 
 import com.google.inject.Inject;
@@ -96,8 +100,20 @@ public class MMServer implements IServer {
 	 * Launches the process manager
 	 */
 	@Override
-	public void start() {
+	public void start(String integFolder) {
 		LOG.info("START MMServer");
+
+		try {
+			DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
+			if (manager.getBaseFile() == null) {
+				manager.setBaseFile(new File(integFolder));
+				if (!manager.getBaseFile().exists()) {
+					manager.getBaseFile().createFolder();
+				}
+			}
+		} catch (FileSystemException e) {
+			LOG.error("Error when initializing file system manager", e);
+		}
 
 		String version = getVersion();
 		LOG.info("Version : " + version);

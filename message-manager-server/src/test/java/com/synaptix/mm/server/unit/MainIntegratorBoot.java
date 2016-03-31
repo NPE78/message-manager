@@ -20,6 +20,7 @@ import com.google.inject.util.Modules;
 import com.synaptix.mm.server.IServer;
 import com.synaptix.mm.server.MMServer;
 import com.synaptix.mm.server.guice.MMServerModule;
+import com.synaptix.mm.server.helper.FSHelper;
 import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
 
 /**
@@ -36,7 +37,7 @@ public final class MainIntegratorBoot {
 		Injector injector = createInjector(MainIntegratorBoot.class.getClassLoader().getResource("integrator.properties"), null);
 
 		IServer server = injector.getInstance(MMServer.class);
-		server.start();
+		server.start(FSHelper.getIntegFolder());
 
 		// MainIntegratorHelper.createJetty(new IJettyStarted() {
 		// @Override

@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.synaptix</groupId>
         <artifactId>message-manager</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>message-manager-server</artifactId>
     <name>Message Manager Server</name>
@@ -60,6 +60,16 @@
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty</artifactId>
             <scope>test</scope>
+        </dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-vfs2</artifactId>
+            <version>2.0</version>
         </dependency>
     </dependencies>
     <profiles>

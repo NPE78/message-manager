@@ -13,13 +13,28 @@ public interface IMessageType {
 	String getName();
 
 	/**
+	 * The name of the message type, should be unique
+	 */
+	void setName(String name);
+
+	/**
 	 * The message way of the messages: IN or OUT
 	 */
 	MessageWay getMessageWay();
 
 	/**
+	 * The message way of the messages: IN or OUT
+	 */
+	void setMessageWay(MessageWay messageWay);
+
+	/**
 	 * The recycling deadline in minutes
 	 */
 	Integer getRecyclingDeadline();
+
+	/**
+	 * The recycling deadline in minutes
+	 */
+	void setRecyclingDeadline(Integer recyclingDeadline);
 
 }
