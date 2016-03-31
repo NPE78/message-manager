@@ -20,7 +20,7 @@ build_merge_job:
     - tags
   script:
     - git merge origin master --no-commit --no-ff
-    - mvn --batch-mode compile -DskipTests=true -Djacoco.skip=true -U
+    - mvn --batch-mode compile -Dmaven.test.skip=true -Djacoco.skip=true -U
   tags:
     - docker
 
