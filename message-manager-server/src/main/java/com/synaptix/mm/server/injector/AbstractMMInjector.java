@@ -34,9 +34,9 @@ import com.synaptix.tmgr.libs.tasks.filesys.FolderEventTriggerTask;
 /**
  * Created by NicolasP on 04/12/2015.
  */
-public abstract class AbstractMMInjector2 extends AbstractMsgInjector implements IInjector {
+public abstract class AbstractMMInjector extends AbstractMsgInjector implements IInjector {
 
-	private static final Log LOG = LogFactory.getLog(AbstractMMInjector2.class);
+	private static final Log LOG = LogFactory.getLog(AbstractMMInjector.class);
 
 	private final Class<? extends ProcessingChannel.Agent> agentClass;
 
@@ -46,7 +46,7 @@ public abstract class AbstractMMInjector2 extends AbstractMsgInjector implements
 	@Named("messageTypeMap")
 	private Map<String, IMessageType> messageTypeMap;
 
-	public AbstractMMInjector2(Class<? extends ProcessingChannel.Agent> agentClass) {
+	public AbstractMMInjector(Class<? extends ProcessingChannel.Agent> agentClass) {
 		super(computeWorkDir(agentClass));
 
 		this.agentClass = agentClass;
