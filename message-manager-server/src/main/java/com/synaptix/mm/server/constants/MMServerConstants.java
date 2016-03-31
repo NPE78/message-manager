@@ -6,7 +6,8 @@ package com.synaptix.mm.server.constants;
 public class MMServerConstants {
 
 	public static final String HEARTBEAT = "heartbeat"; //$NON-NLS-1$
-
 	public static final String DISABLED = "disabled"; //$NON-NLS-1$
 
+	private MMServerConstants() {
+	}
 }
