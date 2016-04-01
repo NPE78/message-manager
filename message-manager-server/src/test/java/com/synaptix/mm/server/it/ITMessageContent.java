@@ -58,17 +58,17 @@ public class ITMessageContent extends AbstractMMTest {
 	@Test
 	public void testArchive() throws Exception {
 
-		File file = new File("./src/test/flux/contentTest.tgz");
+		File file = new File("./src/test/flux/message/contentTest.tgz");
 		Assert.assertTrue(file.exists());
 
 		FileSystemManager manager = VFS.getManager();
 		FileObject fileObject = manager.resolveFile(file.getAbsolutePath());
-		FileObject destObject = manager.resolveFile("./contentTest.tgz");
+		FileObject destObject = manager.resolveFile("./message/contentTest.tgz");
 		destObject.copyFrom(fileObject, Selectors.SELECT_SELF);
 
-		IFSMessage message = new DefaultMessage("test", "87e8ded7-b3a9-486c-a947-95bd1e6e61d0");
+		IFSMessage message = new DefaultMessage("message", "87e8ded7-b3a9-486c-a947-95bd1e6e61d0");
 
-		message.setFolder(".." + File.separator + "contentTest");
+		message.setFolder("contentTest");
 
 		System.out.println("Testing get content for 2nd case");
 		Assert.assertEquals("OK", fluxContentServiceDelegate.getContent(message));
@@ -121,18 +121,6 @@ public class ITMessageContent extends AbstractMMTest {
 			fluxContentServiceDelegate.setContent("test", message);
 		} catch (ContentNotSavedException e) {
 			exceptionRaised = true;
-		}
-		Assert.assertTrue(exceptionRaised);
-
-		message.setFolder("contentTest");
-
-		message = new DefaultMessage("");
-		exceptionRaised = false;
-		try {
-			fluxContentServiceDelegate.setContent("test", message);
-		} catch (ContentNotSavedException e) {
-			exceptionRaised = true;
-			e.printStackTrace();
 		}
 		Assert.assertTrue(exceptionRaised);
 	}
