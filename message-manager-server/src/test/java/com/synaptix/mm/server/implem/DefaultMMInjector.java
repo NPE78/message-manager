@@ -10,16 +10,23 @@ import com.synaptix.mm.shared.model.IMessage;
  */
 public class DefaultMMInjector extends AbstractMMInjector {
 
+	private IFSMessage lastMessage;
+
 	public DefaultMMInjector() {
 		super(DefaultMMAgent.class);
 	}
 
 	@Override
 	protected IFSMessage createMessage() {
-		return new DefaultMessage("DEFAULT");
+		lastMessage = new DefaultMessage("DEFAULT");
+		return lastMessage;
 	}
 
 	@Override
 	protected void saveOrUpdateMessage(IMessage message) {
+	}
+
+	public IFSMessage getLastMessage() {
+		return lastMessage;
 	}
 }

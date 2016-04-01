@@ -153,8 +153,10 @@ public abstract class AbstractMMInjector extends AbstractMsgInjector implements 
 	}
 
 	private void renameAndMoveFile(IFSMessage message, File file) {
-		boolean moved = file.renameTo(new File(file.getParentFile() + File.separator + "accepted" + File.separator + message.getId().toString())); //$NON-NLS-1$
+		File dest = new File(file.getParentFile() + File.separator + "accepted" + File.separator + message.getId().toString());
+		boolean moved = file.renameTo(dest); //$NON-NLS-1$
 		if (moved) {
+			message.setFile(dest);
 			message.setFolder("accepted"); //$NON-NLS-1$
 			saveOrUpdateMessage(message);
 		}
