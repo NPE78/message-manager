@@ -17,6 +17,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
 import com.google.inject.util.Modules;
+import com.synaptix.entity.extension.DatabaseLanguage;
 import com.synaptix.mm.server.IServer;
 import com.synaptix.mm.server.MMServer;
 import com.synaptix.mm.server.guice.MMServerModule;
@@ -35,7 +36,7 @@ public final class MainIntegratorBoot {
 
 	public static void main(String[] args) {
 
-		ServerHelper.configureServer();
+		ServerHelper.configureServer(getDatabaseLanguage());
 
 		Injector injector = createInjector(MainIntegratorBoot.class.getClassLoader().getResource("integrator.properties"), null);
 
@@ -47,6 +48,10 @@ public final class MainIntegratorBoot {
 		// public void jettyStarted(Server server, WebAppContext context) {
 		// }
 		// });
+	}
+
+	private static DatabaseLanguage getDatabaseLanguage() {
+		return DatabaseLanguage.ORACLE;
 	}
 
 	/**

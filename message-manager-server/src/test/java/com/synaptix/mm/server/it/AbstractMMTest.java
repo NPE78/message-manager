@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import com.google.inject.Injector;
+import com.synaptix.entity.extension.DatabaseLanguage;
 import com.synaptix.mm.server.IServer;
 import com.synaptix.mm.server.MMServer;
 import com.synaptix.mm.server.helper.FSHelper;
@@ -37,14 +38,21 @@ public class AbstractMMTest {
 
 	@Before
 	public void init() {
-		ServerHelper.configureServer();
+		ServerHelper.configureServer(getDatabaseLanguage());
 
 		createInjector();
+
+		getServer(); // to create and initialize server (but doesn't start)
+
 		injector.injectMembers(this);
 
 		if (autoStartIntegrator()) {
 			startIntegrator();
 		}
+	}
+
+	protected DatabaseLanguage getDatabaseLanguage() {
+		return DatabaseLanguage.ORACLE;
 	}
 
 	/**
