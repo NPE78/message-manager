@@ -38,7 +38,7 @@ public class AbstractMMTest {
 
 	@Before
 	public void init() {
-		ServerHelper.configureServer(getDatabaseLanguage());
+		ServerHelper.configureServer();
 
 		createInjector();
 
