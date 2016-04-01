@@ -46,7 +46,7 @@ public class DefaultMessage implements IFSMessage {
 		super();
 
 		this.id = id;
-		this.messageType = new DefaultMessageType(messageType);
+		this.messageType = messageType != null ? new DefaultMessageType(messageType) : null;
 		this.firstProcessingDate = Instant.now();
 	}
 

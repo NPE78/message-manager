@@ -8,11 +8,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -36,8 +31,7 @@ public class FluxContentServiceDelegate {
 
 	public String getTestFluxContent(IId id) throws ContentNotFetchedException {
 		try {
-			String filename = VFS.getManager().getBaseFile().getURL().getPath() + File.separator + "testFlux" + File.separator + id.toString();
-			return readFile(filename);
+			return readFile(VFS.getManager().getBaseFile().resolveFile("testFlux").resolveFile(id.toString()));
 		} catch (IOException e) {
 			throw new ContentNotFetchedException("Exception raised", e);
 		}
@@ -56,41 +50,47 @@ public class FluxContentServiceDelegate {
 			if (!exists) {
 				throw new FileNotFoundException(fileFinder.getPath());
 			}
-			return fileFinder.getContent();
+			return readFile(fileFinder.foundFile);
 		} catch (IOException e) {
 			throw new ContentNotFetchedException("Exception raised", e);
 		}
 	}
 
-	private String readFile(String filename) throws IOException {
-		StringBuilder content = new StringBuilder();
-		Path e = Paths.get(filename);
-		try (BufferedReader reader = Files.newBufferedReader(e, Charset.forName("UTF-8"))) {
-			for (String line; (line = reader.readLine()) != null; content.append(line)) {
-				if (content.length() > 0) {
-					content.append("\n");
+	private String readFile(FileObject file) throws IOException {
+		if (!file.exists()) {
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		try (InputStream inputStream = file.getContent().getInputStream();
+			 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+			 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+			String line;
+			while ((line = bufferedReader.readLine()) != null) {
+				if (sb.length() > 0) {
+					sb.append('\n');
 				}
+				sb.append(line);
 			}
 		}
-		return content.toString();
+		return StringUtils.trimToNull(sb.toString());
+	}
+
+	public void writeFile(FileObject file, String content) throws IOException {
+		if (!file.isWriteable()) {
+			throw new IOException("Can't write into file");
+		}
+		try (OutputStream outputStream = file.getContent().getOutputStream()) {
+			if (content != null) {
+				outputStream.write(content.getBytes(Charset.forName("UTF-8"))); //$NON-NLS-1$
+			}
+		}
 	}
 
 	public void setTestFluxContent(String content, IId id) throws ContentNotSavedException {
 		try {
-			String pathname = VFS.getManager().getBaseFile().getURL().getPath() + File.separator + "testFlux" + File.separator + id.toString();
-			File file = new File(pathname);
-			if (file.exists()) {
-				boolean deleted = file.delete();
-				if (!deleted) {
-					throw new ContentNotSavedException("Couldn't remove previous file");
-				}
-			}
-			if (content != null) {
-				file.getParentFile().mkdirs();
-				List<String> lines = new ArrayList<>();
-				lines.add(content);
-				Files.write(Paths.get(pathname), lines);
-			}
+			FileObject file = VFS.getManager().getBaseFile().resolveFile("testFlux").resolveFile(id.toString());
+			file.getParent().createFolder();
+			writeFile(file, content);
 		} catch (IOException e) {
 			throw new ContentNotSavedException("Couldn't write into file", e);
 		}
@@ -109,7 +109,7 @@ public class FluxContentServiceDelegate {
 			if (fileFinder.isArchived) {
 				throw new ContentNotSavedException("Cannot write in an archive");
 			}
-			fileFinder.write(content);
+			writeFile(fileFinder.foundFile, content);
 		} catch (IOException e) {
 			throw new ContentNotSavedException("Couldn't write into file", e);
 		}
@@ -171,22 +171,6 @@ public class FluxContentServiceDelegate {
 			return myFoundFile != null && (myFoundFile.exists() || isArchived);
 		}
 
-		public String getContent() throws IOException {
-			StringBuilder sb = new StringBuilder();
-			try (InputStream inputStream = foundFile.getContent().getInputStream();
-				 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-				 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-				String line;
-				while ((line = bufferedReader.readLine()) != null) {
-					if (sb.length() > 0) {
-						sb.append('\n');
-					}
-					sb.append(line);
-				}
-			}
-			return StringUtils.trimToNull(sb.toString());
-		}
-
 		private String getPath(String[] fs) {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < fs.length - 1; i++) {
@@ -221,15 +205,6 @@ public class FluxContentServiceDelegate {
 				}
 			}
 			return null;
-		}
-
-		public void write(String content) throws IOException {
-			if (!foundFile.isWriteable()) {
-				throw new IOException("Can't write into file");
-			}
-			try (OutputStream outputStream = foundFile.getContent().getOutputStream()) {
-				outputStream.write(content.getBytes(Charset.forName("UTF-8"))); //$NON-NLS-1$
-			}
 		}
 
 		public String getPath() {

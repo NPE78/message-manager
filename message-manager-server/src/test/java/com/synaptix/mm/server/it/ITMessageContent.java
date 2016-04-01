@@ -12,6 +12,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.inject.Inject;
+import com.synaptix.entity.IId;
+import com.synaptix.entity.IdRaw;
 import com.synaptix.mm.engine.implem.DefaultMessage;
 import com.synaptix.mm.server.delegate.FluxContentServiceDelegate;
 import com.synaptix.mm.server.exception.ContentNotFetchedException;
@@ -120,6 +122,32 @@ public class ITMessageContent extends AbstractMMTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testFlux() {
+		try {
+			IFSMessage message = new DefaultMessage(null);
+
+			IId id = new IdRaw(message.getId().toString());
+			Assert.assertNull(fluxContentServiceDelegate.getTestFluxContent(id));
+
+			String text = "test";
+			fluxContentServiceDelegate.setTestFluxContent(text, id);
+			Assert.assertEquals(text, fluxContentServiceDelegate.getTestFluxContent(id));
+
+			text = "test2";
+			fluxContentServiceDelegate.setTestFluxContent(text, id);
+			Assert.assertEquals(text, fluxContentServiceDelegate.getTestFluxContent(id));
+
+			text = null;
+			fluxContentServiceDelegate.setTestFluxContent(text, id);
+			Assert.assertNull(fluxContentServiceDelegate.getTestFluxContent(id));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail();
 		}
 	}
 }
