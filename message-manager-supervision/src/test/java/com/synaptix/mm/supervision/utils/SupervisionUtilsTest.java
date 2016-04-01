@@ -8,9 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.synaptix.mm.engine.MMDictionary;
 import com.synaptix.mm.server.implem.DefaultMMAgent;
-import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
 import com.synaptix.mm.server.it.AbstractMMTest;
 import com.synaptix.mm.supervision.model.AgentInfoDto;
 import com.synaptix.pmgr.core.lib.ProcessEngine;
@@ -24,10 +22,8 @@ public class SupervisionUtilsTest extends AbstractMMTest {
 	@Test
 	public void testGetAgentInfo() throws Exception {
 
-		MMDictionary dictionary = getInstance(MMDictionary.class);
-
 		List<AgentInfoDto> agentInfoDtoList = SupervisionUtils.getAgentInfo(null);
-		Assert.assertEquals(3, agentInfoDtoList.size()); // with RetryAgent
+		Assert.assertTrue(agentInfoDtoList.size() >= 2); // with RetryAgent
 
 		MyMessage message = new MyMessage();
 
@@ -40,15 +36,14 @@ public class SupervisionUtilsTest extends AbstractMMTest {
 		waitIntegrator();
 
 		Assert.assertEquals(3, message.count);
-
 	}
 
 	@Override
 	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
-		return new DefaultTestMMServerModule() {
+		return new AbstractSynaptixIntegratorServletModule() {
 
 			@Override
-			protected void configureTestModule() {
+			protected void configure() {
 				bindAgent(MyMMAgent.class, 5, 10);
 				bindAgent(MySingletonMMAgent.class, 1, 1);
 			}

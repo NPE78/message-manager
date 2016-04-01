@@ -45,7 +45,7 @@ public class BatchArchiveAgent implements ProcessingChannel.Agent {
 	@Override
 	public void work(Object o, Engine engine) {
 
-		URL script = getClass().getResource("dirarch");
+		URL script = getClass().getClassLoader().getResource("dirarch");
 		if (script == null) {
 			LOG.error("DIRARCH script not found!");
 		} else {

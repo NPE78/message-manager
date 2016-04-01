@@ -105,8 +105,6 @@ public class ITMessageContent extends AbstractMMTest {
 
 	@Test
 	public void exceptionMessage() throws Exception {
-		IFSMessage message = new DefaultMessage(null);
-		IId id = new IdRaw(message.getId().toString());
 
 		boolean exceptionRaised = false;
 		try {
@@ -118,6 +116,7 @@ public class ITMessageContent extends AbstractMMTest {
 
 		exceptionRaised = false;
 		try {
+			IFSMessage message = new DefaultMessage(null);
 			fluxContentServiceDelegate.setContent("test", message);
 		} catch (ContentNotSavedException e) {
 			exceptionRaised = true;

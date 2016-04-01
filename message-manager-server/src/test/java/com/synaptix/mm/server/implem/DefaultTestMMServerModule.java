@@ -24,6 +24,9 @@ public class DefaultTestMMServerModule extends AbstractSynaptixIntegratorServlet
 	protected final void configure() {
 		install(new DefaultTestMMModule(processErrorFactoryClass));
 
+		bindAgent(DefaultMMAgent.class, 10, 10);
+		bindInjector(DefaultMMInjector.class);
+
 		configureTestModule();
 	}
 

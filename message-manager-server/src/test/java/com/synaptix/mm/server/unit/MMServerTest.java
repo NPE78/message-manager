@@ -8,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.synaptix.mm.server.MMServer;
-import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
 import com.synaptix.mm.server.it.AbstractMMTest;
 import com.synaptix.pmgr.core.apis.Engine;
 import com.synaptix.pmgr.core.lib.ProcessEngine;
@@ -70,10 +69,10 @@ public class MMServerTest extends AbstractMMTest {
 		}
 	}
 
-	private class TestIntegratorServletModule extends DefaultTestMMServerModule {
+	private class TestIntegratorServletModule extends AbstractSynaptixIntegratorServletModule {
 
 		@Override
-		protected void configureTestModule() {
+		protected void configure() {
 			bindAgent(AgentTest.class, 5, 10);
 			bindAgent(SlowAgentTest.class, 5, 10);
 		}

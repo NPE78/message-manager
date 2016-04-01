@@ -16,12 +16,10 @@ import org.junit.After;
 import org.junit.Before;
 
 import com.google.inject.Injector;
-import com.synaptix.entity.extension.DatabaseLanguage;
 import com.synaptix.mm.server.IServer;
 import com.synaptix.mm.server.MMServer;
 import com.synaptix.mm.server.helper.FSHelper;
 import com.synaptix.mm.server.helper.ServerHelper;
-import com.synaptix.mm.server.implem.DefaultTestMMServerModule;
 import com.synaptix.mm.server.unit.MainIntegratorBoot;
 import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
 
@@ -51,10 +49,6 @@ public class AbstractMMTest {
 		}
 	}
 
-	protected DatabaseLanguage getDatabaseLanguage() {
-		return DatabaseLanguage.ORACLE;
-	}
-
 	/**
 	 * Start the integrator
 	 */
@@ -72,7 +66,7 @@ public class AbstractMMTest {
 	}
 
 	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
-		return new DefaultTestMMServerModule();
+		return null;
 	}
 
 	protected Class<? extends IServer> getServerClass() {
