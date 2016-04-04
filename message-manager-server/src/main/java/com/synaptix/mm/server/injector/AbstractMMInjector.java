@@ -126,12 +126,14 @@ public abstract class AbstractMMInjector extends AbstractMsgInjector implements 
 				renameAndMoveFile((IFSMessage) message, file);
 			}
 		}
-		if (LOG.isDebugEnabled()) {
-			IMessageType messageType = message.getMessageType();
-			LOG.debug(String.format("[%s] Inject: %s", messageType != null ? messageType.getName() : "", message.getId()));
-		}
 
-		ProcessEngine.handle(getAgentName(), message);
+		if (message.getMessageStatus() != MessageStatus.REJECTED) {
+			if (LOG.isDebugEnabled()) {
+				IMessageType messageType = message.getMessageType();
+				LOG.debug(String.format("[%s] Inject: %s", messageType != null ? messageType.getName() : "", message.getId()));
+			}
+			ProcessEngine.handle(getAgentName(), message);
+		}
 	}
 
 	protected abstract IFSMessage createMessage();
@@ -142,13 +144,14 @@ public abstract class AbstractMMInjector extends AbstractMsgInjector implements 
 		if (message.getFirstProcessingDate() == null) {
 			message.setFirstProcessingDate(Instant.now());
 		}
+		if (message.getMessageType() != null && message.getMessageType().getRecyclingDeadline() != null) {
+			Instant deadlineDate = message.getFirstProcessingDate().plus(message.getMessageType().getRecyclingDeadline(), ChronoUnit.MINUTES);
+			message.setDeadlineDate(deadlineDate);
+		}
 		// check deadline_date, only if it's not a new message
 		if ((!(message instanceof IFSMessage) || ((IFSMessage) message).getFile() == null) && message.getDeadlineDate() != null && message.getDeadlineDate().isBefore(Instant.now())) {
 			message.setMessageStatus(MessageStatus.REJECTED);
 			LOG.warn(String.format("Message %s has reached its deadline, it has been rejected", message.getId()));
-		} else if (message.getMessageType() != null && message.getMessageType().getRecyclingDeadline() != null) {
-			Instant deadlineDate = message.getFirstProcessingDate().plus(message.getMessageType().getRecyclingDeadline(), ChronoUnit.MINUTES);
-			message.setDeadlineDate(deadlineDate);
 		}
 	}
 

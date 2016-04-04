@@ -2,6 +2,8 @@ package com.synaptix.mm.server.it;
 
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -10,8 +12,11 @@ import org.apache.commons.vfs2.VFS;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.synaptix.mm.engine.implem.DefaultMessage;
+import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.server.implem.DefaultMMInjector;
 import com.synaptix.mm.shared.model.IFSMessage;
+import com.synaptix.mm.shared.model.domain.MessageStatus;
 
 /**
  * Created by NicolasP on 01/04/2016.
@@ -47,5 +52,22 @@ public class ITInjector extends AbstractMMTest {
 		Assert.assertNotNull(message.getFirstProcessingDate());
 		Assert.assertNotNull(message.getId());
 		Assert.assertEquals(message.getFile().getName(), message.getId().toString());
+	}
+
+	@Test
+	public void injectTestDeadline() throws Exception {
+
+		DefaultMMInjector injector = getInstance(DefaultMMInjector.class);
+
+		DefaultMessage message = new DefaultMessage("MT1");
+		DefaultMessageType messageType = (DefaultMessageType) message.getMessageType();
+		messageType.setRecyclingDeadline(5);
+		message.setFirstProcessingDate(Instant.now().minus(10, ChronoUnit.MINUTES));
+		injector.injectLiseaMessage(message);
+
+
+		Assert.assertEquals(MessageStatus.REJECTED, message.getMessageStatus());
+		Assert.assertNotNull(message.getFirstProcessingDate());
+		Assert.assertNotNull(message.getId());
 	}
 }

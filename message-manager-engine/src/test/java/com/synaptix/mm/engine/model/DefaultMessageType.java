@@ -17,6 +17,8 @@ public class DefaultMessageType implements IMessageType {
 
 	private final MessageWay messageWay;
 
+	private Integer recyclingDeadline;
+
 	public DefaultMessageType(String name) {
 		this(name, MessageWay.IN);
 	}
@@ -26,6 +28,7 @@ public class DefaultMessageType implements IMessageType {
 
 		this.name = name;
 		this.messageWay = messageWay;
+		this.recyclingDeadline = 120;
 	}
 
 	@Override
@@ -50,11 +53,11 @@ public class DefaultMessageType implements IMessageType {
 
 	@Override
 	public Integer getRecyclingDeadline() {
-		return 120;
+		return recyclingDeadline;
 	}
 
 	@Override
 	public void setRecyclingDeadline(Integer recyclingDeadline) {
-		LOG.error("Can not set recyclingDeadline");
+		this.recyclingDeadline = recyclingDeadline;
 	}
 }
