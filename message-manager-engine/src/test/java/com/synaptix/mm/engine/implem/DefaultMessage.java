@@ -47,9 +47,11 @@ public class DefaultMessage implements IFSMessage {
 
 		this.id = id;
 		this.messageType = messageType != null ? new DefaultMessageType(messageType) : null;
-		this.firstProcessingDate = Instant.now();
+		if (id != null) {
+			this.firstProcessingDate = Instant.now();
+		}
 	}
-
+g
 	@Override
 	public Serializable getId() {
 		return id;
