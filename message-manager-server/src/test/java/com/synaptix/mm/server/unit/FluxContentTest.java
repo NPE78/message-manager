@@ -26,7 +26,6 @@ public class FluxContentTest {
 	public void testGetContentException() throws Exception {
 		DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
 		manager.setBaseFile((FileObject) null);
-		System.out.println(manager.getBaseFile());
 
 		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
 
@@ -51,7 +50,6 @@ public class FluxContentTest {
 	public void testSetContentException() throws Exception {
 		DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
 		manager.setBaseFile((FileObject) null);
-		System.out.println(manager.getBaseFile());
 
 		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
 
