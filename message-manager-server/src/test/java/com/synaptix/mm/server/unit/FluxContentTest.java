@@ -2,6 +2,7 @@ package com.synaptix.mm.server.unit;
 
 import java.util.UUID;
 
+import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.junit.Assert;
@@ -23,10 +24,8 @@ public class FluxContentTest {
 
 	@Test
 	public void testGetContentException() throws Exception {
-		FSHelper.fixBaseDir();
-
 		DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
-		manager.setBaseFile(manager.resolveFile("../exception_unit/folder/"));
+		manager.setBaseFile((FileObject) null);
 		System.out.println(manager.getBaseFile());
 
 		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
@@ -50,10 +49,8 @@ public class FluxContentTest {
 
 	@Test
 	public void testSetContentException() throws Exception {
-		FSHelper.fixBaseDir();
-
 		DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
-		manager.setBaseFile(manager.resolveFile("../exception_unit/folder/"));
+		manager.setBaseFile((FileObject) null);
 		System.out.println(manager.getBaseFile());
 
 		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
