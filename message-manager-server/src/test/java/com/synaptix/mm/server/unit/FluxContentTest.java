@@ -26,7 +26,7 @@ public class FluxContentTest {
 		FSHelper.fixBaseDir();
 
 		DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
-		manager.setBaseFile(manager.resolveFile("../exception_unit"));
+		manager.setBaseFile(manager.resolveFile("../exception_unit/folder/"));
 		System.out.println(manager.getBaseFile());
 
 		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
@@ -53,7 +53,7 @@ public class FluxContentTest {
 		FSHelper.fixBaseDir();
 
 		DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
-		manager.setBaseFile(manager.resolveFile("../exception_unit"));
+		manager.setBaseFile(manager.resolveFile("../exception_unit/folder/"));
 		System.out.println(manager.getBaseFile());
 
 		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
