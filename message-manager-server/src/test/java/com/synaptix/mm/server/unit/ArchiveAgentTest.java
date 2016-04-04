@@ -24,12 +24,15 @@ public class ArchiveAgentTest {
 	public void testArchiveAgent() throws Exception {
 		FSHelper.fixBaseDir();
 
+		BatchArchiveAgent agent = new BatchArchiveAgent();
+
+		URL script = getClass().getClassLoader().getResource("dirarch");
+		agent.getScript(script); // create of update script
+
 		FileObject fileDestination = VFS.getManager().getBaseFile().resolveFile("archive");
 		if (fileDestination.exists()) {
 			fileDestination.delete();
 		}
-
-		BatchArchiveAgent agent = new BatchArchiveAgent();
 
 		Injector injector = Guice.createInjector(new AbstractModule() {
 			@Override
@@ -40,8 +43,7 @@ public class ArchiveAgentTest {
 
 		injector.injectMembers(agent);
 
-		URL script = getClass().getClassLoader().getResource("dirarch");
-		Assert.assertEquals(script, agent.getScript(script));
+		Assert.assertEquals(fileDestination.getURL(), agent.getScript(script));
 
 		agent.work("./flux/message", null);
 	}
