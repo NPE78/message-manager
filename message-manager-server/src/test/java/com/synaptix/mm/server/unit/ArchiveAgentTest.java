@@ -2,6 +2,8 @@ package com.synaptix.mm.server.unit;
 
 import java.net.URL;
 
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.VFS;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,8 +21,13 @@ import com.synaptix.mm.shared.model.IIntegConfig;
 public class ArchiveAgentTest {
 
 	@Test
-	public void testArchiveAgent() {
+	public void testArchiveAgent() throws Exception {
 		FSHelper.fixBaseDir();
+
+		FileObject fileDestination = VFS.getManager().getBaseFile().resolveFile("archive");
+		if (fileDestination.exists()) {
+			fileDestination.delete();
+		}
 
 		BatchArchiveAgent agent = new BatchArchiveAgent();
 
