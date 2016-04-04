@@ -10,6 +10,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.synaptix.mm.engine.it.DefaultIntegConfig;
 import com.synaptix.mm.server.agent.BatchArchiveAgent;
+import com.synaptix.mm.server.helper.FSHelper;
 import com.synaptix.mm.shared.model.IIntegConfig;
 
 /**
@@ -19,6 +20,8 @@ public class ArchiveAgentTest {
 
 	@Test
 	public void testArchiveAgent() {
+		FSHelper.fixBaseDir();
+
 		BatchArchiveAgent agent = new BatchArchiveAgent();
 
 		Injector injector = Guice.createInjector(new AbstractModule() {

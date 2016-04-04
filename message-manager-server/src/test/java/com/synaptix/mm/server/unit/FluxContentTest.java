@@ -1,9 +1,7 @@
 package com.synaptix.mm.server.unit;
 
-import java.io.File;
 import java.util.UUID;
 
-import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.junit.Assert;
@@ -25,7 +23,8 @@ public class FluxContentTest {
 
 	@Test
 	public void testGetContentException() throws Exception {
-		fixBaseDir();
+		FSHelper.fixBaseDir();
+
 		DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
 		manager.setBaseFile(manager.resolveFile("../exception_unit"));
 		System.out.println(manager.getBaseFile());
@@ -51,7 +50,8 @@ public class FluxContentTest {
 
 	@Test
 	public void testSetContentException() throws Exception {
-		fixBaseDir();
+		FSHelper.fixBaseDir();
+
 		DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
 		manager.setBaseFile(manager.resolveFile("../exception_unit"));
 		System.out.println(manager.getBaseFile());
@@ -77,7 +77,7 @@ public class FluxContentTest {
 
 	@Test
 	public void testGetSetTestFluxContent() throws Exception {
-		fixBaseDir();
+		FSHelper.fixBaseDir();
 
 		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
 
@@ -90,7 +90,7 @@ public class FluxContentTest {
 
 	@Test
 	public void testGetSetContent() throws Exception {
-		fixBaseDir();
+		FSHelper.fixBaseDir();
 
 		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
 
@@ -100,19 +100,5 @@ public class FluxContentTest {
 		IFSMessage message = new DefaultMessage("message", id);
 		delegate.setContent(text, message);
 		Assert.assertEquals(text, delegate.getContent(message));
-	}
-
-	private void fixBaseDir() {
-		try {
-			DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
-			if (manager.getBaseFile() == null) {
-				manager.setBaseFile(new File(FSHelper.getIntegFolder()));
-				if (!manager.getBaseFile().exists()) {
-					manager.getBaseFile().createFolder();
-				}
-			}
-		} catch (FileSystemException e) {
-			Assert.fail();
-		}
 	}
 }
