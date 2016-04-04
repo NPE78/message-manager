@@ -31,15 +31,15 @@ public class FluxContentServiceDelegate {
 
 	public String getTestFluxContent(IId id) throws ContentNotFetchedException {
 		try {
-			return readFile(VFS.getManager().getBaseFile().resolveFile("testFlux").resolveFile(id.toString()));
-		} catch (IOException e) {
+			return readFile(VFS.getManager().getBaseFile().getChild("testFlux").resolveFile(id.toString()));
+		} catch (Exception e) {
 			throw new ContentNotFetchedException("Exception raised", e);
 		}
 	}
 
 	public String getContent(IFSMessage message) throws ContentNotFetchedException {
 		if (message == null) {
-			throw new ContentNotFetchedException("Couldn't find message");
+			throw new ContentNotFetchedException("Message is null");
 		}
 		if (message.getMessageType() == null) {
 			throw new ContentNotFetchedException("Message type is not provided, it is mandatory to find in the right folder");
@@ -51,8 +51,37 @@ public class FluxContentServiceDelegate {
 				throw new FileNotFoundException(fileFinder.getPath());
 			}
 			return readFile(fileFinder.foundFile);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new ContentNotFetchedException("Exception raised", e);
+		}
+	}
+
+	public void setTestFluxContent(String content, IId id) throws ContentNotSavedException {
+		try {
+			FileObject file = VFS.getManager().getBaseFile().resolveFile("testFlux").resolveFile(id.toString());
+			file.getParent().createFolder();
+			writeFile(file, content);
+		} catch (Exception e) {
+			throw new ContentNotSavedException("Couldn't write into file", e);
+		}
+	}
+
+	public void setContent(String content, IFSMessage message) throws ContentNotSavedException {
+		if (message == null) {
+			throw new ContentNotSavedException("Message is null");
+		}
+		if (message.getMessageType() == null) {
+			throw new ContentNotSavedException("Message type is not provided, it is mandatory to find in the right folder");
+		}
+		FileFinder fileFinder = new FileFinder(message.getMessageType().getName(), message.getFolder(), message.getId().toString());
+		try {
+			fileFinder.find();
+			if (fileFinder.isArchived) {
+				throw new ContentNotSavedException("Cannot write in an archive");
+			}
+			writeFile(fileFinder.foundFile, content);
+		} catch (Exception e) {
+			throw new ContentNotSavedException("Couldn't write into file", e);
 		}
 	}
 
@@ -75,7 +104,7 @@ public class FluxContentServiceDelegate {
 		return StringUtils.trimToNull(sb.toString());
 	}
 
-	public void writeFile(FileObject file, String content) throws IOException {
+	private void writeFile(FileObject file, String content) throws IOException {
 		if (!file.isWriteable()) {
 			throw new IOException("Can't write into file");
 		}
@@ -83,35 +112,6 @@ public class FluxContentServiceDelegate {
 			if (content != null) {
 				outputStream.write(content.getBytes(Charset.forName("UTF-8"))); //$NON-NLS-1$
 			}
-		}
-	}
-
-	public void setTestFluxContent(String content, IId id) throws ContentNotSavedException {
-		try {
-			FileObject file = VFS.getManager().getBaseFile().resolveFile("testFlux").resolveFile(id.toString());
-			file.getParent().createFolder();
-			writeFile(file, content);
-		} catch (IOException e) {
-			throw new ContentNotSavedException("Couldn't write into file", e);
-		}
-	}
-
-	public void setContent(String content, IFSMessage message) throws ContentNotSavedException {
-		if (message == null) {
-			throw new ContentNotSavedException("Couldn't find message");
-		}
-		if (message.getMessageType() == null) {
-			throw new ContentNotSavedException("Message type is not provided, it is mandatory to find in the right folder");
-		}
-		FileFinder fileFinder = new FileFinder(message.getMessageType().getName(), message.getFolder(), message.getId().toString());
-		try {
-			fileFinder.find();
-			if (fileFinder.isArchived) {
-				throw new ContentNotSavedException("Cannot write in an archive");
-			}
-			writeFile(fileFinder.foundFile, content);
-		} catch (IOException e) {
-			throw new ContentNotSavedException("Couldn't write into file", e);
 		}
 	}
 

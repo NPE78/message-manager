@@ -4,6 +4,11 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.VFS;
+import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
+import org.junit.Assert;
+
 /**
  * Created by NicolasP on 31/03/2016.
  */
@@ -25,5 +30,17 @@ public class FSHelper {
 			file = new File(path.substring(0, messageManagerServerIdx) + messageManagerServer + "flux");
 		}
 		return file.getAbsolutePath();
+	}
+
+	public static void fixBaseDir() {
+		try {
+			DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
+				manager.setBaseFile(new File(getIntegFolder()));
+				if (!manager.getBaseFile().exists()) {
+					manager.getBaseFile().createFolder();
+				}
+		} catch (FileSystemException e) {
+			Assert.fail();
+		}
 	}
 }
