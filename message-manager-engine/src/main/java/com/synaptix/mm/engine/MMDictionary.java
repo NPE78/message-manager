@@ -1,5 +1,7 @@
 package com.synaptix.mm.engine;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import com.google.inject.Inject;
 
 /**
@@ -14,6 +16,22 @@ public final class MMDictionary extends SubDictionary {
 	 */
 	@Inject
 	public MMDictionary() {
-		super("MAIN", null); //$NON-NLS-1$
+		super("MAIN", null, new ReentrantReadWriteLock()); //$NON-NLS-1$
+	}
+
+	public void reload(DictionaryBuilder builder) {
+		try {
+			lock.writeLock().lock();
+			clear();
+			builder.build();
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	public interface DictionaryBuilder {
+
+		void build();
+
 	}
 }

@@ -3,6 +3,8 @@ package com.synaptix.mm.engine.unit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -160,7 +162,6 @@ public class DictionaryTest {
 			}
 		}
 
-
 		Assert.assertTrue(dictionary.getSubsetDictionary("MT1.sub").existsSubsetDictionary("ter"));
 		Assert.assertEquals("ter", dictionary.getSubsetDictionary("MT1.sub.ter").getDictionaryName());
 		Assert.assertTrue(dictionary.getSubsetDictionary("MT1.sub.ter").destroy());
@@ -267,5 +268,54 @@ public class DictionaryTest {
 		mt1Dictionary.setBurnAfterUse(true);
 		mt1Dictionary.getProcessingResult(new ArrayList<>());
 		Assert.assertFalse(dictionary.existsSubsetDictionary("MT1"));
+	}
+
+	@Test
+	public void testRebuildInLock() throws Exception {
+		final MMDictionary dictionary = new MMDictionary();
+
+		final CountDownLatch cdl1 = new CountDownLatch(1);
+		final CountDownLatch cdl2 = new CountDownLatch(1);
+		final CountDownLatch cdl3 = new CountDownLatch(1);
+
+		new Thread(() -> {
+
+			cdl2.countDown();
+
+			System.out.println("Building process");
+			List<IProcessError> errorList = new ArrayList<>();
+			errorList.add(new DefaultProcessError("ET1"));
+
+			try {
+				cdl1.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				Assert.fail();
+			}
+
+			System.out.println("Trying to build process result");
+			IProcessingResult processingResult = dictionary.getProcessingResult(errorList);
+			System.out.println("Process result built");
+
+			Assert.assertEquals(ErrorRecyclingKind.WARNING, processingResult.getErrorRecyclingKind());
+
+		}).start();
+
+		cdl2.await();
+		dictionary.reload(() -> {
+			System.out.println("Reloading");
+			cdl1.countDown();
+
+			try {
+				cdl3.await(1, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				Assert.fail();
+			}
+
+			// do stuff, rebuild dictionary
+			System.out.println("Error defined");
+			dictionary.defineError(new DefaultErrorType("ET1", ErrorRecyclingKind.WARNING));
+		});
 	}
 }
