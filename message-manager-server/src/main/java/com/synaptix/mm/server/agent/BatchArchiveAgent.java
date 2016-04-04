@@ -67,7 +67,7 @@ public class BatchArchiveAgent implements ProcessingChannel.Agent {
 		}
 	}
 
-	private URL getScript(URL script) {
+	public URL getScript(URL script) {
 		try {
 			FileSystemManager manager = VFS.getManager();
 			FileObject fileObject = manager.resolveFile(new File(script.getFile()), script.toURI().toString());
