@@ -24,7 +24,12 @@ import com.synaptix.mm.shared.model.IFSMessage;
 public class FluxContentTest {
 
 	@Test
-	public void testGetContentException() {
+	public void testGetContentException() throws Exception {
+		fixBaseDir();
+		DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
+		manager.setBaseFile(manager.resolveFile("../exception_unit"));
+		System.out.println(manager.getBaseFile());
+
 		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
 
 		boolean exceptionRaised = false;
@@ -45,7 +50,12 @@ public class FluxContentTest {
 	}
 
 	@Test
-	public void testSetContentException() {
+	public void testSetContentException() throws Exception {
+		fixBaseDir();
+		DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
+		manager.setBaseFile(manager.resolveFile("../exception_unit"));
+		System.out.println(manager.getBaseFile());
+
 		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
 
 		boolean exceptionRaised = false;
@@ -67,17 +77,7 @@ public class FluxContentTest {
 
 	@Test
 	public void testGetSetTestFluxContent() throws Exception {
-		try {
-			DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
-			if (manager.getBaseFile() == null) {
-				manager.setBaseFile(new File(FSHelper.getIntegFolder()));
-				if (!manager.getBaseFile().exists()) {
-					manager.getBaseFile().createFolder();
-				}
-			}
-		} catch (FileSystemException e) {
-			Assert.fail();
-		}
+		fixBaseDir();
 
 		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
 
@@ -90,6 +90,19 @@ public class FluxContentTest {
 
 	@Test
 	public void testGetSetContent() throws Exception {
+		fixBaseDir();
+
+		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
+
+		IId id = new IdRaw(UUID.randomUUID().toString());
+		String text = "test " + id;
+
+		IFSMessage message = new DefaultMessage("message", id);
+		delegate.setContent(text, message);
+		Assert.assertEquals(text, delegate.getContent(message));
+	}
+
+	private void fixBaseDir() {
 		try {
 			DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
 			if (manager.getBaseFile() == null) {
@@ -101,14 +114,5 @@ public class FluxContentTest {
 		} catch (FileSystemException e) {
 			Assert.fail();
 		}
-
-		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
-
-		IId id = new IdRaw(UUID.randomUUID().toString());
-		String text = "test " + id;
-
-		IFSMessage message = new DefaultMessage("message", id);
-		delegate.setContent(text, message);
-		Assert.assertEquals(text, delegate.getContent(message));
 	}
 }

@@ -31,7 +31,7 @@ public class FluxContentServiceDelegate {
 
 	public String getTestFluxContent(IId id) throws ContentNotFetchedException {
 		try {
-			return readFile(VFS.getManager().getBaseFile().resolveFile("testFlux").resolveFile(id.toString()));
+			return readFile(VFS.getManager().getBaseFile().getChild("testFlux").resolveFile(id.toString()));
 		} catch (Exception e) {
 			throw new ContentNotFetchedException("Exception raised", e);
 		}
