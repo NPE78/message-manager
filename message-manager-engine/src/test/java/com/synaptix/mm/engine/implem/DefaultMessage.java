@@ -25,13 +25,13 @@ public class DefaultMessage implements IFSMessage {
 
 	private final IMessageType messageType;
 
-	private final Instant firstProcessingDate;
-
 	private MessageStatus messageStatus;
 
 	private Instant nextProcessingDate;
 
 	private Instant deadlineDate;
+
+	private Instant firstProcessingDate;
 
 	private String folder;
 
@@ -103,7 +103,7 @@ public class DefaultMessage implements IFSMessage {
 
 	@Override
 	public void setFirstProcessingDate(Instant firstProcessingDate) {
-		LOG.error("Can not set firstProcessingDate");
+		this.firstProcessingDate = firstProcessingDate;
 	}
 
 	@Override
