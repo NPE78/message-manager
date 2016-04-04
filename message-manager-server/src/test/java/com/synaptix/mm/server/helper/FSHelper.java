@@ -35,12 +35,10 @@ public class FSHelper {
 	public static void fixBaseDir() {
 		try {
 			DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
-			if (manager.getBaseFile() == null) {
 				manager.setBaseFile(new File(getIntegFolder()));
 				if (!manager.getBaseFile().exists()) {
 					manager.getBaseFile().createFolder();
 				}
-			}
 		} catch (FileSystemException e) {
 			Assert.fail();
 		}
