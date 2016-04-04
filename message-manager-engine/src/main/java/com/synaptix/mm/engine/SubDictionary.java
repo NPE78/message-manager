@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.ReadWriteLock;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -38,23 +39,21 @@ public class SubDictionary {
 	 * list of known errors for current dictionary
 	 */
 	protected final List<IErrorType> errorTypeList;
-
+	protected final ReadWriteLock lock;
 	private final String dictionaryName;
-
 	private final Map<String, SubDictionary> subsetDictionaryMap;
-
 	private final SubDictionary parentDictionary;
-
 	private boolean burnAfterUse;
 
 	/**
 	 * Add a sub dictionary using {@link MMDictionary#addSubsetDictionary(String)}
 	 */
-	SubDictionary(String name, SubDictionary parentDictionary) {
+	SubDictionary(String name, SubDictionary parentDictionary, ReadWriteLock lock) {
 		super();
 
 		this.dictionaryName = name;
 		this.parentDictionary = parentDictionary;
+		this.lock = lock;
 
 		this.errorTypeList = new ArrayList<>();
 		this.subsetDictionaryMap = new HashMap<>();
@@ -129,7 +128,7 @@ public class SubDictionary {
 
 			SubDictionary newDictionary = subsetDictionaryMap.get(name);
 			if (newDictionary == null) {
-				newDictionary = new SubDictionary(this.dictionaryName + "." + name, this); //$NON-NLS-1$
+				newDictionary = new SubDictionary(this.dictionaryName + "." + name, this, lock); //$NON-NLS-1$
 				subsetDictionaryMap.put(name, newDictionary);
 			}
 			return newDictionary.getOrCreateSubsetDictionary(StringUtils.substring(dictionaryName, idx + 1), checkUnique);
@@ -140,7 +139,7 @@ public class SubDictionary {
 					throw new InvalidDictionaryOperationException(dictionaryName + " is already defined");
 				}
 			} else {
-				newDictionary = new SubDictionary(this.dictionaryName + "." + dictionaryName, this); //$NON-NLS-1$
+				newDictionary = new SubDictionary(this.dictionaryName + "." + dictionaryName, this, lock); //$NON-NLS-1$
 				subsetDictionaryMap.put(dictionaryName, newDictionary);
 			}
 			return newDictionary;
@@ -156,11 +155,19 @@ public class SubDictionary {
 		}
 	}
 
+	/**
+	 * Build a map which represents the errors managed by this dictionary and its children
+	 */
 	public final Map<String, IErrorType> getErrorMap() {
-		Map<String, IErrorType> errorMap = new HashMap<>();
-		errorTypeList.forEach(errorType -> errorMap.put(errorType.getCode(), errorType));
-		subsetDictionaryMap.forEach((s, subDictionary) -> subDictionary.getErrorMap().forEach((s1, errorType) -> errorMap.put(s + "." + s1, errorType)));
-		return errorMap;
+		try {
+			lock.readLock().lock();
+			Map<String, IErrorType> errorMap = new HashMap<>();
+			errorTypeList.forEach(errorType -> errorMap.put(errorType.getCode(), errorType));
+			subsetDictionaryMap.forEach((s, subDictionary) -> subDictionary.getErrorMap().forEach((s1, errorType) -> errorMap.put(s + "." + s1, errorType)));
+			return errorMap;
+		} finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	/**
@@ -184,44 +191,53 @@ public class SubDictionary {
 	 * If an error is unknown for the message type in the current dictionary or in a parent one, an {@link UnknownErrorException} is raised
 	 */
 	public final IProcessingResult getProcessingResult(List<IProcessError> errorList) {
-		IProcessingResult processingResult;
-		if (errorList == null || errorList.isEmpty()) {
-			processingResult = ProcessingResultBuilder.accept();
-		} else {
+		try {
+			lock.readLock().lock();
+			IProcessingResult processingResult;
+			if (errorList == null || errorList.isEmpty()) {
+				processingResult = ProcessingResultBuilder.accept();
+			} else {
+				processingResult = buildProcessingResult(errorList);
+			}
 
-			Worst worst = new Worst();
-
-			Map<IProcessError, ErrorImpact> errorMap = new HashMap<>();
-			Try<List<Pair<IProcessError, ErrorImpact>>> collect = errorList.stream().map(Try.lazyOf(this::add).andThen(trySupplier -> {
-				Try<Pair<IProcessError, ErrorImpact>> pairTry = trySupplier.get();
-				if (pairTry.isSuccess()) {
-					Pair<IProcessError, ErrorImpact> pair = pairTry.asSuccess().getResult();
-					errorMap.put(pair.getKey(), pair.getValue());
-					updateWorst(worst, pair.getValue());
-				} else if (pairTry.isFailure() && pairTry.asFailure().getException() instanceof UnknownErrorException) {
-					IProcessError processError = ((UnknownErrorException) pairTry.asFailure().getException()).getProcessError();
-					ErrorImpact errorImpact = new ErrorImpact(ErrorRecyclingKind.MANUAL, null, dictionaryName);
-					errorMap.put(processError, errorImpact);
-					updateWorst(worst, errorImpact);
+			if (burnAfterUse) {
+				try {
+					destroy();
+				} catch (InvalidDictionaryOperationException ex) {
+					LOG.error("Couldn't destroy after use", ex);
 				}
-				return trySupplier;
-			})).collect(Try.collect());
-			Exception e = null;
-			if (collect.isFailure()) {
-				e = collect.asFailure().getException();
 			}
+			return processingResult;
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
 
-			processingResult = buildProcessingResult(worst, errorMap, e);
+	private IProcessingResult buildProcessingResult(List<IProcessError> errorList) {
+		IProcessingResult processingResult;
+		Worst worst = new Worst();
+
+		Map<IProcessError, ErrorImpact> errorMap = new HashMap<>();
+		Try<List<Pair<IProcessError, ErrorImpact>>> collect = errorList.stream().map(Try.lazyOf(this::add).andThen(trySupplier -> {
+			Try<Pair<IProcessError, ErrorImpact>> pairTry = trySupplier.get();
+			if (pairTry.isSuccess()) {
+				Pair<IProcessError, ErrorImpact> pair = pairTry.asSuccess().getResult();
+				errorMap.put(pair.getKey(), pair.getValue());
+				updateWorst(worst, pair.getValue());
+			} else if (pairTry.isFailure() && pairTry.asFailure().getException() instanceof UnknownErrorException) {
+				IProcessError processError = ((UnknownErrorException) pairTry.asFailure().getException()).getProcessError();
+				ErrorImpact errorImpact = new ErrorImpact(ErrorRecyclingKind.MANUAL, null, dictionaryName);
+				errorMap.put(processError, errorImpact);
+				updateWorst(worst, errorImpact);
+			}
+			return trySupplier;
+		})).collect(Try.collect());
+		Exception e = null;
+		if (collect.isFailure()) {
+			e = collect.asFailure().getException();
 		}
 
-		if (burnAfterUse) {
-			try {
-				destroy();
-			} catch (InvalidDictionaryOperationException ex) {
-				LOG.error("Couldn't destroy after use", ex);
-			}
-		}
-
+		processingResult = compileProcessingResult(worst, errorMap, e);
 		return processingResult;
 	}
 
@@ -292,7 +308,7 @@ public class SubDictionary {
 		worst.delay = Math.max(errorImpact.getNextRecyclingDuration() != null ? errorImpact.getNextRecyclingDuration() : 0, worst.delay != null ? worst.delay : 0);
 	}
 
-	private IProcessingResult buildProcessingResult(Worst worst, Map<IProcessError, ErrorImpact> errorMap, Exception e) {
+	private IProcessingResult compileProcessingResult(Worst worst, Map<IProcessError, ErrorImpact> errorMap, Exception e) {
 		switch (worst.errorRecyclingKind) {
 			case AUTOMATIC:
 				Instant nextProcessingDate = Instant.now();
