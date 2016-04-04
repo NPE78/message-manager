@@ -3,6 +3,7 @@ package com.synaptix.mm.engine.implem;
 import java.io.File;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -39,15 +40,15 @@ public class DefaultMessage implements IFSMessage {
 	private String content;
 
 	public DefaultMessage(String messageType) {
-		this(messageType, UUID.randomUUID());
+		this(messageType, null);
 	}
 
 	public DefaultMessage(String messageType, Serializable id) {
 		super();
 
-		this.id = id;
+		this.id = id == null ? UUID.randomUUID() : id;
 		this.messageType = messageType != null ? new DefaultMessageType(messageType) : null;
-		this.firstProcessingDate = id != null ? null : Instant.now();
+		this.firstProcessingDate = id == null ? null : Instant.now().minus(2, ChronoUnit.MINUTES);
 	}
 
 	@Override
