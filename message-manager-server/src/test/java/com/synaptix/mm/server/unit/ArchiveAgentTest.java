@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -67,16 +68,16 @@ public class ArchiveAgentTest {
 		injector.injectMembers(agent);
 		injector.injectMembers(mmInjector);
 
-		File file = createFile();
-
-		mmInjector.setWorkDir(file.getParentFile());
-
-		new File(file.getParentFile().getAbsolutePath() + "/accepted/").mkdirs();
-		new File(file.getParentFile().getAbsolutePath() + "/rejected/").mkdirs();
-
 		Assert.assertEquals(fileDestination.getURL(), agent.getScript(script));
 
-		agent.work(mmInjector.getWorkDir().getAbsolutePath(), null);
+		// test with files
+		File file = createFile();
+
+		File archivePath = new File(file.getParentFile().getAbsolutePath() + "/archiveTest" + UUID.randomUUID().toString());
+		archivePath.mkdirs();
+		mmInjector.setWorkDir(archivePath);
+
+		agent.work(archivePath.getAbsolutePath(), null);
 		if (SystemUtils.IS_OS_LINUX) {
 			Assert.assertFalse(file.exists());
 		}

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,9 +47,16 @@ public class InjectorTest {
 		try (FileWriter writer = new FileWriter(file)) {
 			writer.write("test mmInjector");
 		}
-		mmInjector.setWorkDir(file.getParentFile());
-		new File(file.getParentFile().getAbsolutePath() + "/accepted/").mkdirs();
-		new File(file.getParentFile().getAbsolutePath() + "/rejected/").mkdirs();
+		File injectorPath = new File(file.getParentFile().getAbsolutePath() + "/injectorTest" + UUID.randomUUID().toString());
+		injectorPath.mkdirs();
+
+		File f = new File(injectorPath.getAbsolutePath() + "/" + file.getName());
+		file.renameTo(f);
+		file = f;
+
+		mmInjector.setWorkDir(injectorPath);
+		new File(injectorPath.getAbsolutePath() + "/accepted/").mkdirs();
+		new File(injectorPath.getAbsolutePath() + "/rejected/").mkdirs();
 
 		mmInjector.inject(new FolderEventTriggerTask.NewFileTriggerEvent(file, null));
 
