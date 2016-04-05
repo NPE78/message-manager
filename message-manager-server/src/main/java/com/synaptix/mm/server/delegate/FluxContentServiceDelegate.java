@@ -29,6 +29,9 @@ public class FluxContentServiceDelegate {
 
 	private static final Log LOG = LogFactory.getLog(FluxContentServiceDelegate.class);
 
+	/**
+	 * Get the content of a test flux
+	 */
 	public String getTestFluxContent(IId id) throws ContentNotFetchedException {
 		try {
 			return readFile(VFS.getManager().getBaseFile().getChild("testFlux").resolveFile(id.toString()));
@@ -37,6 +40,9 @@ public class FluxContentServiceDelegate {
 		}
 	}
 
+	/**
+	 * Get the content of a message
+	 */
 	public String getContent(IFSMessage message) throws ContentNotFetchedException {
 		if (message == null) {
 			throw new ContentNotFetchedException("Message is null");
@@ -56,6 +62,9 @@ public class FluxContentServiceDelegate {
 		}
 	}
 
+	/**
+	 * Set the content of a test flux
+	 */
 	public void setTestFluxContent(String content, IId id) throws ContentNotSavedException {
 		try {
 			FileObject file = VFS.getManager().getBaseFile().resolveFile("testFlux").resolveFile(id.toString());
@@ -66,6 +75,9 @@ public class FluxContentServiceDelegate {
 		}
 	}
 
+	/**
+	 * Set the content of a message
+	 */
 	public void setContent(String content, IFSMessage message) throws ContentNotSavedException {
 		if (message == null) {
 			throw new ContentNotSavedException("Message is null");

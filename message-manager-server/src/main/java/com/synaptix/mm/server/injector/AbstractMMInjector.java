@@ -46,6 +46,9 @@ public abstract class AbstractMMInjector extends AbstractMsgInjector implements 
 	@Named("messageTypeMap")
 	private Map<String, IMessageType> messageTypeMap;
 
+	/**
+	 * Create an injector by giving an agent class. Each file published to its workdir (deduced from the agent name) will be handled by the agent
+	 */
 	public AbstractMMInjector(Class<? extends ProcessingChannel.Agent> agentClass) {
 		super(computeWorkDir(agentClass));
 
@@ -65,11 +68,17 @@ public abstract class AbstractMMInjector extends AbstractMsgInjector implements 
 		return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, agentName.replaceAll("Agent[^a-z]?", ""));
 	}
 
+	/**
+	 * Returns the name of the injector (deduced from the SimpleName of the agent class)
+	 */
 	@Override
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Inject an event that occured on the workdir
+	 */
 	@Override
 	public final Object inject(FolderEventTriggerTask.FileTriggerEvent evt) {
 		File file = (File) evt.getAttachment();
@@ -100,6 +109,9 @@ public abstract class AbstractMMInjector extends AbstractMsgInjector implements 
 	}
 
 	@Override
+	/**
+	 * Inject a message from a file
+	 */
 	public final void injectMessage(String s, File file) {
 
 		// we could check if the filename matches an ID to know if we should better recycle it
@@ -114,6 +126,9 @@ public abstract class AbstractMMInjector extends AbstractMsgInjector implements 
 		injectLiseaMessage(message);
 	}
 
+	/**
+	 * Inject a message (can be recycled or new), manages deadline & first processing dates, and handles it to the injector's agent
+	 */
 	public final void injectLiseaMessage(IMessage message) {
 
 		manageDeadlineDate(message);
@@ -136,8 +151,14 @@ public abstract class AbstractMMInjector extends AbstractMsgInjector implements 
 		}
 	}
 
+	/**
+	 * Called to create a new message
+	 */
 	protected abstract IFSMessage createMessage();
 
+	/**
+	 * Called to persist a message (database, ...)
+	 */
 	protected abstract void saveOrUpdateMessage(IMessage message);
 
 	private void manageDeadlineDate(IMessage message) {
@@ -166,6 +187,9 @@ public abstract class AbstractMMInjector extends AbstractMsgInjector implements 
 		}
 	}
 
+	/**
+	 * This returns the name of the agent associated to the injector
+	 */
 	public final String getAgentName() {
 		return agentClass.getSimpleName();
 	}

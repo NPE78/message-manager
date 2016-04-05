@@ -19,6 +19,9 @@ public final class MMDictionary extends SubDictionary {
 		super("MAIN", null, new ReentrantReadWriteLock()); //$NON-NLS-1$
 	}
 
+	/**
+	 * Reload the main dictionary in a thread safe method.
+	 */
 	public void reload(DictionaryBuilder builder) {
 		try {
 			lock.writeLock().lock();
@@ -29,6 +32,9 @@ public final class MMDictionary extends SubDictionary {
 		}
 	}
 
+	/**
+	 * This is the callback used by the {@link #reload} method when reloading the dictionary
+	 */
 	public interface DictionaryBuilder {
 
 		void build();
