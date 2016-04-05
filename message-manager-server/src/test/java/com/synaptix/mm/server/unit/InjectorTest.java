@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,7 +30,7 @@ public class InjectorTest {
 	public void testInjector() throws Exception {
 		FSHelper.fixBaseDir();
 
-		DefaultMMInjector injector = new DefaultMMInjector();
+		DefaultMMInjector mmInjector = new DefaultMMInjector();
 
 		Injector guiceInjector = Guice.createInjector(new AbstractModule() {
 			@Override
@@ -40,19 +41,26 @@ public class InjectorTest {
 				}).annotatedWith(Names.named("messageTypeMap")).toInstance(messageTypeMap);
 			}
 		});
-		guiceInjector.injectMembers(injector);
+		guiceInjector.injectMembers(mmInjector);
 
 		File file = File.createTempFile("test_injector", "txt");
 		try (FileWriter writer = new FileWriter(file)) {
-			writer.write("test injector");
+			writer.write("test mmInjector");
 		}
-		injector.setWorkDir(file.getParentFile());
-		new File(file.getParentFile().getAbsolutePath() + "/accepted/").mkdirs();
-		new File(file.getParentFile().getAbsolutePath() + "/rejected/").mkdirs();
+		File injectorPath = new File(file.getParentFile().getAbsolutePath() + "/injectorTest" + UUID.randomUUID().toString() + "/");
+		injectorPath.mkdirs();
 
-		injector.inject(new FolderEventTriggerTask.NewFileTriggerEvent(file, null));
+		File f = new File(injectorPath.getAbsolutePath() + "/" + file.getName());
+		file.renameTo(f);
+		file = f;
 
-		IFSMessage lastMessage = injector.getLastMessage();
+		mmInjector.setWorkDir(injectorPath);
+		new File(injectorPath.getAbsolutePath() + "/accepted/").mkdirs();
+		new File(injectorPath.getAbsolutePath() + "/rejected/").mkdirs();
+
+		mmInjector.inject(new FolderEventTriggerTask.NewFileTriggerEvent(file, null));
+
+		IFSMessage lastMessage = mmInjector.getLastMessage();
 		Assert.assertEquals("accepted", lastMessage.getFolder());
 		Assert.assertEquals("DEFAULT", lastMessage.getMessageType().getName());
 		Assert.assertNotNull(lastMessage.getFirstProcessingDate());
