@@ -80,6 +80,7 @@ public class ArchiveAgentTest {
 
 		agent.work(archivePath.getAbsolutePath(), null);
 		if (SystemUtils.IS_OS_LINUX) {
+			System.out.println(file);
 			Assert.assertFalse(file.exists());
 		}
 
@@ -87,6 +88,7 @@ public class ArchiveAgentTest {
 		file.renameTo(new File(archivePath.getAbsolutePath() + "/" + file.getName()));
 		agent.work(null, null);
 		if (SystemUtils.IS_OS_LINUX) {
+			System.out.println(file);
 			Assert.assertFalse(file.exists());
 		}
 	}
