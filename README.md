@@ -30,7 +30,7 @@ Contient le dictionnaire et le moteur du message manager. Contient également l'
 
 A pour dépendance le projet *engine*
 
-A pour dépendance le process manager de Synaptix, et propose une implémentation par défaut pour un process : `AbstractMMAgent`.
+A pour dépendance le process manager de Synaptix, et propose une implémentation par défaut pour un process : `AbstractMMAgent` ainsi qu'une implémentation par défaut pour un injecteur : `AbstractMMInjector`.
 
 [Cf documentation sur le wiki](https://gitlab.talanlabs.com/nicolas-poste/message-manager/wikis/home#workflow-dun-agent)
 
