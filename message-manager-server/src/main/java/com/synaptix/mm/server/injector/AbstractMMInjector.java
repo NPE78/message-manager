@@ -156,6 +156,7 @@ public abstract class AbstractMMInjector extends AbstractMsgInjector implements 
 	}
 
 	private void renameAndMoveFile(IFSMessage message, File file) {
+		// this can not happen if the message is being rejected: it would have no file
 		File dest = new File(file.getParentFile() + File.separator + "accepted" + File.separator + message.getId().toString());
 		boolean moved = file.renameTo(dest); //$NON-NLS-1$
 		if (moved) {

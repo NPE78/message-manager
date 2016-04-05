@@ -16,7 +16,6 @@ import com.synaptix.mm.engine.implem.DefaultMessage;
 import com.synaptix.mm.engine.model.DefaultMessageType;
 import com.synaptix.mm.server.implem.DefaultMMInjector;
 import com.synaptix.mm.shared.model.IFSMessage;
-import com.synaptix.mm.shared.model.domain.MessageStatus;
 
 /**
  * Created by NicolasP on 01/04/2016.
@@ -65,8 +64,6 @@ public class ITInjector extends AbstractMMTest {
 		message.setFirstProcessingDate(Instant.now().minus(10, ChronoUnit.MINUTES));
 		injector.injectLiseaMessage(message);
 
-
-		Assert.assertEquals(MessageStatus.REJECTED, message.getMessageStatus());
 		Assert.assertNotNull(message.getFirstProcessingDate());
 		Assert.assertNotNull(message.getId());
 	}
