@@ -76,6 +76,7 @@ public class ArchiveAgentTest {
 		File archivePath = new File(file.getParentFile().getAbsolutePath() + "/archiveTest" + UUID.randomUUID().toString());
 		archivePath.mkdirs();
 		mmInjector.setWorkDir(archivePath);
+		file.renameTo(new File(archivePath.getAbsolutePath() + "/" + file.getName()));
 
 		agent.work(archivePath.getAbsolutePath(), null);
 		if (SystemUtils.IS_OS_LINUX) {
@@ -83,7 +84,7 @@ public class ArchiveAgentTest {
 		}
 
 		file = createFile();
-
+		file.renameTo(new File(archivePath.getAbsolutePath() + "/" + file.getName()));
 		agent.work(null, null);
 		if (SystemUtils.IS_OS_LINUX) {
 			Assert.assertFalse(file.exists());
