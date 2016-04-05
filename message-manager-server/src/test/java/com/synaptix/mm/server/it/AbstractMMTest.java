@@ -34,13 +34,13 @@ public class AbstractMMTest {
 
 	private boolean started;
 
+	private IServer server;
+
 	@Before
 	public void init() {
 		ServerHelper.configureServer();
 
 		createInjector();
-
-		getServer(); // to create and initialize server (but doesn't start)
 
 		injector.injectMembers(this);
 
@@ -49,11 +49,15 @@ public class AbstractMMTest {
 		}
 	}
 
+	protected String getIntegFolder() {
+		return FSHelper.getIntegFolder();
+	}
+
 	/**
 	 * Start the integrator
 	 */
 	protected final void startIntegrator() {
-		getServer().start(FSHelper.getIntegFolder());
+		server.start(getIntegFolder());
 		this.started = true;
 	}
 
@@ -63,6 +67,7 @@ public class AbstractMMTest {
 
 	protected void createInjector() {
 		injector = MainIntegratorBoot.createInjector(getPropertyUrl(), buildIntegratorTestModule());
+		server = injector.getInstance(getServerClass());
 	}
 
 	protected AbstractSynaptixIntegratorServletModule buildIntegratorTestModule() {
@@ -77,10 +82,7 @@ public class AbstractMMTest {
 	 * Start the integrator by using {@link #startIntegrator()}
 	 */
 	protected final IServer getServer() {
-		if (injector == null) {
-			return null;
-		}
-		return injector.getInstance(getServerClass());
+		return server;
 	}
 
 	protected final <I> I getInstance(Class<I> clazz) {
@@ -90,7 +92,6 @@ public class AbstractMMTest {
 	@After
 	public void stopIntegrator() {
 		if (started) {
-			IServer server = getServer();
 			if (server != null) {
 				server.stop();
 			}
@@ -102,8 +103,6 @@ public class AbstractMMTest {
 	}
 
 	protected final void waitIntegrator(int timeout) {
-		IServer server = getServer();
-
 		final CountDownLatch cdl = new CountDownLatch(1);
 		Thread thread = new Thread(() -> {
 			while (server.isRunning()) {
