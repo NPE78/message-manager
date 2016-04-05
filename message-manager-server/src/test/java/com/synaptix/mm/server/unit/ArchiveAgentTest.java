@@ -39,6 +39,7 @@ public class ArchiveAgentTest {
 		FSHelper.fixBaseDir();
 
 		BatchArchiveAgent agent = new BatchArchiveAgent();
+		final DefaultMMInjector mmInjector = new DefaultMMInjector();
 
 		URL script = getClass().getClassLoader().getResource("dirarch");
 		agent.getScript(script); // create of update script
@@ -60,10 +61,9 @@ public class ArchiveAgentTest {
 				).toInstance(injectorSet);
 				bind(new TypeLiteral<Map<String, IMessageType>>() {
 				}).annotatedWith(Names.named("messageTypeMap")).toInstance(new HashMap<>());
+				bind(DefaultMMInjector.class).toInstance(mmInjector);
 			}
 		});
-
-		DefaultMMInjector mmInjector = new DefaultMMInjector();
 
 		injector.injectMembers(agent);
 		injector.injectMembers(mmInjector);
