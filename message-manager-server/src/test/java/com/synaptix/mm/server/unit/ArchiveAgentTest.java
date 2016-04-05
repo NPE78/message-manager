@@ -73,7 +73,7 @@ public class ArchiveAgentTest {
 		// test with files
 		File file = createFile();
 
-		File archivePath = new File(file.getParentFile().getAbsolutePath() + "/archiveTest" + UUID.randomUUID().toString());
+		File archivePath = new File(file.getParentFile().getAbsolutePath() + "/archiveTest" + UUID.randomUUID().toString() + "/");
 		archivePath.mkdirs();
 		mmInjector.setWorkDir(archivePath);
 		file.renameTo(new File(archivePath.getAbsolutePath() + "/" + file.getName()));

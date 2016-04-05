@@ -47,7 +47,7 @@ public class InjectorTest {
 		try (FileWriter writer = new FileWriter(file)) {
 			writer.write("test mmInjector");
 		}
-		File injectorPath = new File(file.getParentFile().getAbsolutePath() + "/injectorTest" + UUID.randomUUID().toString());
+		File injectorPath = new File(file.getParentFile().getAbsolutePath() + "/injectorTest" + UUID.randomUUID().toString() + "/");
 		injectorPath.mkdirs();
 
 		File f = new File(injectorPath.getAbsolutePath() + "/" + file.getName());
