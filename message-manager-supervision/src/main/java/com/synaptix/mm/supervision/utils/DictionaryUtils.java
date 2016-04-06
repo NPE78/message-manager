@@ -30,7 +30,7 @@ public class DictionaryUtils {
 		}
 
 		Map<String, IErrorType> errorMap = dico.getErrorMap();
-		DictionaryModelDto root = new DictionaryModelDto("MAIN"); //$NON-NLS-1$
+		DictionaryModelDto root = new DictionaryModelDto(dico.getDictionaryName());
 		Map<String, DictionaryModelDto> map = new HashMap<>();
 		for (Map.Entry<String, IErrorType> entry : errorMap.entrySet()) {
 			DictionaryModelDto currentModel = root;
