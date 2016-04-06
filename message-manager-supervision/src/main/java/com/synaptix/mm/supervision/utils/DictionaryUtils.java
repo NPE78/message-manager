@@ -26,10 +26,11 @@ public class DictionaryUtils {
 	public static DictionaryModelDto getDictionaryDto(String subDictionary) throws UnknownDictionaryException {
 		SubDictionary dico = dictionary;
 		String description = "This is the root dictionary";
+		String s = "MAIN";
 		if (StringUtils.isNotBlank(subDictionary)) {
 			dico = dictionary.getSubsetDictionary(subDictionary);
-			String t = "." + subDictionary;
-			description = "This is a sub dictionary of MAIN" +  StringUtils.substring(t, 0, t.lastIndexOf(".")); //$NON-NLS-2$
+			s = s + "." + subDictionary;
+			description = "This is a sub dictionary of " + StringUtils.substring(s, 0, s.lastIndexOf(".")); //$NON-NLS-2$
 		}
 
 		Map<String, IErrorType> errorMap = dico.getErrorMap();
@@ -46,6 +47,8 @@ public class DictionaryUtils {
 				DictionaryModelDto newModel = map.get(r);
 				if (newModel == null) {
 					newModel = new DictionaryModelDto(d);
+					String t = s + "." + r;
+					newModel.setDescription("This is a sub dictionary of " + StringUtils.substring(t, 0, t.lastIndexOf(".")));
 					currentModel.getSubDictionaryList().add(newModel);
 					map.put(r, newModel);
 				}
