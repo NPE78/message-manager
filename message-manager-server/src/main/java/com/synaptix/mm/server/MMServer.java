@@ -117,19 +117,8 @@ public class MMServer implements IServer {
 	}
 
 	private void initAgents() {
-		List<AbstractMMAgent<?>> agentList = new ArrayList<>();
-		Set<Class<?>> channelSet = new HashSet<>();
-		ProcessEngine.getInstance().getChannels().stream().filter(channelSlot -> BaseEngine.ChannelSlotImpl.class.isAssignableFrom(channelSlot.getClass())).forEach(channelSlot -> {
-			BaseEngine.ChannelSlotImpl channelSlotImpl = (BaseEngine.ChannelSlotImpl) channelSlot;
-			if (ProcessingChannel.class.isAssignableFrom(channelSlotImpl.getPluggedChannel().getClass())) {
-				ProcessingChannel processingChannel = (ProcessingChannel) channelSlotImpl.getPluggedChannel();
-				Class<? extends ProcessingChannel.Agent> clazz = processingChannel.getAgent().getClass();
-				if (AbstractMMAgent.class.isAssignableFrom(clazz) && !channelSet.contains(clazz)) {
-					channelSet.add(clazz);
-					agentList.add((AbstractMMAgent<?>) processingChannel.getAgent());
-				}
-			}
-		});
+		List<AbstractMMAgent<?>> agentList = getAgentList();
+
 		final CountDownLatch cdl = new CountDownLatch(agentList.size());
 		List<Thread> threadList = new ArrayList<>();
 		for (final AbstractMMAgent<?> agentProcess : agentList) {
@@ -152,6 +141,26 @@ public class MMServer implements IServer {
 		}
 
 		LOG.info("End of identification");
+	}
+
+	/**
+	 * Returns a list of agents known by MM
+	 */
+	public final List<AbstractMMAgent<?>> getAgentList() {
+		List<AbstractMMAgent<?>> agentList = new ArrayList<>();
+		Set<Class<?>> channelSet = new HashSet<>();
+		ProcessEngine.getInstance().getChannels().stream().filter(channelSlot -> BaseEngine.ChannelSlotImpl.class.isAssignableFrom(channelSlot.getClass())).forEach(channelSlot -> {
+			BaseEngine.ChannelSlotImpl channelSlotImpl = (BaseEngine.ChannelSlotImpl) channelSlot;
+			if (ProcessingChannel.class.isAssignableFrom(channelSlotImpl.getPluggedChannel().getClass())) {
+				ProcessingChannel processingChannel = (ProcessingChannel) channelSlotImpl.getPluggedChannel();
+				Class<? extends Agent> clazz = processingChannel.getAgent().getClass();
+				if (AbstractMMAgent.class.isAssignableFrom(clazz) && !channelSet.contains(clazz)) {
+					channelSet.add(clazz);
+					agentList.add((AbstractMMAgent<?>) processingChannel.getAgent());
+				}
+			}
+		});
+		return agentList;
 	}
 
 	private void initGates() {
