@@ -25,12 +25,16 @@ public class DictionaryUtils {
 
 	public static DictionaryModelDto getDictionaryDto(String subDictionary) throws UnknownDictionaryException {
 		SubDictionary dico = dictionary;
+		String description = "This is the root dictionary";
 		if (StringUtils.isNotBlank(subDictionary)) {
 			dico = dictionary.getSubsetDictionary(subDictionary);
+			String t = "." + subDictionary;
+			description = "This is a sub dictionary of MAIN" +  StringUtils.substring(t, 0, t.lastIndexOf("."));
 		}
 
 		Map<String, IErrorType> errorMap = dico.getErrorMap();
 		DictionaryModelDto root = new DictionaryModelDto(dico.getDictionaryName());
+		root.setDescription(description);
 		Map<String, DictionaryModelDto> map = new HashMap<>();
 		for (Map.Entry<String, IErrorType> entry : errorMap.entrySet()) {
 			DictionaryModelDto currentModel = root;

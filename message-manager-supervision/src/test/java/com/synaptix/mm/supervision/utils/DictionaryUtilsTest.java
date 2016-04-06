@@ -30,6 +30,7 @@ public class DictionaryUtilsTest extends AbstractSupervisionTest {
 
 		DictionaryModelDto dictionaryDto = DictionaryUtils.getDictionaryDto(null);
 		Assert.assertEquals("MAIN", dictionaryDto.getDictionaryName());
+		Assert.assertEquals("This is the root dictionary", dictionaryDto.getDescription());
 		Assert.assertEquals(1, dictionaryDto.getErrorList().size());
 		Assert.assertTrue(dictionaryDto.getErrorList().get(0).startsWith("TEST "));
 		Assert.assertEquals(1, dictionaryDto.getSubDictionaryList().size());
@@ -41,9 +42,14 @@ public class DictionaryUtilsTest extends AbstractSupervisionTest {
 
 		dictionaryDto = DictionaryUtils.getDictionaryDto("sub");
 		Assert.assertEquals("sub", dictionaryDto.getDictionaryName());
+		Assert.assertEquals("This is a sub dictionary of MAIN", dictionaryDto.getDescription());
 		Assert.assertEquals(0, dictionaryDto.getErrorList().size());
 		Assert.assertEquals(1, dictionaryDto.getSubDictionaryList().size());
 		Assert.assertEquals(1, dictionaryDto.getSubDictionaryList().get(0).getErrorList().size());
 		Assert.assertTrue(dictionaryDto.getSubDictionaryList().get(0).getErrorList().get(0).startsWith("TEST2 "));
+
+		dictionaryDto = DictionaryUtils.getDictionaryDto("sub.ter");
+		Assert.assertEquals("ter", dictionaryDto.getDictionaryName());
+		Assert.assertEquals("This is a sub dictionary of MAIN.sub", dictionaryDto.getDescription());
 	}
 }

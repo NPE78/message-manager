@@ -11,11 +11,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class DictionaryModelDto {
 
-	final String dictionaryName;
+	private final String dictionaryName;
 
-	final List<String> errorList;
+	private String description;
 
-	final List<DictionaryModelDto> subDictionaryList;
+	private final List<String> errorList;
+
+	private final List<DictionaryModelDto> subDictionaryList;
 
 	public DictionaryModelDto(String dictionaryName) {
 		this.dictionaryName = dictionaryName;
@@ -25,6 +27,14 @@ public class DictionaryModelDto {
 
 	public String getDictionaryName() {
 		return dictionaryName;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public List<String> getErrorList() {
