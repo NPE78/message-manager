@@ -29,7 +29,7 @@ public class DictionaryUtils {
 		if (StringUtils.isNotBlank(subDictionary)) {
 			dico = dictionary.getSubsetDictionary(subDictionary);
 			String t = "." + subDictionary;
-			description = "This is a sub dictionary of MAIN" +  StringUtils.substring(t, 0, t.lastIndexOf("."));
+			description = "This is a sub dictionary of MAIN" +  StringUtils.substring(t, 0, t.lastIndexOf(".")); //$NON-NLS-2$
 		}
 
 		Map<String, IErrorType> errorMap = dico.getErrorMap();
