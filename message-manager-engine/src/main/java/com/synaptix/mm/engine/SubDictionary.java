@@ -150,7 +150,7 @@ public class SubDictionary {
 		if ("MAIN".equals(name)) { //$NON-NLS-1$
 			throw new InvalidDictionaryOperationException("MAIN is reserved");
 		}
-		if (StringUtils.isBlank(name) || name.matches(".*\\s.*")) {
+		if (StringUtils.isBlank(name) || name.matches(".*\\s.*")) { //$NON-NLS-1$
 			throw new InvalidDictionaryOperationException("Cannot add subset dictionary with blank(s) in name");
 		}
 	}

@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.synaptix.mm.server.implem.DefaultMMAgent;
-import com.synaptix.mm.server.it.AbstractMMTest;
+import com.synaptix.mm.supervision.guice.MMSupervisionModule;
 import com.synaptix.mm.supervision.model.AgentInfoDto;
 import com.synaptix.pmgr.core.lib.ProcessEngine;
 import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
@@ -17,7 +17,7 @@ import com.synaptix.pmgr.guice.AbstractSynaptixIntegratorServletModule;
 /**
  * Created by NicolasP on 29/10/2015.
  */
-public class SupervisionUtilsTest extends AbstractMMTest {
+public class SupervisionUtilsTest extends AbstractSupervisionTest {
 
 	@Test
 	public void testGetAgentInfo() throws Exception {
@@ -44,6 +44,8 @@ public class SupervisionUtilsTest extends AbstractMMTest {
 
 			@Override
 			protected void configure() {
+				install(new MMSupervisionModule());
+
 				bindAgent(MyMMAgent.class, 5, 10);
 				bindAgent(MySingletonMMAgent.class, 1, 1);
 			}
