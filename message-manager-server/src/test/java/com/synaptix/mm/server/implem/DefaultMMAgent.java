@@ -1,5 +1,6 @@
 package com.synaptix.mm.server.implem;
 
+import java.time.Instant;
 import java.util.Map;
 
 import com.google.inject.Inject;
@@ -38,8 +39,9 @@ public class DefaultMMAgent extends AbstractMMAgent<IDefaultProcessContext> {
 	}
 
 	@Override
-	public void notifyMessageStatus(MessageStatus newMessageStatus) {
+	public void notifyMessageStatus(MessageStatus newMessageStatus, Instant nextProcessingDate) {
 		getProcessContext().getMessage().setMessageStatus(newMessageStatus);
+		getProcessContext().getMessage().setNextProcessingDate(nextProcessingDate);
 	}
 
 	@Override

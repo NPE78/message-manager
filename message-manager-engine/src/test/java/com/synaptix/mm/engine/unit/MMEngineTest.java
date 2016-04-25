@@ -1,5 +1,6 @@
 package com.synaptix.mm.engine.unit;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -130,7 +131,7 @@ public class MMEngineTest {
 		}
 
 		@Override
-		public void notifyMessageStatus(MessageStatus newMessageStatus) {
+		public void notifyMessageStatus(MessageStatus newMessageStatus, Instant nextProcessingDate) {
 		}
 
 		@Override
@@ -166,7 +167,7 @@ public class MMEngineTest {
 		}
 
 		@Override
-		public void notifyMessageStatus(MessageStatus newMessageStatus) {
+		public void notifyMessageStatus(MessageStatus newMessageStatus, Instant nextProcessingDate) {
 		}
 
 		@Override
@@ -206,7 +207,7 @@ public class MMEngineTest {
 		}
 
 		@Override
-		public void notifyMessageStatus(MessageStatus newMessageStatus) {
+		public void notifyMessageStatus(MessageStatus newMessageStatus, Instant nextProcessingDate) {
 		}
 
 		@Override

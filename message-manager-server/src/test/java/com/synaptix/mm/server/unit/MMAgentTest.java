@@ -1,5 +1,6 @@
 package com.synaptix.mm.server.unit;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -176,7 +177,7 @@ public class MMAgentTest extends AbstractMMTest {
 		}
 
 		@Override
-		public void notifyMessageStatus(MessageStatus newMessageStatus) {
+		public void notifyMessageStatus(MessageStatus newMessageStatus, Instant nextProcessingDate) {
 		}
 
 		@Override
