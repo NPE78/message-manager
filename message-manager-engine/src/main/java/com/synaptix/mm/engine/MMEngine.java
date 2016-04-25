@@ -86,7 +86,7 @@ public final class MMEngine {
 		if (processingResult.getState() == IProcessingResult.State.INVALID) {
 			switch (processingResult.getErrorRecyclingKind()) {
 				case AUTOMATIC:
-					process.notifyMessageStatus(MessageStatus.TO_RECYCLE_AUTOMATICALLY);
+					process.notifyMessageStatus(MessageStatus.TO_RECYCLE_AUTOMATICALLY, processingResult.getNextProcessingDate());
 					break;
 				case MANUAL:
 					process.notifyMessageStatus(MessageStatus.TO_RECYCLE_MANUALLY);

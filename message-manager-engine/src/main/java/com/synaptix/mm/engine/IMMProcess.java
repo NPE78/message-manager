@@ -1,5 +1,6 @@
 package com.synaptix.mm.engine;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +50,15 @@ public interface IMMProcess {
 	 * Called to notify the implementing class that the message status has to be changed.
 	 * If needed, use this to update the message in the database or elsewhere.
 	 */
-	void notifyMessageStatus(MessageStatus newMessageStatus);
+	default void notifyMessageStatus(MessageStatus newMessageStatus) {
+		notifyMessageStatus(newMessageStatus, null);
+	}
+
+	/**
+	 * Called to notify the implementing class that the message status has to be changed.
+	 * If needed, use this to update the message in the database or elsewhere.
+	 */
+	void notifyMessageStatus(MessageStatus newMessageStatus, Instant nextProcessingDate);
 
 	/**
 	 * Get the list of errors raised. Used and enriched by the mm engine, see {@link IProcessingResult#getErrorMap()}.
