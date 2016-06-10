@@ -258,6 +258,14 @@ public class MMServer implements IServer {
 	}
 
 	/**
+	 * Returns true if the server is started
+	 * @return
+	 */
+	public boolean isStarted() {
+		return started;
+	}
+
+	/**
 	 * Returns a set of agents which are running at that moment
 	 */
 	@Override

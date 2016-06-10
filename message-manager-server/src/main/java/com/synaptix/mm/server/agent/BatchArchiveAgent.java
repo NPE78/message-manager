@@ -119,7 +119,7 @@ public class BatchArchiveAgent implements ProcessingChannel.Agent {
 
 	private void archiveFolder(String scriptPath, String folder) {
 		try {
-			String cmd = scriptPath + " " + folder + " " + config.getIntegHost() + ":" + config.getIntegPort() + "/lisea-app-integ/rest/arch/archive";
+			String cmd = scriptPath + " " + folder + " " + config.getIntegHost() + ":" + config.getIntegPort() + "/" + config.getIntegApplicationName() + "/rest/arch/archive";
 			LOG.debug(cmd);
 			Process process = Runtime.getRuntime().exec(cmd);
 
