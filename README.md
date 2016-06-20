@@ -10,6 +10,16 @@ Le message manager a pour but de faciliter le cycle de vie des messages reçus o
 Lors de l'intégration ou de la constitution d'un message, il arrive que des erreurs soient remontées.
 Afin de traiter chaque erreur, il dispose d'un dictionnaire d'erreurs où chaque type d'erreur est associée à une [typologie de recyclage](https://gitlab.talanlabs.com/nicolas-poste/message-manager/wikis/home#typologie-des-types-de-recyclage-induites-par-une-erreur).
 
+# Dépendance
+
+```xml
+		<dependency>
+			<groupId>message-manager</groupId>
+			<artifactId>message-manager</artifactId>
+			<version>1.1.2</version>
+		</dependency>
+```
+
 # Vocabulaire
 
 [Voir wiki](https://gitlab.talanlabs.com/nicolas-poste/message-manager/wikis/home#d%C3%A9finitions)
