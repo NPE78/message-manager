@@ -123,13 +123,13 @@ public abstract class AbstractMMInjector extends AbstractMsgInjector implements 
 		message.setContent(s);
 		message.setFile(file);
 
-		injectLiseaMessage(message);
+		injectMessage(message);
 	}
 
 	/**
 	 * Inject a message (can be recycled or new), manages deadline & first processing dates, and handles it to the injector's agent
 	 */
-	public final void injectLiseaMessage(IMessage message) {
+	public final void injectMessage(IMessage message) {
 
 		manageDeadlineDate(message);
 

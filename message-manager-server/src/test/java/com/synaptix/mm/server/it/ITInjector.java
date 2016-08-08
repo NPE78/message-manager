@@ -62,7 +62,7 @@ public class ITInjector extends AbstractMMTest {
 		DefaultMessageType messageType = (DefaultMessageType) message.getMessageType();
 		messageType.setRecyclingDeadline(5);
 		message.setFirstProcessingDate(Instant.now().minus(10, ChronoUnit.MINUTES));
-		injector.injectLiseaMessage(message);
+		injector.injectMessage(message);
 
 		Assert.assertNotNull(message.getFirstProcessingDate());
 		Assert.assertNotNull(message.getId());
