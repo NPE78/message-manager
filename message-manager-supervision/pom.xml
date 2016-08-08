@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.synaptix</groupId>
         <artifactId>message-manager</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.1.4-SNAPSHOT</version>
     </parent>
     <artifactId>message-manager-supervision</artifactId>
     <name>Message Manager Supervision</name>
