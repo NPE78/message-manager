@@ -88,6 +88,22 @@ public class MMServer implements IServer {
 		LOG.info("START MMServer");
 
 		try {
+			setBaseDir(integFolder);
+		} catch (IllegalAccessException e) {
+			LOG.error("Error when initializing file system manager", e);
+		}
+
+		String version = getVersion();
+		LOG.info("Version : " + version);
+
+		launchEngine();
+	}
+
+	public void setBaseDir(String integFolder) throws IllegalAccessException {
+		if (started) {
+			throw new IllegalAccessException("The integrator is already started, the main folder can't be changed!");
+		}
+		try {
 			DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
 			if (manager.getBaseFile() == null) {
 				manager.setBaseFile(new File(integFolder));
@@ -98,11 +114,6 @@ public class MMServer implements IServer {
 		} catch (FileSystemException e) {
 			LOG.error("Error when initializing file system manager", e);
 		}
-
-		String version = getVersion();
-		LOG.info("Version : " + version);
-
-		launchEngine();
 	}
 
 	private void launchEngine() {
