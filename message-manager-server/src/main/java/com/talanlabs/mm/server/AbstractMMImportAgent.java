@@ -9,6 +9,7 @@ import com.talanlabs.mm.shared.model.domain.MessageWay;
 import com.talanlabs.processmanager.engine.ProcessManager;
 import com.talanlabs.processmanager.messages.agent.AbstractFileAgent;
 import com.talanlabs.processmanager.messages.flux.AbstractImportFlux;
+import com.talanlabs.processmanager.shared.exceptions.AgentException;
 import java.io.File;
 import java.io.Serializable;
 import java.time.Instant;
@@ -40,8 +41,15 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
         return MessageWay.IN;
     }
 
+    @Override
+    public void register(String engineUuid, int maxWorking) {
+        throw new AgentException("You have to register this agent using register(engineUuid, maxWorking, delay, basePath) method");
+    }
+
     public void register(String engineUuid, int maxWorking, long delay, File basePath) {
         underlyingAgent.register(engineUuid, maxWorking, delay, basePath);
+
+        super.register(engineUuid);
     }
 
     @Override

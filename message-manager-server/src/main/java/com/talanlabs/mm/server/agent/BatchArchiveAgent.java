@@ -69,8 +69,6 @@ public class BatchArchiveAgent implements Agent {
     public URL getScript(URL script) {
         try {
             FileSystemManager manager = VFS.getManager();
-            FileObject fileObject = manager.resolveFile(new File(script.getFile()), script.toURI().toString());
-            logService.info(fileObject::toString);
             FileObject fileDestination = manager.getBaseFile().resolveFile("archive");
 
             if (!fileDestination.exists() || !initialized) {
@@ -80,19 +78,21 @@ public class BatchArchiveAgent implements Agent {
             return fileDestination.getURL();
         } catch (Exception e) {
             logService.error(() -> "Error copying script", e);
+            throw new BatchArchiveException(e);
         }
-        return script;
     }
 
     private void initScript(URL script, FileObject fileDestination) throws IOException, URISyntaxException {
         OutputStream outputStream = fileDestination.getContent().getOutputStream(false); // no append, create a new file
-        try (InputStream is = (InputStream) script.getContent(); InputStreamReader inputStreamReader = new InputStreamReader(is)) {
+        try (InputStream is = (InputStream) script.getContent();
+             InputStreamReader inputStreamReader = new InputStreamReader(is)) {
             BufferedReader reader = new BufferedReader(inputStreamReader);
             String line;
             while ((line = reader.readLine()) != null) {
                 outputStream.write(line.getBytes(Charset.defaultCharset()));
                 outputStream.write(10); // new line
             }
+        } finally {
             outputStream.close();
         }
 
