@@ -36,7 +36,6 @@ public class DefaultMessageType implements IMessageType {
 		return name;
 	}
 
-	@Override
 	public void setName(String name) {
 		LOG.error("Can not set name");
 	}
@@ -46,7 +45,6 @@ public class DefaultMessageType implements IMessageType {
 		return messageWay;
 	}
 
-	@Override
 	public void setMessageWay(MessageWay messageWay) {
 		LOG.error("Can not set messageWay");
 	}
@@ -56,7 +54,6 @@ public class DefaultMessageType implements IMessageType {
 		return recyclingDeadline;
 	}
 
-	@Override
 	public void setRecyclingDeadline(Integer recyclingDeadline) {
 		this.recyclingDeadline = recyclingDeadline;
 	}

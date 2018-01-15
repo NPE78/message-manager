@@ -50,6 +50,8 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
         underlyingAgent.register(engineUuid, maxWorking, delay, basePath);
 
         super.register(engineUuid);
+
+        MMEngineAddon.registerMessageType(engineUuid, buildMessageType());
     }
 
     @Override
@@ -68,7 +70,9 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
 
     protected abstract F createFlux();
 
-    public final void injectMessage(F flux) {
+    private void injectMessage(UnderlyingImportFlux underlyingImportFlux) {
+        F flux = getMessage(underlyingImportFlux);
+
         String engineUuid = flux.getProcessContext().getEngineUuid();
         flux.setMessageType(MMEngineAddon.getMessageType(engineUuid, getName()));
 
@@ -83,7 +87,7 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
 
         if (flux.getMessageStatus() != MessageStatus.REJECTED) {
             getLogService().debug(() -> "[{0}] Inject: {1}", flux.getMessageType() != null ? flux.getMessageType().getName() : "", flux.getId());
-            ProcessManager.handle(engineUuid, getName(), flux);
+            ProcessManager.handle(engineUuid, getName(), underlyingImportFlux);
         }
     }
 
@@ -130,6 +134,11 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
         }
     }
 
+    @SuppressWarnings("unchecked")
+    F getMessage(UnderlyingImportFlux underlyingImportFlux) {
+        return (F) underlyingImportFlux.message;
+    }
+
     protected abstract void saveMessageError(IProcessError processError, ErrorImpact errorImpact);
 
     /**
@@ -138,7 +147,7 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
     private class UnderlyingAgent extends AbstractFileAgent<UnderlyingImportFlux> {
 
         UnderlyingAgent() {
-            super(UnderlyingImportFlux.class);
+            super(UnderlyingImportFlux.class, AbstractMMImportAgent.this.getName());
         }
 
         @Override
@@ -155,17 +164,12 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
             flux.getProcessContext().init(engineUuid);
             flux.setMessageStatus(MessageStatus.TO_BE_INTEGRATED);
 
-            AbstractMMImportAgent.this.injectMessage(flux);
+            AbstractMMImportAgent.this.injectMessage(underlyingFlux);
         }
 
         @Override
         public String getName() {
             return AbstractMMImportAgent.this.getName();
-        }
-
-        @SuppressWarnings("unchecked")
-        F getMessage(UnderlyingImportFlux underlyingImportFlux) {
-            return (F) underlyingImportFlux.message;
         }
 
         @Override
