@@ -10,7 +10,6 @@ import com.talanlabs.processmanager.shared.exceptions.BaseEngineCreationExceptio
 import com.talanlabs.processmanager.shared.logging.LogManager;
 import com.talanlabs.processmanager.shared.logging.LogService;
 import java.io.File;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -33,8 +32,6 @@ public class MMServer implements IServer {
 
     private boolean started;
 
-    private IProcessErrorFactory processErrorFactory;
-
     /**
      * @param engineUuid This is the id of the process manager to create
      * @param errorPath  Path where the remaining messages will be stored when shutting down
@@ -49,6 +46,8 @@ public class MMServer implements IServer {
         this.engine = ProcessManager.getInstance().createEngine(engineUuid, errorPath);
 
         this.timeoutSeconds = 2 * 60;
+
+        MMEngineAddon.register(engine.getUuid(), this);
     }
 
     /**
@@ -70,7 +69,7 @@ public class MMServer implements IServer {
 
     @Override
     public void setProcessErrorFactory(IProcessErrorFactory processErrorFactory) {
-        this.processErrorFactory = processErrorFactory;
+        MMEngineAddon.setProcessErrorFactory(engine.getUuid(), processErrorFactory);
     }
 
     /**
@@ -116,49 +115,9 @@ public class MMServer implements IServer {
     }
 
     private void launchEngine() {
-        if (processErrorFactory != null) {
-            MMEngineAddon.register(engine.getUuid(), processErrorFactory);
-        } else {
-            MMEngineAddon.register(engine.getUuid());
-        }
         engine.activateChannels();
 
-        initAgents();
-
         this.started = true;
-    }
-
-    private void initAgents() {
-        List<? extends AbstractMMAgent<?>> agentStream = getAgentStream();
-        final CountDownLatch cdl = new CountDownLatch(agentStream.size());
-        agentStream.forEach(a -> askToIdentify(a, cdl));
-
-        try {
-            cdl.await();
-        } catch (InterruptedException e) {
-            logService.error(() -> "Init agents interrupted for {0}", e, engine.getUuid());
-        }
-
-        logService.info(() -> "End of identification");
-    }
-
-    private void askToIdentify(AbstractMMAgent<?> agentProcess, CountDownLatch cdl) {
-        new Thread(() -> {
-            try {
-                logService.info(() -> "Sending identification message to {0}", agentProcess.getClass().getSimpleName());
-                agentProcess.identificate();
-            } finally {
-                cdl.countDown();
-            }
-        }).start();
-    }
-
-    /**
-     * Returns a stream of agents known by MM
-     */
-    private List<? extends AbstractMMAgent<?>> getAgentStream() {
-        return getProcessingChannelStream()
-                .map(ProcessingChannel::getAgent).filter(AbstractMMAgent.class::isInstance).map(agent -> (AbstractMMAgent<?>) agent).collect(Collectors.toList());
     }
 
     private Stream<ProcessingChannel> getProcessingChannelStream() {
@@ -177,7 +136,6 @@ public class MMServer implements IServer {
      */
     @Override
     public void stop() {
-        engine.shutdown();
         if (!started) {
             logService.error(() -> "MMServer is not launched");
             return;

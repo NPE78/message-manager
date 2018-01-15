@@ -25,25 +25,31 @@ public class DefaultMMImportAgentTest<F extends AbstractMMImportFlux> extends Ab
 
     @Override
     protected void saveOrUpdateMessage(F message) {
+        // default empty implementation
     }
 
     @Override
     protected void acceptMessage() {
+        // default empty implementation
     }
 
     @Override
     protected void rejectMessage() {
+        // default empty implementation
     }
 
     @Override
     protected void saveMessageError(IProcessError processError, ErrorImpact errorImpact) {
+        // default empty implementation
     }
 
     @Override
     public void process(F message) {
+        // default empty implementation
     }
 
     @Override
     public void notifyMessageStatus(MessageStatus newMessageStatus, Instant nextProcessingDate) {
+        // default empty implementation
     }
 }

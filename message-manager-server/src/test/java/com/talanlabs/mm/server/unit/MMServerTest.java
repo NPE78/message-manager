@@ -30,6 +30,8 @@ public class MMServerTest extends AbstractMMTest {
 		agentTest.register("test", 5);
         slowAgentTest.register("test", 5);
 
+        startIntegrator();
+
 		agentTest.work(randomInt, "test");
 
 		//test timeout

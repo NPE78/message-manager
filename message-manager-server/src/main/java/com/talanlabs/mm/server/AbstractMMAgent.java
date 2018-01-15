@@ -8,12 +8,15 @@ import com.talanlabs.mm.engine.model.IProcessingResult;
 import com.talanlabs.mm.engine.model.ProcessingResultBuilder;
 import com.talanlabs.mm.server.addon.MMEngineAddon;
 import com.talanlabs.mm.server.model.AbstractMMFlux;
+import com.talanlabs.mm.server.model.DefaultMessageType;
 import com.talanlabs.mm.server.model.ProcessContext;
+import com.talanlabs.mm.shared.model.IMessageType;
 import com.talanlabs.mm.shared.model.IProcessError;
 import com.talanlabs.mm.shared.model.domain.ErrorImpact;
 import com.talanlabs.mm.shared.model.domain.ErrorRecyclingKind;
 import com.talanlabs.mm.shared.model.domain.MessageStatus;
 import com.talanlabs.processmanager.engine.AbstractAgent;
+import com.talanlabs.processmanager.shared.logging.LogManager;
 import com.talanlabs.processmanager.shared.logging.LogService;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -36,6 +39,8 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
      */
     private final ThreadLocal<F> fluxThreadLocal;
 
+    private IMessageType messageType;
+
     /**
      * Create an agent with given name
      *
@@ -44,7 +49,7 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
     public AbstractMMAgent(Class<F> fluxClass) {
         super(fluxClass.getSimpleName());
 
-        logService = com.talanlabs.processmanager.shared.logging.LogManager.getLogService(getClass());
+        logService = LogManager.getLogService(getClass());
 
         this.fluxClass = fluxClass;
         this.messageTypeName = fluxClass.getSimpleName();
@@ -55,10 +60,26 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
         return logService;
     }
 
+    @Override
+    public void register(String engineUuid, int maxWorking) {
+        super.register(engineUuid, maxWorking);
+
+        MMEngineAddon.registerMessageType(engineUuid, buildMessageType());
+    }
+
     /**
-     * Register the agent to the system
+     * Builds the message type
      */
-    public void identificate() {
+    protected IMessageType buildMessageType() {
+        messageType = new DefaultMessageType(getName(), getMessageWay());
+        return messageType;
+    }
+
+    /**
+     * Returns the message type previously build by {@link #buildMessageType()}
+     */
+    public final IMessageType getMessageType() {
+        return messageType;
     }
 
     @Override
