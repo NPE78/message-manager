@@ -1,13 +1,16 @@
 package com.talanlabs.mm.server.unit;
 
+import com.talanlabs.mm.engine.factory.DefaultProcessErrorFactory;
 import com.talanlabs.mm.server.AbstractMMTest;
 import com.talanlabs.mm.server.MMServer;
+import com.talanlabs.mm.server.addon.MMEngineAddon;
 import com.talanlabs.processmanager.engine.AbstractAgent;
 import com.talanlabs.processmanager.engine.ProcessManager;
 import java.io.Serializable;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,6 +43,15 @@ public class MMServerTest extends AbstractMMTest {
 
 		getServer().stop(); // will be stopped anyway, but this is to test the double stop
 	}
+
+	@Test
+    public void testProcessErrorFactory() {
+        DefaultProcessErrorFactory processErrorFactory = new DefaultProcessErrorFactory();
+        getServer().setProcessErrorFactory(processErrorFactory);
+        Assertions.assertThat(MMEngineAddon.getProcessErrorFactory("test") == processErrorFactory).isTrue();
+
+        ProcessManager.getInstance().shutdownEngine("test");
+    }
 
 	private class AgentTest extends AbstractAgent {
 

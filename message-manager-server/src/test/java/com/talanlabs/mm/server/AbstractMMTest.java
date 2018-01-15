@@ -14,6 +14,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs2.FileSystemException;
 import org.junit.After;
 import org.junit.Before;
 
@@ -29,7 +30,7 @@ public class AbstractMMTest {
     private IServer server;
 
 	@Before
-	public void init() throws BaseEngineCreationException {
+	public void init() throws BaseEngineCreationException, FileSystemException {
 		ServerHelper.configureServer();
 
         server = new MMServer("test", getIntegFolder(), TestUtils.getErrorPath());
