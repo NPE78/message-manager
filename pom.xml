@@ -30,7 +30,7 @@
 
 		<process-manager.version>1.0-SNAPSHOT</process-manager.version>
 
-		<jacoco-maven-plugin.version>0.7.5.201505241946</jacoco-maven-plugin.version>
+		<jacoco-maven-plugin.version>0.8.0</jacoco-maven-plugin.version>
 		<jacoco.it.execution.data.file>${project.build.directory}/coverage-reports/jacoco-it.exec</jacoco.it.execution.data.file>
 		<jacoco.ut.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.ut.execution.data.file>
 
@@ -66,7 +66,8 @@
 		<module>message-manager-server</module>
 		<module>message-manager-supervision</module>
 		<module>message-manager-test-dependencies</module>
-	</modules>
+        <module>message-manager-example</module>
+    </modules>
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
 		<directory>${basedir}/target</directory>
@@ -158,6 +159,21 @@
 							<destFile>${jacoco.it.execution.data.file}</destFile>
 						</configuration>
 					</execution>
+                    <execution>
+                        <id>report-aggregate</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                        <configuration>
+                            <title>JaCoCo</title>
+                            <footer>Code Coverage Report for JaCoCo ${project.version}</footer>
+                            <includes>
+                                <!-- Analyze class files only to exclude shaded agent JAR from report -->
+                                <include>**/*.class</include>
+                            </includes>
+                        </configuration>
+                    </execution>
 				</executions>
 			</plugin>
 			<plugin>

@@ -1,7 +1,7 @@
 package com.talanlabs.mm.server.unit;
 
 import com.talanlabs.mm.engine.implem.DefaultMessage;
-import com.talanlabs.mm.server.delegate.FluxContentServiceDelegate;
+import com.talanlabs.mm.server.delegate.FluxContentManager;
 import com.talanlabs.mm.server.exception.ContentNotFetchedException;
 import com.talanlabs.mm.server.exception.ContentNotSavedException;
 import com.talanlabs.mm.server.helper.FSHelper;
@@ -23,7 +23,7 @@ public class FluxContentTest {
 		DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
 		manager.setBaseFile((FileObject) null);
 
-		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
+		FluxContentManager delegate = new FluxContentManager();
 
 		boolean exceptionRaised = false;
 		try {
@@ -47,7 +47,7 @@ public class FluxContentTest {
 		DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
 		manager.setBaseFile((FileObject) null);
 
-		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
+		FluxContentManager delegate = new FluxContentManager();
 
 		boolean exceptionRaised = false;
 		try {
@@ -70,7 +70,7 @@ public class FluxContentTest {
 	public void testGetSetTestFluxContent() throws Exception {
 		FSHelper.fixBaseDir();
 
-		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
+		FluxContentManager delegate = new FluxContentManager();
 
 		String id = UUID.randomUUID().toString();
 		String text = "test " + id;
@@ -83,7 +83,7 @@ public class FluxContentTest {
 	public void testGetSetContent() throws Exception {
 		FSHelper.fixBaseDir();
 
-		FluxContentServiceDelegate delegate = new FluxContentServiceDelegate();
+		FluxContentManager delegate = new FluxContentManager();
 
 		String id = UUID.randomUUID().toString();
 		String text = "test " + id;

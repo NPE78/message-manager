@@ -32,7 +32,7 @@ public class AbstractMMTest {
 	public void init() throws BaseEngineCreationException {
 		ServerHelper.configureServer();
 
-        server = new MMServer("test", TestUtils.getErrorPath());
+        server = new MMServer("test", getIntegFolder(), TestUtils.getErrorPath());
 
 		if (autoStartIntegrator()) {
 			startIntegrator();
@@ -47,7 +47,7 @@ public class AbstractMMTest {
 	 * Start the integrator
 	 */
 	protected final void startIntegrator() {
-		server.start(getIntegFolder());
+		server.start();
 		this.started = true;
 	}
 

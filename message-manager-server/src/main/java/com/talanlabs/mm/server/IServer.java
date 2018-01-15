@@ -1,6 +1,7 @@
 package com.talanlabs.mm.server;
 
 import com.talanlabs.mm.engine.factory.IProcessErrorFactory;
+import com.talanlabs.mm.server.model.AbstractMMFlux;
 import java.util.Set;
 
 /**
@@ -11,7 +12,7 @@ public interface IServer {
     /**
      * Starts the server
      */
-    void start(String integFolder);
+    void start();
 
     /**
      * Sets the process error factory which will be passed to the process manager engine when starting up the server<br>
@@ -34,4 +35,11 @@ public interface IServer {
      */
     Set<String> runningSet();
 
+    /**
+     * Send a message asynchronously to an agent of given class (using its channel)
+     * @param agentClass agent class to use
+     * @param message message to send
+     * @param <F> type of message to send to an agent which manages this type of message
+     */
+    <F extends AbstractMMFlux> void handle(Class<? extends AbstractMMAgent<F>> agentClass, F message);
 }

@@ -27,13 +27,9 @@ public enum MessageStatus {
 	 */
 	TO_RECYCLE_AUTOMATICALLY(3),
 	/**
-	 * The message has successfully been integrated
+	 * The message has successfully been processed (sent or integrated)
 	 */
-	INTEGRATED(2),
-	/**
-	 * The message has successfully been sent
-	 */
-	SENT(2),
+	PROCESSED(2),
 	/**
 	 * The message has definitely been rejected
 	 */

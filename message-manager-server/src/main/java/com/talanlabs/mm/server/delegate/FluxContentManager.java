@@ -22,9 +22,9 @@ import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 /**
  * Created by NicolasP on 06/01/2016.
  */
-public class FluxContentServiceDelegate {
+public class FluxContentManager {
 
-	private static final Log LOG = LogFactory.getLog(FluxContentServiceDelegate.class);
+	private static final Log LOG = LogFactory.getLog(FluxContentManager.class);
 
 	/**
 	 * Get the content of a test flux

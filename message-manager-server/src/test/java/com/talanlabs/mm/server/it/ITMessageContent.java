@@ -2,7 +2,7 @@ package com.talanlabs.mm.server.it;
 
 import com.talanlabs.mm.engine.implem.DefaultMessage;
 import com.talanlabs.mm.server.AbstractMMTest;
-import com.talanlabs.mm.server.delegate.FluxContentServiceDelegate;
+import com.talanlabs.mm.server.delegate.FluxContentManager;
 import com.talanlabs.mm.server.exception.ContentNotFetchedException;
 import com.talanlabs.mm.server.exception.ContentNotSavedException;
 import com.talanlabs.mm.shared.model.IFSMessage;
@@ -22,11 +22,11 @@ import org.junit.Test;
  */
 public class ITMessageContent extends AbstractMMTest {
 
-	private FluxContentServiceDelegate fluxContentServiceDelegate;
+	private FluxContentManager fluxContentManager;
 
 	@Before
     public void before() {
-        fluxContentServiceDelegate = new FluxContentServiceDelegate();
+        fluxContentManager = new FluxContentManager();
     }
 
     @Override
@@ -42,23 +42,23 @@ public class ITMessageContent extends AbstractMMTest {
 		boolean exceptionRaised = false;
 		try {
 			System.out.println("Testing get content for 1st case");
-			Assert.assertNull(fluxContentServiceDelegate.getContent(message));
+			Assert.assertNull(fluxContentManager.getContent(message));
 		} catch (ContentNotFetchedException e) {
 			exceptionRaised = e.getCause() instanceof FileNotFoundException;
 		}
 		Assert.assertTrue(exceptionRaised);
 
 		System.out.println("Testing set content for 1st case");
-		fluxContentServiceDelegate.setContent("test", message);
+		fluxContentManager.setContent("test", message);
 
 		System.out.println("Testing get content after set content for 1st case");
-		Assert.assertEquals("test", fluxContentServiceDelegate.getContent(message));
+		Assert.assertEquals("test", fluxContentManager.getContent(message));
 
 		System.out.println("Testing set content 2 for 1st case");
-		fluxContentServiceDelegate.setContent("test plus complet", message);
+		fluxContentManager.setContent("test plus complet", message);
 
 		System.out.println("Testing get content after set content 2 for 1st case");
-		Assert.assertEquals("test plus complet", fluxContentServiceDelegate.getContent(message));
+		Assert.assertEquals("test plus complet", fluxContentManager.getContent(message));
 	}
 
 	@Test
@@ -78,12 +78,12 @@ public class ITMessageContent extends AbstractMMTest {
         message.setFolder("contentTest");
 
 		System.out.println("Testing get content for 2nd case");
-		Assert.assertEquals("OK", fluxContentServiceDelegate.getContent(message));
+		Assert.assertEquals("OK", fluxContentManager.getContent(message));
 
 		boolean exceptionRaised = false;
 		try {
 			System.out.println("Testing set content for 2nd case");
-			fluxContentServiceDelegate.setContent("test", message);
+			fluxContentManager.setContent("test", message);
 		} catch (ContentNotSavedException e) {
 			exceptionRaised = true;
 		}
@@ -100,19 +100,19 @@ public class ITMessageContent extends AbstractMMTest {
             testFlux.createFolder();
         }
 
-        Assert.assertNull(fluxContentServiceDelegate.getTestFluxContent(id));
+        Assert.assertNull(fluxContentManager.getTestFluxContent(id));
 
 		String text = "test";
-		fluxContentServiceDelegate.setTestFluxContent(text, id);
-		Assert.assertEquals(text, fluxContentServiceDelegate.getTestFluxContent(id));
+		fluxContentManager.setTestFluxContent(text, id);
+		Assert.assertEquals(text, fluxContentManager.getTestFluxContent(id));
 
 		text = "test2";
-		fluxContentServiceDelegate.setTestFluxContent(text, id);
-		Assert.assertEquals(text, fluxContentServiceDelegate.getTestFluxContent(id));
+		fluxContentManager.setTestFluxContent(text, id);
+		Assert.assertEquals(text, fluxContentManager.getTestFluxContent(id));
 
 		text = null;
-		fluxContentServiceDelegate.setTestFluxContent(text, id);
-		Assert.assertNull(fluxContentServiceDelegate.getTestFluxContent(id));
+		fluxContentManager.setTestFluxContent(text, id);
+		Assert.assertNull(fluxContentManager.getTestFluxContent(id));
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class ITMessageContent extends AbstractMMTest {
 
 		boolean exceptionRaised = false;
 		try {
-			fluxContentServiceDelegate.setContent("test", null);
+			fluxContentManager.setContent("test", null);
 		} catch (ContentNotSavedException e) {
 			exceptionRaised = true;
 		}
@@ -129,7 +129,7 @@ public class ITMessageContent extends AbstractMMTest {
 		exceptionRaised = false;
 		try {
 			IFSMessage message = new DefaultMessage(null);
-			fluxContentServiceDelegate.setContent("test", message);
+			fluxContentManager.setContent("test", message);
 		} catch (ContentNotSavedException e) {
 			exceptionRaised = true;
 		}
