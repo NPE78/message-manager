@@ -5,7 +5,6 @@ import com.talanlabs.mm.server.addon.MMEngineAddon;
 import com.talanlabs.mm.server.model.AbstractMMFlux;
 import com.talanlabs.processmanager.engine.ProcessManager;
 import com.talanlabs.processmanager.engine.ProcessingChannel;
-import com.talanlabs.processmanager.messages.probe.ProbeAgent;
 import com.talanlabs.processmanager.shared.Engine;
 import com.talanlabs.processmanager.shared.exceptions.BaseEngineCreationException;
 import com.talanlabs.processmanager.shared.logging.LogManager;
@@ -34,20 +33,18 @@ public class MMServer implements IServer {
     private boolean started;
 
     /**
-     * @param engineUuid This is the id of the process manager to create
-     * @param errorPath  Path where the remaining messages will be stored when shutting down
+     * @param engineUuid  This is the id of the process manager to create
+     * @param integFolder Base path where all messages folders are stored
+     * @param errorPath   Path where the remaining messages will be stored when shutting down
+     * @throws FileSystemException Thrown if an error occurred when initializing the file system manager
      */
-    public MMServer(String engineUuid, String integFolder, File errorPath) throws BaseEngineCreationException {
+    public MMServer(String engineUuid, String integFolder, File errorPath) throws BaseEngineCreationException, FileSystemException {
         super();
 
         logService = LogManager.getLogService(getClass());
         logService.info(() -> "New server: " + engineUuid);
 
-        try {
-            setBaseDir(integFolder);
-        } catch (IllegalAccessException e) {
-            logService.error(() -> "Error when initializing file system manager", e);
-        }
+        setBaseDir(integFolder);
 
         this.engine = ProcessManager.getInstance().createEngine(engineUuid, errorPath);
 
@@ -92,28 +89,21 @@ public class MMServer implements IServer {
     }
 
     /**
-     * Call setBaseDir prior to the start of the server
+     * Initialize the message manager server "virtual file system"
      *
-     * @param integFolder Base path where all messages are stored
-     * @throws IllegalAccessException an exception is thrown is the server is already started
+     * @param integFolder Base path where all messages folders are stored
+     * @throws FileSystemException Thrown if an error occurred when initializing the file system manager
      */
-    public void setBaseDir(String integFolder) throws IllegalAccessException {
-        if (started) {
-            throw new IllegalAccessException("The integrator is already started, the main folder can't be changed!");
-        }
-        try {
-            DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
-            if (manager.getBaseFile() == null) {
-                manager.setBaseFile(new File(integFolder));
-                if (!manager.getBaseFile().exists()) {
-                    manager.getBaseFile().createFolder();
-                }
-            } else {
-                String path = manager.getBaseFile().getURL().getPath();
-                logService.warn(() -> "VFS already has a base file: " + path);
+    private void setBaseDir(String integFolder) throws FileSystemException {
+        DefaultFileSystemManager manager = (DefaultFileSystemManager) VFS.getManager();
+        if (manager.getBaseFile() == null) {
+            manager.setBaseFile(new File(integFolder));
+            if (!manager.getBaseFile().exists()) {
+                manager.getBaseFile().createFolder();
             }
-        } catch (FileSystemException e) {
-            logService.error(() -> "Error when initializing file system manager", e);
+        } else {
+            String path = manager.getBaseFile().getURL().getPath();
+            logService.warn(() -> "VFS already has a base file: " + path);
         }
     }
 
@@ -127,27 +117,17 @@ public class MMServer implements IServer {
         return engine.getPluggedChannels().stream().filter(ProcessingChannel.class::isInstance).map(ProcessingChannel.class::cast);
     }
 
-    private void stopAgent(ProbeAgent agent) {
-        logService.info(() -> "Stopping " + agent.getChannel());
-        agent.shutdown();
-        logService.info(() -> "Stop sent to " + agent.getChannel());
-    }
-
     /**
      * Stop the process manager and wait for all agents to finish.
      * Use {@link #setTimeoutSeconds} to change the timeout (default is 2min)
      */
     @Override
     public void stop() {
-        if (!started) {
+        if (!isStarted()) {
             logService.error(() -> "MMServer is not launched");
             return;
         }
         logService.info(() -> "STOP MMServer");
-
-        getProcessingChannelStream().map(ProcessingChannel::getAgent)
-                .filter(ProbeAgent.class::isInstance).map(ProbeAgent.class::cast).forEach(this::stopAgent);
-        logService.info(() -> "End of probe agents");
 
         started = false;
 

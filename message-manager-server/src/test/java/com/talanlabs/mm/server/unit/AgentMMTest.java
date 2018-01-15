@@ -37,6 +37,7 @@ public class AgentMMTest extends AbstractMMTest {
             }
         };
         agent.register("test", 5, 200, new File(FSHelper.getIntegFolder()));
+        Assertions.assertThat(agent.getWorkDir()).isEqualTo(file.getParentFile());
 
         startIntegrator();
 

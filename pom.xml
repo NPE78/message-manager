@@ -147,6 +147,7 @@
 						</goals>
 						<configuration>
 							<destFile>${jacoco.ut.execution.data.file}</destFile>
+                            <append>true</append>
 						</configuration>
 					</execution>
 					<execution>
@@ -157,22 +158,15 @@
 						</goals>
 						<configuration>
 							<destFile>${jacoco.it.execution.data.file}</destFile>
+                            <append>true</append>
 						</configuration>
 					</execution>
                     <execution>
                         <id>report-aggregate</id>
-                        <phase>prepare-package</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>report-aggregate</goal>
                         </goals>
-                        <configuration>
-                            <title>JaCoCo</title>
-                            <footer>Code Coverage Report for JaCoCo ${project.version}</footer>
-                            <includes>
-                                <!-- Analyze class files only to exclude shaded agent JAR from report -->
-                                <include>**/*.class</include>
-                            </includes>
-                        </configuration>
                     </execution>
 				</executions>
 			</plugin>
