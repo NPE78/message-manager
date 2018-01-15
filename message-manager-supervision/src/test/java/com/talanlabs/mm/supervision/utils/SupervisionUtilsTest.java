@@ -1,6 +1,7 @@
 package com.talanlabs.mm.supervision.utils;
 
 import com.talanlabs.mm.server.AbstractMMTest;
+import com.talanlabs.mm.server.MMServer;
 import com.talanlabs.mm.server.helper.TestUtils;
 import com.talanlabs.mm.server.implem.DefaultMMAgent;
 import com.talanlabs.mm.server.model.AbstractMMFlux;
@@ -19,9 +20,6 @@ public class SupervisionUtilsTest extends AbstractMMTest {
 
     @Test
     public void testGetAgentInfo() throws Exception {
-
-        DefaultMMAgent.DefaultFlux message = new DefaultMMAgent.DefaultFlux();
-
         MyMMAgent myMMAgent = new MyMMAgent();
         myMMAgent.register("test", 5);
 
@@ -33,9 +31,9 @@ public class SupervisionUtilsTest extends AbstractMMTest {
         List<AgentInfoDto> agentInfoDtoList = SupervisionUtils.getAgentInfo("test", null);
         Assert.assertTrue(agentInfoDtoList.size() >= 2); // with RetryAgent
 
-        ProcessManager.handle("test", MyMMAgent.class.getSimpleName(), message);
-        ProcessManager.handle("test", MySingletonMMAgent.class.getSimpleName(), message);
-        ProcessManager.handle("test", MySingletonMMAgent.class.getSimpleName(), message);
+        MMServer.handle("test", MyMMAgent.class, new MyFlux1());
+        ProcessManager.handle("test", MySingletonMMAgent.class.getSimpleName(), new MyFlux2());
+        ProcessManager.handle("test", MySingletonMMAgent.class.getSimpleName(), new MyFlux2());
 
         TestUtils.sleep(2000);
     }

@@ -7,6 +7,7 @@ import com.talanlabs.mm.engine.factory.IProcessErrorFactory;
 import com.talanlabs.mm.engine.model.IProcessingResult;
 import com.talanlabs.mm.engine.model.ProcessingResultBuilder;
 import com.talanlabs.mm.server.addon.MMEngineAddon;
+import com.talanlabs.mm.server.delegate.FluxContentManager;
 import com.talanlabs.mm.server.model.AbstractMMFlux;
 import com.talanlabs.mm.server.model.DefaultMessageType;
 import com.talanlabs.mm.server.model.ProcessContext;
@@ -19,6 +20,7 @@ import com.talanlabs.processmanager.engine.AbstractAgent;
 import com.talanlabs.processmanager.shared.logging.LogManager;
 import com.talanlabs.processmanager.shared.logging.LogService;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,15 +58,15 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
         this.fluxThreadLocal = new ThreadLocal<>();
     }
 
-    public final LogService getLogService() {
+    final LogService getLogService() {
         return logService;
     }
 
     @Override
     public void register(String engineUuid, int maxWorking) {
-        super.register(engineUuid, maxWorking);
-
         MMEngineAddon.registerMessageType(engineUuid, buildMessageType());
+
+        super.register(engineUuid, maxWorking);
     }
 
     /**
@@ -94,6 +96,17 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
         }
     }
 
+    @Override
+    public void notifyMessageStatus(MessageStatus newMessageStatus, Instant nextProcessingDate) {
+        F message = getMessage();
+        message.setMessageStatus(newMessageStatus);
+        message.setNextProcessingDate(nextProcessingDate);
+
+        saveOrUpdateMessage(message);
+    }
+
+    protected abstract void saveOrUpdateMessage(F message);
+
     /**
      * If the message concerns this agent, uses the mm engine to track any progress during the process
      */
@@ -103,8 +116,10 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
             F message = (F) messageObject;
 
             message.getProcessContext().init(engineUuid);
+            setCurrentMessage(message);
 
-            fluxThreadLocal.set(message);
+            prepare(message);
+
             return getMMEngine(engineUuid).start(message, this, getMMDictionary());
         }
         IProcessingResult processingResult = ProcessingResultBuilder.rejectDefinitely(getSingleUnknownErrorMap(engineUuid, ErrorRecyclingKind.NOT_RECYCLABLE), null);
@@ -112,7 +127,21 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
         return processingResult; // if the message does not concern this agent, we reject it
     }
 
-    private Map<IProcessError, ErrorImpact> getSingleUnknownErrorMap(String engineUuid, ErrorRecyclingKind errorRecyclingKind) {
+    /**
+     * Override this method to do extra stuff before the message being processed by the message manager engine
+     */
+    protected void prepare(F message) {
+        // nothing for this implementation
+    }
+
+    /**
+     * Sets the current message in the thread local
+     */
+    final void setCurrentMessage(F message) {
+        fluxThreadLocal.set(message);
+    }
+
+    protected final Map<IProcessError, ErrorImpact> getSingleUnknownErrorMap(String engineUuid, ErrorRecyclingKind errorRecyclingKind) {
         Map<IProcessError, ErrorImpact> errorMap = new HashMap<>();
         IProcessError unknownError = MMEngineAddon.getProcessErrorFactory(engineUuid).createProcessError("UNKNOWN_ERROR");
         errorMap.put(unknownError, ErrorImpact.of(errorRecyclingKind));
@@ -158,6 +187,10 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
 
     private MMDictionary getMMDictionary() {
         return MMEngineAddon.getDictionary(getProcessContext().getEngineUuid());
+    }
+
+    protected final FluxContentManager getFluxContentManager() {
+        return MMEngineAddon.getFluxContentManager(getProcessContext().getEngineUuid());
     }
 
     /**

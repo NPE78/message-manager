@@ -5,7 +5,6 @@ import com.talanlabs.mm.engine.model.IProcessingResult;
 import com.talanlabs.mm.shared.model.IMessage;
 import com.talanlabs.mm.shared.model.IProcessError;
 import com.talanlabs.mm.shared.model.domain.MessageStatus;
-import com.talanlabs.mm.shared.model.domain.MessageWay;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -88,10 +87,8 @@ public final class MMEngine {
 				default:
 					throw new IllegalStateException("Status is INVALID but errorRecyclingKind is " + processingResult.getErrorRecyclingKind());
 			}
-		} else if (process.getMessageWay() == MessageWay.OUT) {
-			process.notifyMessageStatus(MessageStatus.SENT);
 		} else {
-			process.notifyMessageStatus(MessageStatus.INTEGRATED);
+			process.notifyMessageStatus(MessageStatus.PROCESSED);
 		}
 	}
 }

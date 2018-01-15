@@ -201,11 +201,11 @@ public class MMAgentTest extends AbstractMMTest {
 			super(MyFlux.class);
 		}
 
-		@Override
-		public void notifyMessageStatus(MessageStatus newMessageStatus, Instant nextProcessingDate) {
-		}
+        @Override
+        protected void saveOrUpdateMessage(MyFlux message) {
+        }
 
-		@Override
+        @Override
 		public MessageWay getMessageWay() {
 			return MessageWay.IN;
 		}

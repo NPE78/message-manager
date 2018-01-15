@@ -2,6 +2,7 @@ package com.talanlabs.mm.server;
 
 import com.talanlabs.mm.engine.factory.IProcessErrorFactory;
 import com.talanlabs.mm.server.addon.MMEngineAddon;
+import com.talanlabs.mm.server.model.AbstractMMFlux;
 import com.talanlabs.processmanager.engine.ProcessManager;
 import com.talanlabs.processmanager.engine.ProcessingChannel;
 import com.talanlabs.processmanager.messages.probe.ProbeAgent;
@@ -36,12 +37,17 @@ public class MMServer implements IServer {
      * @param engineUuid This is the id of the process manager to create
      * @param errorPath  Path where the remaining messages will be stored when shutting down
      */
-    public MMServer(String engineUuid, File errorPath) throws BaseEngineCreationException {
+    public MMServer(String engineUuid, String integFolder, File errorPath) throws BaseEngineCreationException {
         super();
 
         logService = LogManager.getLogService(getClass());
-
         logService.info(() -> "New server: " + engineUuid);
+
+        try {
+            setBaseDir(integFolder);
+        } catch (IllegalAccessException e) {
+            logService.error(() -> "Error when initializing file system manager", e);
+        }
 
         this.engine = ProcessManager.getInstance().createEngine(engineUuid, errorPath);
 
@@ -76,14 +82,8 @@ public class MMServer implements IServer {
      * Launches the process manager: activates channels, init agents
      */
     @Override
-    public void start(String integFolder) {
-        logService.info(() -> "START MMServer {0} on {1}", engine.getUuid(), integFolder);
-
-        try {
-            setBaseDir(integFolder);
-        } catch (IllegalAccessException e) {
-            logService.error(() -> "Error when initializing file system manager", e);
-        }
+    public void start() {
+        logService.info(() -> "START MMServer {0}", engine.getUuid());
 
         String version = getVersion();
         logService.info(() -> "Version : " + version);
@@ -108,6 +108,9 @@ public class MMServer implements IServer {
                 if (!manager.getBaseFile().exists()) {
                     manager.getBaseFile().createFolder();
                 }
+            } else {
+                String path = manager.getBaseFile().getURL().getPath();
+                logService.warn(() -> "VFS already has a base file: " + path);
             }
         } catch (FileSystemException e) {
             logService.error(() -> "Error when initializing file system manager", e);
@@ -211,5 +214,14 @@ public class MMServer implements IServer {
     public final Set<String> runningSet() {
         return getProcessingChannelStream().filter(processingChannel -> processingChannel.getNbWorking() > 0)
                 .map(ProcessingChannel::getName).collect(Collectors.toSet());
+    }
+
+    @Override
+    public <F extends AbstractMMFlux> void handle(Class<? extends AbstractMMAgent<F>> agentClass, F message) {
+        ProcessManager.handle(engine.getUuid(), agentClass.getSimpleName(), message);
+    }
+
+    public static <F extends AbstractMMFlux> void handle(String engineUuid, Class<? extends AbstractMMAgent<F>> agentClass, F message) {
+        ProcessManager.handle(engineUuid, agentClass.getSimpleName(), message);
     }
 }

@@ -6,9 +6,7 @@ import com.talanlabs.mm.server.AbstractMMAgent;
 import com.talanlabs.mm.server.model.AbstractMMFlux;
 import com.talanlabs.mm.shared.model.IProcessError;
 import com.talanlabs.mm.shared.model.domain.ErrorImpact;
-import com.talanlabs.mm.shared.model.domain.MessageStatus;
 import com.talanlabs.mm.shared.model.domain.MessageWay;
-import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -21,9 +19,8 @@ public class DefaultMMAgent<F extends AbstractMMFlux> extends AbstractMMAgent<F>
     }
 
     @Override
-    public void notifyMessageStatus(MessageStatus newMessageStatus, Instant nextProcessingDate) {
-        getMessage().setMessageStatus(newMessageStatus);
-        getMessage().setNextProcessingDate(nextProcessingDate);
+    protected void saveOrUpdateMessage(F message) {
+        // do stuff
     }
 
     @Override
