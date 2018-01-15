@@ -88,8 +88,7 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
             dispatchMessage(messageObject, engineUuid);
         } catch (Exception e) {
             getLogService().error(() -> messageTypeName, e);
-            Map<IProcessError, ErrorImpact> errorMap = new HashMap<>();
-            errorMap.put(addError("UNKNOWN_ERROR"), new ErrorImpact(ErrorRecyclingKind.MANUAL, null, null));
+            Map<IProcessError, ErrorImpact> errorMap = getSingleUnknownErrorMap(engineUuid, ErrorRecyclingKind.MANUAL);
             reject(errorMap);
             notifyMessageStatus(MessageStatus.TO_RECYCLE_MANUALLY);
         }
@@ -108,7 +107,16 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
             fluxThreadLocal.set(message);
             return getMMEngine(engineUuid).start(message, this, getMMDictionary());
         }
-        return ProcessingResultBuilder.rejectDefinitely(null, null); // if the message does not concern this agent, we reject it
+        IProcessingResult processingResult = ProcessingResultBuilder.rejectDefinitely(getSingleUnknownErrorMap(engineUuid, ErrorRecyclingKind.NOT_RECYCLABLE), null);
+        getMMEngine(engineUuid).reject(this, processingResult);
+        return processingResult; // if the message does not concern this agent, we reject it
+    }
+
+    private Map<IProcessError, ErrorImpact> getSingleUnknownErrorMap(String engineUuid, ErrorRecyclingKind errorRecyclingKind) {
+        Map<IProcessError, ErrorImpact> errorMap = new HashMap<>();
+        IProcessError unknownError = MMEngineAddon.getProcessErrorFactory(engineUuid).createProcessError("UNKNOWN_ERROR");
+        errorMap.put(unknownError, ErrorImpact.of(errorRecyclingKind));
+        return errorMap;
     }
 
     private MMEngine getMMEngine(String engineUuid) {

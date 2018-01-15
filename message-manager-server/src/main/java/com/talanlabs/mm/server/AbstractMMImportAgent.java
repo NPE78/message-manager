@@ -9,6 +9,7 @@ import com.talanlabs.mm.shared.model.domain.MessageWay;
 import com.talanlabs.processmanager.engine.ProcessManager;
 import com.talanlabs.processmanager.messages.agent.AbstractFileAgent;
 import com.talanlabs.processmanager.messages.flux.AbstractImportFlux;
+import com.talanlabs.processmanager.shared.Agent;
 import com.talanlabs.processmanager.shared.exceptions.AgentException;
 import java.io.File;
 import java.io.Serializable;
@@ -23,7 +24,7 @@ import java.util.Map;
  */
 public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> extends AbstractMMAgent<F> {
 
-    private UnderlyingAgent underlyingAgent;
+    private final UnderlyingAgent underlyingAgent;
 
     /**
      * Create an agent with given name
@@ -58,6 +59,10 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
     public final void accept(Map<IProcessError, ErrorImpact> errorMap) {
         // we don't move the file anymore, its done by the injector
         saveErrors(errorMap);
+        F message = getMessage();
+        if (message != null) {
+            underlyingAgent.acceptFile(message.getFile());
+        }
         acceptMessage();
     }
 
@@ -65,14 +70,16 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
     public final void reject(Map<IProcessError, ErrorImpact> errorMap) {
         // we don't move the file anymore, its done by the injector
         saveErrors(errorMap);
+        F message = getMessage();
+        if (message != null) {
+            underlyingAgent.rejectFile(message.getFile());
+        }
         rejectMessage();
     }
 
     protected abstract F createFlux();
 
-    private void injectMessage(UnderlyingImportFlux underlyingImportFlux) {
-        F flux = getMessage(underlyingImportFlux);
-
+    private void injectMessage(F flux) {
         String engineUuid = flux.getProcessContext().getEngineUuid();
         flux.setMessageType(MMEngineAddon.getMessageType(engineUuid, getName()));
 
@@ -87,7 +94,7 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
 
         if (flux.getMessageStatus() != MessageStatus.REJECTED) {
             getLogService().debug(() -> "[{0}] Inject: {1}", flux.getMessageType() != null ? flux.getMessageType().getName() : "", flux.getId());
-            ProcessManager.handle(engineUuid, getName(), underlyingImportFlux);
+            ProcessManager.handle(engineUuid, getName(), flux);
         }
     }
 
@@ -106,6 +113,11 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
         }
     }
 
+    /**
+     * We want the file to be renamed to the id of the message so that if the file ever had to be rejected, it would consider the previous state of the message<br>
+     * Also, we move the file to the accepted directory<br>
+     * This happens prior to the #handle method call
+     */
     private void renameAndMoveFile(F flux, File file) {
         // this can not happen if the message is being rejected: it would have no file
         File dest = new File(file.getParentFile(), "accepted" + File.separator + flux.getId().toString());
@@ -163,8 +175,14 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
             F flux = getMessage(underlyingFlux);
             flux.getProcessContext().init(engineUuid);
             flux.setMessageStatus(MessageStatus.TO_BE_INTEGRATED);
+            flux.setFile(underlyingFlux.getFile());
 
-            AbstractMMImportAgent.this.injectMessage(underlyingFlux);
+            AbstractMMImportAgent.this.injectMessage(flux);
+        }
+
+        @Override
+        protected Agent getAgent() {
+            return AbstractMMImportAgent.this;
         }
 
         @Override
