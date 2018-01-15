@@ -60,7 +60,8 @@ public class MMAgentTest extends AbstractMMTest {
     }
 
 	@Test
-	public void testMMAgent() {
+    // in this test, we put an error in a agent process to see how it reacts
+	public void testErrorManagement() {
 
         MMDictionary dictionary = MMEngineAddon.getDictionary("test");
 

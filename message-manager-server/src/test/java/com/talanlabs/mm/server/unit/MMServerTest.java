@@ -1,7 +1,7 @@
 package com.talanlabs.mm.server.unit;
 
-import com.talanlabs.mm.server.MMServer;
 import com.talanlabs.mm.server.AbstractMMTest;
+import com.talanlabs.mm.server.MMServer;
 import com.talanlabs.processmanager.engine.AbstractAgent;
 import com.talanlabs.processmanager.engine.ProcessManager;
 import java.io.Serializable;
@@ -19,7 +19,7 @@ public class MMServerTest extends AbstractMMTest {
 	private static int randomInt;
 
 	@Test
-	public void test1() {
+	public void testServer() {
 
 		Assert.assertNotNull(getServer());
 

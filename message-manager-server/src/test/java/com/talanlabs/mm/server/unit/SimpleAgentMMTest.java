@@ -19,7 +19,7 @@ import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-public class AgentMMTest extends AbstractMMTest {
+public class SimpleAgentMMTest extends AbstractMMTest {
 
     @Test
     public void testMMAgent() throws InterruptedException, IOException {
@@ -34,6 +34,7 @@ public class AgentMMTest extends AbstractMMTest {
             @Override
             protected void acceptMessage() {
                 checks.put("ACCEPTED", true);
+                checks.put("FILENAME", getMessage().getId().toString().equals(getMessage().getFile().getName()));
             }
         };
         agent.register("test", 5, 200, new File(FSHelper.getIntegFolder()));
@@ -45,6 +46,7 @@ public class AgentMMTest extends AbstractMMTest {
         TestUtils.sleep(500);
 
         Assertions.assertThat(checks.get("ACCEPTED")).isTrue();
+        Assertions.assertThat(checks.get("FILENAME")).isTrue();
 
         waitIntegrator(10);
     }
@@ -58,6 +60,32 @@ public class AgentMMTest extends AbstractMMTest {
             ProcessManager.getInstance().shutdownEngine("test");
         }
     }
+
+    @Test
+    public void testReject() {
+        final Map<String, Boolean> checks = new HashMap<>();
+
+        MyMMAgent agent = new MyMMAgent() {
+            @Override
+            protected void rejectMessage() {
+                checks.put("REJECTED", true);
+            }
+        };
+        agent.register("test", 5, 200, new File(FSHelper.getIntegFolder()));
+
+        startIntegrator();
+
+        agent.dispatchMessage("testMessage", "test");
+
+        Assertions.assertThat(checks.get("REJECTED")).isTrue();
+    }
+//
+//    @Test
+//    public void testRenameAndMove() {
+//        MyMMAgent agent = new MyMMAgent();
+//        agent.register("test", 5, 200, new File(FSHelper.getIntegFolder()));
+//    }
+
 
     private class MyMMAgent extends AbstractMMImportAgent<MyFlux> {
 

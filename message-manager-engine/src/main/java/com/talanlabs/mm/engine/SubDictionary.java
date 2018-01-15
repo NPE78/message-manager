@@ -185,7 +185,7 @@ public class SubDictionary {
 
 	/**
 	 * Get the processing result given a message type and a list of errors raised during the process.
-	 * It uses the dictionnary to determine whether the process is valid or invalid, computes the recycling kind according to the configuration and if needed a next processing date
+	 * It uses the dictionary to determine whether the process is valid or invalid, computes the recycling kind according to the configuration and if needed a next processing date
 	 * If an error is unknown for the message type in the current dictionary or in a parent one, an {@link UnknownErrorException} is raised
 	 */
 	public final IProcessingResult getProcessingResult(List<IProcessError> errorList) {
@@ -224,7 +224,7 @@ public class SubDictionary {
 				updateWorst(worst, pair.getValue());
 			} else if (pairTry.isFailure() && pairTry.asFailure().getException() instanceof UnknownErrorException) {
 				IProcessError processError = ((UnknownErrorException) pairTry.asFailure().getException()).getProcessError();
-				ErrorImpact errorImpact = new ErrorImpact(ErrorRecyclingKind.MANUAL, null, dictionaryName);
+				ErrorImpact errorImpact = ErrorImpact.of(ErrorRecyclingKind.MANUAL);
 				errorMap.put(processError, errorImpact);
 				updateWorst(worst, errorImpact);
 			}
@@ -274,25 +274,23 @@ public class SubDictionary {
 	 */
 	private ErrorImpact computeErrorImpact(IProcessError processError) throws UnknownErrorException {
 		String errorCode = processError.getErrorCode();
-		ErrorImpact errorImpact;
 		Optional<IErrorType> first = Optional.empty();
 		if (errorTypeList != null) {
 			first = errorTypeList.stream().filter(processError::matches).findFirst();
 		}
 		if (first == null || !first.isPresent()) {
 			if (parentDictionary == null) {
-				throw new UnknownErrorException(processError, "Error code '" + errorCode + "' not found " + getDictionaryExceptionString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				throw new UnknownErrorException(processError, "Error code '" + errorCode + "' not found " + getDictionaryExceptionString()); //$NON-NLS-1$ //$NON-NLS-2$
 			} else {
 				try {
 					return parentDictionary.computeErrorImpact(processError);
 				} catch (UnknownErrorException e) {
-					throw new UnknownErrorException(processError, "Error code '" + errorCode + "' not found" + getDictionaryExceptionString(), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					throw new UnknownErrorException(processError, "Error code '" + errorCode + "' not found" + getDictionaryExceptionString(), e); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}
 		IErrorType errorType = first.get();
-        errorImpact = new ErrorImpact(errorType.getRecyclingKind(), errorType.getNextRecyclingDuration(), dictionaryName);
-        return errorImpact;
+        return new ErrorImpact(errorType.getRecyclingKind(), errorType.getNextRecyclingDuration());
 	}
 
 	private String getDictionaryExceptionString() {

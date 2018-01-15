@@ -9,13 +9,14 @@ public class ErrorImpact {
 
 	private final Integer nextRecyclingDuration;
 
-	private final String dictionaryName;
-
-	public ErrorImpact(ErrorRecyclingKind recyclingKind, Integer nextRecyclingDuration, String dictionaryName) {
+	public ErrorImpact(ErrorRecyclingKind recyclingKind, Integer nextRecyclingDuration) {
 		this.recyclingKind = recyclingKind;
 		this.nextRecyclingDuration = nextRecyclingDuration;
-		this.dictionaryName = dictionaryName;
 	}
+
+	public static ErrorImpact of(ErrorRecyclingKind errorRecyclingKind) {
+        return new ErrorImpact(errorRecyclingKind, null);
+    }
 
 	/**
 	 * The recycling kind induced by the error
@@ -29,12 +30,5 @@ public class ErrorImpact {
 	 */
 	public Integer getNextRecyclingDuration() {
 		return nextRecyclingDuration;
-	}
-
-	/**
-	 * The dictionary used to compute the impact of this error
-	 */
-	public String getDictionaryName() {
-		return dictionaryName;
 	}
 }

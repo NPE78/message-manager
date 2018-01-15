@@ -49,16 +49,24 @@ public final class MMEngine {
 		process.close(!blocking); // notify the end of the process (for super transaction for instance)
 
 		if (blocking) {
-			process.reject(processingResult.getErrorMap());
-		} else {
-			process.accept(processingResult.getErrorMap());
-		}
+            reject(process, processingResult);
+        } else {
+            accept(process, processingResult);
+        }
 
 		notifyMessageResult(processingResult, process);
 		return processingResult;
 	}
 
-	/**
+    public <F extends IMessage> void accept(IMMProcess<F> process, IProcessingResult processingResult) {
+        process.accept(processingResult.getErrorMap());
+    }
+
+    public <F extends IMessage> void reject(IMMProcess<F> process, IProcessingResult processingResult) {
+        process.reject(processingResult.getErrorMap());
+    }
+
+    /**
 	 * Of all the errors raised until here, are they blocking the process?
 	 */
 	private boolean checkBlocking(IProcessingResult processingResult) {
