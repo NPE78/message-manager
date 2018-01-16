@@ -1,7 +1,5 @@
 package com.talanlabs.mm.server.implem;
 
-import com.talanlabs.mm.engine.MMDictionary;
-import com.talanlabs.mm.engine.SubDictionary;
 import com.talanlabs.mm.server.AbstractMMAgent;
 import com.talanlabs.mm.server.model.AbstractMMFlux;
 import com.talanlabs.mm.shared.model.IProcessError;
@@ -36,11 +34,6 @@ public class DefaultMMAgent<F extends AbstractMMFlux> extends AbstractMMAgent<F>
     @Override
     public void accept(Map<IProcessError, ErrorImpact> errorMap) {
         // do stuff
-    }
-
-    @Override
-    public SubDictionary getValidationDictionary(MMDictionary rootDictionary) {
-        return rootDictionary;
     }
 
     @Override

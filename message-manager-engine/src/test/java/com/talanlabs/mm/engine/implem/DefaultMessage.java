@@ -1,25 +1,19 @@
 package com.talanlabs.mm.engine.implem;
 
+import com.talanlabs.mm.engine.model.DefaultMessageType;
+import com.talanlabs.mm.shared.model.IFSMessage;
+import com.talanlabs.mm.shared.model.IMessageType;
+import com.talanlabs.mm.shared.model.domain.MessageStatus;
 import java.io.File;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.talanlabs.mm.engine.model.DefaultMessageType;
-import com.talanlabs.mm.shared.model.IFSMessage;
-import com.talanlabs.mm.shared.model.IMessageType;
-import com.talanlabs.mm.shared.model.domain.MessageStatus;
-
 /**
  * Created by NicolasP on 26/10/2015.
  */
 public class DefaultMessage implements IFSMessage {
-
-	private static final Log LOG = LogFactory.getLog(DefaultMessage.class);
 
 	private final Serializable id;
 
@@ -59,11 +53,6 @@ public class DefaultMessage implements IFSMessage {
 	@Override
 	public IMessageType getMessageType() {
 		return messageType;
-	}
-
-	@Override
-	public void setMessageType(IMessageType messageType) {
-		LOG.error("Can not set messageType");
 	}
 
 	@Override

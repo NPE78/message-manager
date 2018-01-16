@@ -1,5 +1,8 @@
 package com.talanlabs.mm.server.model;
 
+import com.talanlabs.mm.engine.MMDictionary;
+import com.talanlabs.mm.server.addon.MMEngineAddon;
+import com.talanlabs.mm.server.delegate.FluxContentManager;
 import com.talanlabs.mm.shared.model.IMessage;
 import com.talanlabs.mm.shared.model.IMessageType;
 import com.talanlabs.mm.shared.model.domain.MessageStatus;
@@ -12,7 +15,7 @@ public abstract class AbstractMMFlux extends AbstractFlux implements IMessage {
     /**
      * The process context contains a list of errors for this message and this message only
      */
-    private final ProcessContext processContext;
+    private final transient ProcessContext processContext;
 
     private Serializable id;
     private IMessageType messageType;
@@ -21,6 +24,7 @@ public abstract class AbstractMMFlux extends AbstractFlux implements IMessage {
     private Instant deadlineDate;
     private Instant firstProcessingDate;
 
+    private String engineUuid;
 
     public AbstractMMFlux() {
         processContext = new ProcessContext();
@@ -28,6 +32,12 @@ public abstract class AbstractMMFlux extends AbstractFlux implements IMessage {
 
     public ProcessContext getProcessContext() {
         return processContext;
+    }
+
+    public final void init(String engineUuid, String messageTypeName) {
+        this.engineUuid = engineUuid;
+        messageType = MMEngineAddon.getMessageType(engineUuid, messageTypeName);
+        processContext.init(engineUuid);
     }
 
     @Override
@@ -42,11 +52,6 @@ public abstract class AbstractMMFlux extends AbstractFlux implements IMessage {
     @Override
     public IMessageType getMessageType() {
         return messageType;
-    }
-
-    @Override
-    public void setMessageType(IMessageType messageType) {
-        this.messageType = messageType;
     }
 
     @Override
@@ -87,5 +92,23 @@ public abstract class AbstractMMFlux extends AbstractFlux implements IMessage {
     @Override
     public void setFirstProcessingDate(Instant firstProcessingDate) {
         this.firstProcessingDate = firstProcessingDate;
+    }
+
+    public String getEngineUuid() {
+        return engineUuid;
+    }
+
+    /**
+     * Returns the associated dictionary for the engine in which the message is being processed
+     */
+    public MMDictionary getDictionary() {
+        return MMEngineAddon.getDictionary(engineUuid);
+    }
+
+    /**
+     * Returns the associated flux content manager for the engine in which the message is being processed
+     */
+    public FluxContentManager getFluxContentManager() {
+        return MMEngineAddon.getFluxContentManager(engineUuid);
     }
 }

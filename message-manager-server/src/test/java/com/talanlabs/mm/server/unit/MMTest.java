@@ -2,7 +2,7 @@ package com.talanlabs.mm.server.unit;
 
 import com.talanlabs.mm.engine.factory.DefaultProcessErrorFactory;
 import com.talanlabs.mm.server.AbstractMMTest;
-import com.talanlabs.mm.server.MMServer;
+import com.talanlabs.mm.server.MM;
 import com.talanlabs.mm.server.addon.MMEngineAddon;
 import com.talanlabs.processmanager.engine.AbstractAgent;
 import com.talanlabs.processmanager.engine.ProcessManager;
@@ -17,7 +17,7 @@ import org.junit.Test;
 /**
  * Created by NicolasP on 21/10/2015.
  */
-public class MMServerTest extends AbstractMMTest {
+public class MMTest extends AbstractMMTest {
 
 	private static int randomInt;
 
@@ -38,7 +38,7 @@ public class MMServerTest extends AbstractMMTest {
 		agentTest.work(randomInt, "test");
 
 		//test timeout
-		((MMServer) getServer()).setTimeoutSeconds(2);
+		((MM) getServer()).setTimeoutSeconds(2);
 		ProcessManager.handle("test", SlowAgentTest.class.getSimpleName(), "message");
 
 		getServer().stop(); // will be stopped anyway, but this is to test the double stop

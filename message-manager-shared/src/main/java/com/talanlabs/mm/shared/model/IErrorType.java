@@ -23,4 +23,23 @@ public interface IErrorType {
 	 */
 	Integer getNextRecyclingDuration();
 
+	static IErrorType of(String code, ErrorRecyclingKind errorRecyclingKind, Integer nextRecyclingDuration) {
+        return new IErrorType() {
+            @Override
+            public String getCode() {
+                return code;
+            }
+
+            @Override
+            public ErrorRecyclingKind getRecyclingKind() {
+                return errorRecyclingKind;
+            }
+
+            @Override
+            public Integer getNextRecyclingDuration() {
+                return nextRecyclingDuration;
+            }
+        };
+    }
+
 }

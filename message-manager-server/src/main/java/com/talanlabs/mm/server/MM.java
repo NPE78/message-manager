@@ -20,9 +20,9 @@ import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 
 /**
- * Launches an instance of the process manager
+ * Launches an instance of the message manager server
  */
-public class MMServer implements IServer {
+public class MM implements IServer {
 
     private final LogService logService;
 
@@ -38,7 +38,7 @@ public class MMServer implements IServer {
      * @param errorPath   Path where the remaining messages will be stored when shutting down
      * @throws FileSystemException Thrown if an error occurred when initializing the file system manager
      */
-    public MMServer(String engineUuid, String integFolder, File errorPath) throws BaseEngineCreationException, FileSystemException {
+    public MM(String engineUuid, String integFolder, File errorPath) throws BaseEngineCreationException, FileSystemException {
         super();
 
         logService = LogManager.getLogService(getClass());
@@ -196,12 +196,12 @@ public class MMServer implements IServer {
                 .map(ProcessingChannel::getName).collect(Collectors.toSet());
     }
 
-    @Override
-    public <F extends AbstractMMFlux> void handle(Class<? extends AbstractMMAgent<F>> agentClass, F message) {
-        ProcessManager.handle(engine.getUuid(), agentClass.getSimpleName(), message);
-    }
-
-    public static <F extends AbstractMMFlux> void handle(String engineUuid, Class<? extends AbstractMMAgent<F>> agentClass, F message) {
-        ProcessManager.handle(engineUuid, agentClass.getSimpleName(), message);
+    /**
+     * Send a message asynchronously to an agent of given class (using its channel)
+     * @param message message to send (this message contains the information of the engine on which it has to be processed and the channel, using the message type name)
+     * @param <F> type of message to send to an agent which manages this type of message
+     */
+    public static <F extends AbstractMMFlux> void handle(F message) {
+        ProcessManager.handle(message.getEngineUuid(), message.getMessageType().getName(), message);
     }
 }

@@ -1,7 +1,7 @@
 package com.talanlabs.mm.supervision.utils;
 
 import com.talanlabs.mm.server.AbstractMMTest;
-import com.talanlabs.mm.server.MMServer;
+import com.talanlabs.mm.server.MM;
 import com.talanlabs.mm.server.helper.TestUtils;
 import com.talanlabs.mm.server.implem.DefaultMMAgent;
 import com.talanlabs.mm.server.model.AbstractMMFlux;
@@ -31,7 +31,10 @@ public class SupervisionUtilsTest extends AbstractMMTest {
         List<AgentInfoDto> agentInfoDtoList = SupervisionUtils.getAgentInfo("test", null);
         Assert.assertTrue(agentInfoDtoList.size() >= 2); // with RetryAgent
 
-        MMServer.handle("test", MyMMAgent.class, new MyFlux1());
+        MyFlux1 myFlux1 = new MyFlux1();
+        myFlux1.init("test", MyFlux1.class.getSimpleName());
+
+        MM.handle(myFlux1);
         ProcessManager.handle("test", MySingletonMMAgent.class.getSimpleName(), new MyFlux2());
         ProcessManager.handle("test", MySingletonMMAgent.class.getSimpleName(), new MyFlux2());
 
@@ -46,11 +49,11 @@ public class SupervisionUtilsTest extends AbstractMMTest {
 
         @Override
         public void process(MyFlux1 messageObject) {
-            List<AgentInfoDto> agentInfoDtoList = SupervisionUtils.getAgentInfo("test", "MyMMAgent");
+            List<AgentInfoDto> agentInfoDtoList = SupervisionUtils.getAgentInfo("test", "MyFlux1");
             Assert.assertEquals(1, agentInfoDtoList.size());
 
             AgentInfoDto agentInfoDto = agentInfoDtoList.get(0);
-            Assert.assertEquals("MyMMAgent", agentInfoDto.getName());
+            Assert.assertEquals("MyFlux1", agentInfoDto.getName());
             Assert.assertTrue(agentInfoDto.isBusy());
             Assert.assertTrue(agentInfoDto.isAvailable());
             Assert.assertFalse(agentInfoDto.isOverloaded());
@@ -73,11 +76,11 @@ public class SupervisionUtilsTest extends AbstractMMTest {
                 e.printStackTrace();
             }
             synchronized (SupervisionUtilsTest.class) {
-                List<AgentInfoDto> agentInfoDtoList = SupervisionUtils.getAgentInfo("test", "MySingletonMMAgent");
+                List<AgentInfoDto> agentInfoDtoList = SupervisionUtils.getAgentInfo("test", "MyFlux2");
                 Assert.assertEquals(1, agentInfoDtoList.size());
 
                 AgentInfoDto agentInfoDto = agentInfoDtoList.get(0);
-                Assert.assertEquals("MySingletonMMAgent", agentInfoDto.getName());
+                Assert.assertEquals("MyFlux2", agentInfoDto.getName());
 
                 Assert.assertTrue(agentInfoDto.isBusy());
                 Assert.assertTrue(agentInfoDto.isAvailable());

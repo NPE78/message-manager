@@ -8,7 +8,6 @@ import com.talanlabs.mm.shared.model.domain.ErrorImpact;
 import com.talanlabs.mm.shared.model.domain.ErrorRecyclingKind;
 import com.talanlabs.mm.shared.model.domain.MessageStatus;
 import com.talanlabs.mm.shared.model.domain.MessageWay;
-import com.talanlabs.processmanager.engine.ProcessManager;
 import com.talanlabs.processmanager.messages.agent.AbstractFileAgent;
 import com.talanlabs.processmanager.messages.flux.AbstractImportFlux;
 import com.talanlabs.processmanager.shared.Agent;
@@ -88,8 +87,6 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
     protected abstract F createFlux();
 
     private void injectMessage(F flux) {
-        String engineUuid = flux.getProcessContext().getEngineUuid();
-
         manageDeadlineDate(flux);
 
         saveOrUpdateMessage(flux);
@@ -101,7 +98,7 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
 
         if (flux.getMessageStatus() != MessageStatus.REJECTED) {
             getLogService().debug(() -> "[{0}] Inject: {1}", flux.getMessageType() != null ? flux.getMessageType().getName() : "", flux.getId());
-            ProcessManager.handle(engineUuid, getName(), flux);
+            MM.handle(flux);
         }
     }
 
@@ -142,7 +139,7 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
             message.setContent(getFluxContentManager().getContent(message));
         } catch (ContentNotFetchedException e) {
             getLogService().warn(() -> "The content could not be fetched for message {0}", e, message.getId());
-            reject(getSingleUnknownErrorMap(message.getProcessContext().getEngineUuid(), ErrorRecyclingKind.MANUAL));
+            reject(getSingleUnknownErrorMap(message.getEngineUuid(), ErrorRecyclingKind.MANUAL));
         }
     }
 
@@ -163,7 +160,7 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
     }
 
     @SuppressWarnings("unchecked")
-    F getMessage(UnderlyingImportFlux underlyingImportFlux) {
+    private F getMessage(UnderlyingImportFlux underlyingImportFlux) {
         return (F) underlyingImportFlux.message;
     }
 
@@ -188,10 +185,9 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
         @Override
         protected void handleFlux(UnderlyingImportFlux underlyingFlux, String engineUuid) {
             F flux = getMessage(underlyingFlux);
-            flux.getProcessContext().init(engineUuid);
+            flux.init(engineUuid, getName());
             flux.setMessageStatus(MessageStatus.TO_BE_INTEGRATED);
             flux.setFile(underlyingFlux.getFile());
-            flux.setMessageType(MMEngineAddon.getMessageType(engineUuid, getName()));
 
             AbstractMMImportAgent.this.injectMessage(flux);
         }
