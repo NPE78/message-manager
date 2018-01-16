@@ -39,7 +39,7 @@ public class MyMMImportAgent extends AbstractMMImportAgent<MyImportFlux> {
     }
 
     @Override
-    protected void enrichDictionary(SubDictionary subDictionary) {
+    protected void enrichDictionary(SubDictionary subDictionary, String engineUuid) {
         registerErrorEnum(MyErrors.class, subDictionary);
     }
 
@@ -97,11 +97,6 @@ public class MyMMImportAgent extends AbstractMMImportAgent<MyImportFlux> {
 
         MyErrors(ErrorRecyclingKind recyclingKind) {
             this.recyclingKind = recyclingKind;
-        }
-
-        @Override
-        public String getCode() {
-            return name();
         }
 
         @Override

@@ -5,7 +5,10 @@ import com.talanlabs.mm.shared.model.domain.ErrorRecyclingKind;
 
 public interface IErrorEnum extends IErrorType {
 
-    String getCode();
+    String name();
+
+    @Override
+    default String getCode() { return name(); }
 
     @Override
     default ErrorRecyclingKind getRecyclingKind() {

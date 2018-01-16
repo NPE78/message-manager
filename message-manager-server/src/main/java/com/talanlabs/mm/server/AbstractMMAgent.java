@@ -51,8 +51,6 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
      */
     private final ThreadLocal<F> fluxThreadLocal;
 
-    private IMessageType messageType;
-
     /**
      * Create an agent with given name
      *
@@ -84,15 +82,7 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
      * Builds the message type
      */
     protected IMessageType buildMessageType() {
-        messageType = new DefaultMessageType(getName(), getMessageWay());
-        return messageType;
-    }
-
-    /**
-     * Returns the message type previously build by {@link #buildMessageType()}
-     */
-    public final IMessageType getMessageType() {
-        return messageType;
+        return new DefaultMessageType(getName(), getMessageWay());
     }
 
     @Override
@@ -162,7 +152,7 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
     private SubDictionary getOrCreateSubsetDictionary(String engineUuid) {
         try {
             SubDictionary subsetDictionary = MMEngineAddon.getDictionary(engineUuid).getOrCreateSubsetDictionary(getMessageTypeName());
-            enrichDictionary(subsetDictionary);
+            enrichDictionary(subsetDictionary, engineUuid);
             return subsetDictionary;
         } catch (InvalidDictionaryOperationException e) {
             throw new DictionaryException(e);
@@ -174,7 +164,7 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
      * The dictionary is the one of the agent (message type : MAIN.messageTypeName)<br>
      * Use {@link #registerErrorEnum(Class, SubDictionary)} to add a whole lot of errors quickly
      */
-    protected void enrichDictionary(SubDictionary subDictionary) {
+    protected void enrichDictionary(SubDictionary subDictionary, String engineUuid) {
     }
 
     /**
