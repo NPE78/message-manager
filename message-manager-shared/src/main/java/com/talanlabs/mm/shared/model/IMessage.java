@@ -20,11 +20,6 @@ public interface IMessage {
 	IMessageType getMessageType();
 
 	/**
-	 * The type of the message
-	 */
-	void setMessageType(IMessageType messageType);
-
-	/**
 	 * The status of the message. Uses a kind of workflow to know what to do next
 	 */
 	MessageStatus getMessageStatus();

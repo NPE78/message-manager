@@ -1,9 +1,11 @@
 package com.talanlabs.mm.shared.model.domain;
 
+import java.io.Serializable;
+
 /**
  * Created by NicolasP on 29/12/2015.
  */
-public class ErrorImpact {
+public class ErrorImpact implements Serializable {
 
 	private final ErrorRecyclingKind recyclingKind;
 

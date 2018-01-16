@@ -5,8 +5,8 @@ import com.talanlabs.mm.shared.model.domain.MessageWay;
 
 public class DefaultMessageType implements IMessageType {
 
-    private String name;
-    private MessageWay messageWay;
+    private final String name;
+    private final MessageWay messageWay;
     private Integer recyclingDeadline;
 
     public DefaultMessageType(String name, MessageWay messageWay) {
@@ -20,17 +20,9 @@ public class DefaultMessageType implements IMessageType {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @Override
     public MessageWay getMessageWay() {
         return messageWay;
-    }
-
-    public void setMessageWay(MessageWay messageWay) {
-        this.messageWay = messageWay;
     }
 
     @Override

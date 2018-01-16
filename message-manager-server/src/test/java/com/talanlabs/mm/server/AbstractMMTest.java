@@ -33,7 +33,7 @@ public class AbstractMMTest {
 	public void init() throws BaseEngineCreationException, FileSystemException {
 		ServerHelper.configureServer();
 
-        server = new MMServer("test", getIntegFolder(), TestUtils.getErrorPath());
+        server = new MM("test", getIntegFolder(), TestUtils.getErrorPath());
 
 		if (autoStartIntegrator()) {
 			startIntegrator();

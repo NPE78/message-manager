@@ -1,5 +1,5 @@
 Feature: Message Manager feature
-  We create an engine, add TriggerEngine and Gate Factory addons.
+  We create a server, initialize a dictionary
   We then add an agent which listens to a folder
 
   Background:
@@ -15,7 +15,7 @@ Feature: Message Manager feature
 
   Scenario: Injecting a file which is correct
     When a file with a warning error is received
-    Then the file should be accepted
+    Then the file should be accepted with warnings
     Then shutdown the engine
 
   Scenario: Injecting a file which has a automatic recycling error

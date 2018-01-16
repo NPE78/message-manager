@@ -10,19 +10,14 @@ import java.util.List;
 /**
  * This POJO is the lowest level of what needs to be a process context: a list of errors raised during the process
  */
-public class ProcessContext implements Serializable {
+public final class ProcessContext implements Serializable {
 
     private final List<IProcessError> processErrorList;
 
-    private transient String engineUuid;
     private transient IProcessErrorFactory processErrorFactory;
 
-    public ProcessContext() {
+    ProcessContext() {
         processErrorList = new ArrayList<>(0);
-    }
-
-    public String getEngineUuid() {
-        return engineUuid;
     }
 
     public IProcessErrorFactory getProcessErrorFactory() {
@@ -30,7 +25,6 @@ public class ProcessContext implements Serializable {
     }
 
     public void init(String engineUuid) {
-        this.engineUuid = engineUuid;
         this.processErrorFactory = MMEngineAddon.getProcessErrorFactory(engineUuid);
     }
 

@@ -3,7 +3,7 @@ package com.talanlabs.messagemanager.example;
 import com.talanlabs.mm.engine.MMDictionary;
 import com.talanlabs.mm.engine.model.DefaultErrorType;
 import com.talanlabs.mm.server.IServer;
-import com.talanlabs.mm.server.MMServer;
+import com.talanlabs.mm.server.MM;
 import com.talanlabs.mm.server.addon.MMEngineAddon;
 import com.talanlabs.mm.server.helper.FSHelper;
 import com.talanlabs.mm.server.helper.TestUtils;
@@ -32,17 +32,17 @@ public class MessageManagerScenarioSteps {
 
     @Given("^engine is created$")
     public void engineIsCreated() throws Throwable {
-        server = new MMServer("example", FSHelper.getIntegFolder(), TestUtils.getErrorPath());
+        server = new MM("example", FSHelper.getIntegFolder(), TestUtils.getErrorPath());
         messages = new HashMap<>();
     }
 
     @And("^dictionary is configured$")
     public void dictionaryIsConfigured() {
         MMDictionary dictionary = MMEngineAddon.getDictionary("example");
-        dictionary.defineError(new DefaultErrorType("warningError", ErrorRecyclingKind.WARNING));
-        dictionary.defineError(new DefaultErrorType("notRecyclableError", ErrorRecyclingKind.NOT_RECYCLABLE));
-        dictionary.defineError(new DefaultErrorType("automaticError", ErrorRecyclingKind.AUTOMATIC, 60));
-        dictionary.defineError(new DefaultErrorType("manualError", ErrorRecyclingKind.MANUAL));
+        dictionary.defineError(new DefaultErrorType("WARNING_ERROR", ErrorRecyclingKind.WARNING));
+        dictionary.defineError(new DefaultErrorType("NOT_RECYCLABLE_ERROR", ErrorRecyclingKind.NOT_RECYCLABLE));
+        dictionary.defineError(new DefaultErrorType("AUTOMATIC_ERROR", ErrorRecyclingKind.AUTOMATIC, 60));
+        dictionary.defineError(new DefaultErrorType("MANUAL_ERROR", ErrorRecyclingKind.MANUAL));
     }
 
     @And("^agent is created and registered$")
@@ -69,8 +69,12 @@ public class MessageManagerScenarioSteps {
 
     @Then("^the file should be accepted$")
     public void theFileShouldBeAccepted() {
-        MessageStatus expected = MessageStatus.PROCESSED;
-        check(expected);
+        check(MessageStatus.PROCESSED, 1);
+    }
+
+    @Then("^the file should be accepted with warnings$")
+    public void theFileShouldBeAcceptedWithWarnings() {
+        check(MessageStatus.PROCESSED, 2);
     }
 
     @When("^an invalid file with an automatic error is received$")
@@ -80,7 +84,7 @@ public class MessageManagerScenarioSteps {
 
     @Then("^the file should be in recycling automatically state$")
     public void theFileShouldBeInRecyclingAutomaticallyState() {
-        check(MessageStatus.TO_RECYCLE_AUTOMATICALLY);
+        check(MessageStatus.TO_RECYCLE_AUTOMATICALLY, 2);
     }
 
     @When("^an invalid file with a manual error is received$")
@@ -90,7 +94,7 @@ public class MessageManagerScenarioSteps {
 
     @Then("^the file should be in recycling manually state$")
     public void theFileShouldBeInRecyclingManuallyState() {
-        check(MessageStatus.TO_RECYCLE_MANUALLY);
+        check(MessageStatus.TO_RECYCLE_MANUALLY, 2);
     }
 
     @When("^an invalid file with a reject definitely is received$")
@@ -100,7 +104,7 @@ public class MessageManagerScenarioSteps {
 
     @Then("^the file should be rejected$")
     public void theFileShouldBeRejected() {
-        check(MessageStatus.REJECTED);
+        check(MessageStatus.REJECTED, 2);
     }
 
     private void injectFile(String content) throws IOException, InterruptedException {
@@ -113,12 +117,13 @@ public class MessageManagerScenarioSteps {
         TestUtils.sleep(500);
     }
 
-    private void check(MessageStatus expected) {
+    private void check(MessageStatus expected, int expectedErrors) {
         Assertions.assertThat(messages).hasSize(1);
         Serializable id = messages.keySet().iterator().next();
         MyImportFlux myImportFlux = messages.values().iterator().next();
         Assertions.assertThat(myImportFlux.getMessageStatus()).isEqualTo(expected);
         Assertions.assertThat(myImportFlux.getId()).isEqualTo(id);
+        Assertions.assertThat(myImportFlux.getErrors()).hasSize(expectedErrors);
     }
 
     @Then("^shutdown the engine$")
