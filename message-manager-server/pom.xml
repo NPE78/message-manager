@@ -47,13 +47,6 @@
         </dependency>
         <dependency>
             <groupId>com.talanlabs</groupId>
-            <artifactId>message-manager-engine</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.talanlabs</groupId>
             <artifactId>process-manager-messages-plugin</artifactId>
         </dependency>
         <dependency>
@@ -74,15 +67,21 @@
     </dependencies>
     <profiles>
         <profile>
-            <id>PROD_ENV</id>
+            <id>useTests</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>!maven.test.skip</name>
+                </property>
             </activation>
-            <build>
-                <filters>
-                    <filter>src/main/filters/NORMAL.properties</filter>
-                </filters>
-            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>com.talanlabs</groupId>
+                    <artifactId>message-manager-engine</artifactId>
+                    <version>${project.version}</version>
+                    <type>test-jar</type>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 </project>
