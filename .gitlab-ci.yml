@@ -9,7 +9,7 @@ build_job:
   only:
     - master
   script:
-    - mvn --batch-mode package -DskipTests=true -Djacoco.skip=true
+    - mvn --batch-mode package -Dmaven.test.skip=true -Djacoco.skip=true
   tags:
     - docker
 
@@ -21,7 +21,7 @@ build_merge_job:
   script:
     - git checkout origin/master
     - git merge $CI_BUILD_REF --no-commit --no-ff
-    - mvn --batch-mode package -DskipTests=true -Djacoco.skip=true -U
+    - mvn --batch-mode package -Dmaven.test.skip=true -Djacoco.skip=true -U
   tags:
     - docker
 
@@ -50,7 +50,7 @@ deploy_job:
   only:
     - master
   script:
-    - mvn --batch-mode deploy -DskipTests=true -Djacoco.skip=true
+    - mvn --batch-mode deploy -DskipTests -Djacoco.skip=true
   tags:
     - docker
 
@@ -60,6 +60,6 @@ deploy_tags_job:
     - tags
   script:
     - mvn --batch-mode org.codehaus.mojo:versions-maven-plugin:2.1:set -DnewVersion=$CI_BUILD_REF_NAME -DgenerateBackupPoms=false
-    - mvn --batch-mode deploy -DskipTests=true -Djacoco.skip=true
+    - mvn --batch-mode deploy -Dmaven.test.skip=true -Djacoco.skip=true -Prelease
   tags:
     - docker
