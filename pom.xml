@@ -5,10 +5,41 @@
 	<artifactId>message-manager</artifactId>
 	<version>2.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<organization>
-		<name>TalanLabs</name>
-		<url>http://www.talanlabs.com</url>
-	</organization>
+
+    <name>Message Manager</name>
+    <description>Message Manager, extension of the Process Manager by TalanLabs</description>
+    <url>http://www.talanlabs.com</url>
+
+    <organization>
+        <name>TalanLabs</name>
+        <url>http://www.talanlabs.com</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>GNU LGPL 3</name>
+            <url>http://www.gnu.org/licenses/lgpl.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>nicolas.poste@talan.com</id>
+            <name>Nicolas Poste</name>
+            <email>nicolas.poste@talan.com</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:https://gitlab.talanlabs.com/nicolas-poste/message-manager.git</connection>
+        <url>https://gitlab.talanlabs.com/nicolas-poste/message-manager</url>
+    </scm>
+    <ciManagement>
+        <system>gitlab-ci</system>
+        <url>https://gitlab.talanlabs.com/nicolas-poste/message-manager</url>
+    </ciManagement>
+    <issueManagement>
+        <system>gitlab</system>
+        <url>https://gitlab.talanlabs.com/nicolas-poste/message-manager/issues</url>
+    </issueManagement>
 	<properties>
 		<root-directory>${project.basedir}</root-directory>
 
@@ -20,13 +51,9 @@
 		<maven-source-plugin.version>2.4</maven-source-plugin.version>
 		<maven-test-jar-plugin.version>2.4</maven-test-jar-plugin.version>
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-		<build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
-		<maven-processor-plugin.version>2.2.1</maven-processor-plugin.version>
 		<maven-failsafe-plugin.version>2.18.1</maven-failsafe-plugin.version>
-
-		<log4j.version>1.2.17</log4j.version>
-
-		<antlr4.version>4.5.1-1</antlr4.version>
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
 
 		<process-manager.version>1.0.0</process-manager.version>
 
@@ -36,10 +63,6 @@
 
 		<sonar-maven-plugin.version>2.6</sonar-maven-plugin.version>
 
-		<logback.configurationFile>${root-directory}/etc/maven-annotation-logback.xml</logback.configurationFile>
-		<generated.sources.dir>${project.build.directory}/generated-sources/apt</generated.sources.dir>
-		<generated.antlr.sources.dir>${project.build.directory}/generated-sources/apt</generated.antlr.sources.dir>
-
 		<sonar.jacoco.reportPaths>target/coverage-reports/jacoco-ut.exec,target/coverage-reports/jacoco-it.exec</sonar.jacoco.reportPaths>
 		<sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
 		<sonar.exclusions>**/pom.xml</sonar.exclusions>
@@ -47,26 +70,58 @@
 		<jetty.version>6.1.26</jetty.version>
 		<guava.version>18.0</guava.version>
 	</properties>
-	<scm>
-		<url>https://gitlab.talanlabs.com/nicolas-poste/message-manager</url>
-		<connection>scm:git:https://gitlab.talanlabs.com/nicolas-poste/message-manager.git</connection>
-	</scm>
-	<ciManagement>
-		<system>gitlab-ci</system>
-		<url>https://gitlab.talanlabs.com/ci/projects/7</url>
-	</ciManagement>
-	<issueManagement>
-		<system>gitlab</system>
-		<url>https://gitlab.talanlabs.com/nicolas-poste/message-manager/issues</url>
-	</issueManagement>
-	<modules>
-		<module>message-manager-shared</module>
-		<module>message-manager-engine</module>
-		<module>message-manager-server</module>
-		<module>message-manager-supervision</module>
-		<module>message-manager-test-dependencies</module>
-        <module>message-manager-example</module>
-    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>2.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.talanlabs</groupId>
+            <artifactId>try</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.talanlabs</groupId>
+                <artifactId>process-manager-messages-plugin</artifactId>
+                <version>${process-manager.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
 		<directory>${basedir}/target</directory>
@@ -174,6 +229,17 @@
 					<deployAtEnd>true</deployAtEnd>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>${nexus-staging-maven-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -198,33 +264,6 @@
 					<version>${maven-source-plugin.version}</version>
 				</plugin>
 				<plugin>
-					<groupId>org.bsc.maven</groupId>
-					<artifactId>maven-processor-plugin</artifactId>
-					<version>${maven-processor-plugin.version}</version>
-					<configuration>
-						<outputDirectory>${generated.sources.dir}</outputDirectory>
-						<failOnError>false</failOnError>
-						<outputDirectory>${generated.sources.dir}</outputDirectory>
-
-						<systemProperties>
-							<logback.configurationFile>${logback.configurationFile}</logback.configurationFile>
-						</systemProperties>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.antlr</groupId>
-					<artifactId>antlr4-maven-plugin</artifactId>
-					<version>${antlr4.version}</version>
-					<configuration>
-						<outputDirectory>${generated.antlr.sources.dir}</outputDirectory>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>${build-helper-maven-plugin.version}</version>
-				</plugin>
-				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
 					<version>${maven-failsafe-plugin.version}</version>
@@ -245,119 +284,61 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	<repositories>
-		<repository>
-			<id>talanlabs-releases-repository</id>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<url>http://nexus.talanlabs.com/content/groups/public_release</url>
-		</repository>
-		<repository>
-			<id>talanlabs-snapshots-repository</id>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<url>http://nexus.talanlabs.com/content/groups/public_snapshots</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>talanlabs-releases-repository</id>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<url>http://nexus.talanlabs.com/content/groups/public_release</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>talanlabs-snapshots-repository</id>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<url>http://nexus.talanlabs.com/content/groups/public_snapshots</url>
-		</pluginRepository>
-	</pluginRepositories>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.antlr</groupId>
-				<artifactId>antlr4-runtime</artifactId>
-				<version>${antlr4.version}</version>
-			</dependency>
 
-			<dependency>
-				<groupId>com.talanlabs</groupId>
-				<artifactId>process-manager-messages-plugin</artifactId>
-				<version>${process-manager.version}</version>
-			</dependency>
+    <modules>
+        <module>message-manager-shared</module>
+        <module>message-manager-engine</module>
+        <module>message-manager-server</module>
+        <module>message-manager-supervision</module>
+        <module>message-manager-test-dependencies</module>
+        <module>message-manager-example</module>
+    </modules>
 
-			<dependency>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty</artifactId>
-				<version>${jetty.version}</version>
-			</dependency>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>2.2.0</version>
-            <scope>test</scope>
-        </dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.4</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.talanlabs</groupId>
-			<artifactId>try</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-	</dependencies>
-	<distributionManagement>
-		<repository>
-			<id>talanlabs-releases-repository</id>
-			<url>http://nexus.talanlabs.com/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>talanlabs-snapshots-repository</id>
-			<url>http://nexus.talanlabs.com/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven-javadoc-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven-gpg-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
