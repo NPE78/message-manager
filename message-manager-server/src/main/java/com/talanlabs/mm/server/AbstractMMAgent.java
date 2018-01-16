@@ -13,7 +13,6 @@ import com.talanlabs.mm.server.addon.MMEngineAddon;
 import com.talanlabs.mm.server.delegate.FluxContentManager;
 import com.talanlabs.mm.server.exception.DictionaryException;
 import com.talanlabs.mm.server.model.AbstractMMFlux;
-import com.talanlabs.mm.server.model.DefaultMessageType;
 import com.talanlabs.mm.server.model.IErrorEnum;
 import com.talanlabs.mm.server.model.ProcessContext;
 import com.talanlabs.mm.shared.model.IMessageType;
@@ -82,7 +81,7 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
      * Builds the message type
      */
     protected IMessageType buildMessageType() {
-        return new DefaultMessageType(getName(), getMessageWay());
+        return IMessageType.of(getName(), getMessageWay());
     }
 
     @Override
