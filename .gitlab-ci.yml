@@ -29,6 +29,7 @@ test_sonar_preview_job:
   stage: test
   except:
     - master
+    - tags
   script:
     - git checkout origin/master
     - git merge $CI_BUILD_REF --no-commit --no-ff
