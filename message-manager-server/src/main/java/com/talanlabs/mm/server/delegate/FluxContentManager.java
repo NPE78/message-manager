@@ -47,7 +47,7 @@ public class FluxContentManager {
 		if (message.getMessageType() == null) {
 			throw new ContentNotFetchedException("Message type is not provided, it is mandatory to find in the right folder");
 		}
-		FileFinder fileFinder = new FileFinder(message.getMessageType().getName(), message.getFolder(), message.getId().toString());
+		FileFinder fileFinder = new FileFinder(message.getName(), message.getFolder(), message.getId().toString());
 		try {
 			boolean exists = fileFinder.find();
 			if (!exists) {
@@ -82,7 +82,7 @@ public class FluxContentManager {
 		if (message.getMessageType() == null) {
 			throw new ContentNotSavedException("Message type is not provided, it is mandatory to find in the right folder");
 		}
-		FileFinder fileFinder = new FileFinder(message.getMessageType().getName(), message.getFolder(), message.getId().toString());
+		FileFinder fileFinder = new FileFinder(message.getName(), message.getFolder(), message.getId().toString());
 		try {
 			fileFinder.find();
 			if (fileFinder.isArchived) {

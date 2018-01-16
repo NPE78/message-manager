@@ -32,7 +32,7 @@ public class SupervisionUtilsTest extends AbstractMMTest {
         Assert.assertTrue(agentInfoDtoList.size() >= 2); // with RetryAgent
 
         MyFlux1 myFlux1 = new MyFlux1();
-        myFlux1.init("test", MyFlux1.class.getSimpleName());
+        myFlux1.init("test");
 
         MM.handle(myFlux1);
         ProcessManager.handle("test", MySingletonMMAgent.class.getSimpleName(), new MyFlux2());

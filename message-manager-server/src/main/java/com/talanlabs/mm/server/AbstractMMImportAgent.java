@@ -97,7 +97,7 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
         }
 
         if (flux.getMessageStatus() != MessageStatus.REJECTED) {
-            getLogService().debug(() -> "[{0}] Inject: {1}", flux.getMessageType() != null ? flux.getMessageType().getName() : "", flux.getId());
+            getLogService().debug(() -> "[{0}] Inject: {1}", flux.getName(), flux.getId());
             MM.handle(flux);
         }
     }
@@ -185,7 +185,7 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
         @Override
         protected void handleFlux(UnderlyingImportFlux underlyingFlux, String engineUuid) {
             F flux = getMessage(underlyingFlux);
-            flux.init(engineUuid, getName());
+            flux.init(engineUuid);
             flux.setMessageStatus(MessageStatus.TO_BE_INTEGRATED);
             flux.setFile(underlyingFlux.getFile());
 
