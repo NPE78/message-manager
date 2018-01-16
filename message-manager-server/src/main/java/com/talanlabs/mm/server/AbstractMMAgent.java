@@ -120,7 +120,7 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
 
                 checkDictionary(engineUuid);
 
-                message.init(engineUuid, getName()); // this message has another thread local than the one passed to the #handle method
+                message.init(engineUuid); // this message has another thread local than the one passed to the #handle method
                 setCurrentMessage(message);
 
                 prepare(message);

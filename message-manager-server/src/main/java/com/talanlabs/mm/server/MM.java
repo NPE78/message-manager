@@ -198,10 +198,10 @@ public class MM implements IServer {
 
     /**
      * Send a message asynchronously to an agent of given class (using its channel)
-     * @param message message to send (this message contains the information of the engine on which it has to be processed and the channel, using the message type name)
+     * @param message message to send (this message contains the information of the engine on which it has to be processed and the channel, using its name)
      * @param <F> type of message to send to an agent which manages this type of message
      */
     public static <F extends AbstractMMFlux> void handle(F message) {
-        ProcessManager.handle(message.getEngineUuid(), message.getMessageType().getName(), message);
+        ProcessManager.handle(message.getEngineUuid(), message.getName(), message);
     }
 }

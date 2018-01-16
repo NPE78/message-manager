@@ -34,9 +34,10 @@ public abstract class AbstractMMFlux extends AbstractFlux implements IMessage {
         return processContext;
     }
 
-    public final void init(String engineUuid, String messageTypeName) {
+    public final void init(String engineUuid) {
         this.engineUuid = engineUuid;
-        messageType = MMEngineAddon.getMessageType(engineUuid, messageTypeName);
+        setName(this.getClass().getSimpleName());
+        messageType = MMEngineAddon.getMessageType(engineUuid, this.getClass().getSimpleName());
         processContext.init(engineUuid);
     }
 

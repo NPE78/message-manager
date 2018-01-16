@@ -14,6 +14,10 @@ public interface IMessage {
 	 */
 	Serializable getId();
 
+	default String getName() {
+        return getMessageType() != null ? getMessageType().getName() : null;
+    }
+
 	/**
 	 * The type of the message
 	 */
