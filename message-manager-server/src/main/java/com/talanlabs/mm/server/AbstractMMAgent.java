@@ -25,6 +25,7 @@ import com.talanlabs.processmanager.shared.logging.LogManager;
 import com.talanlabs.processmanager.shared.logging.LogService;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +94,29 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
             Map<IProcessError, ErrorImpact> errorMap = getSingleUnknownErrorMap(engineUuid, ErrorRecyclingKind.MANUAL);
             reject(errorMap);
             notifyMessageStatus(MessageStatus.TO_RECYCLE_MANUALLY);
+        }
+    }
+
+    /**
+     * Called prior to the #handle method
+     */
+    final void handleMessage(F flux) {
+        manageDeadlineDate(flux);
+        saveOrUpdateMessage(flux);
+    }
+
+    void manageDeadlineDate(F flux) {
+        if (flux.getFirstProcessingDate() == null) {
+            flux.setFirstProcessingDate(Instant.now());
+        }
+        if (flux.getMessageType() != null && flux.getMessageType().getRecyclingDeadline() != null) {
+            Instant deadlineDate = flux.getFirstProcessingDate().plus(flux.getMessageType().getRecyclingDeadline(), ChronoUnit.MINUTES);
+            flux.setDeadlineDate(deadlineDate);
+        }
+        // check deadline_date
+        if (flux.getDeadlineDate() != null && flux.getDeadlineDate().isBefore(Instant.now())) {
+            flux.setMessageStatus(MessageStatus.REJECTED);
+            getLogService().warn(() -> "Message {0} has reached its deadline, it has been rejected", flux.getId());
         }
     }
 

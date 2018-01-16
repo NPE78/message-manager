@@ -14,8 +14,6 @@ import com.talanlabs.processmanager.shared.Agent;
 import com.talanlabs.processmanager.shared.exceptions.AgentException;
 import java.io.File;
 import java.io.Serializable;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 /**
@@ -87,9 +85,7 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
     protected abstract F createFlux();
 
     private void injectMessage(F flux) {
-        manageDeadlineDate(flux);
-
-        saveOrUpdateMessage(flux);
+        handleMessage(flux);
 
         File file = flux.getFile();
         if (file != null && !flux.getId().toString().equals(file.getName())) {
@@ -99,21 +95,6 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
         if (flux.getMessageStatus() != MessageStatus.REJECTED) {
             getLogService().debug(() -> "[{0}] Inject: {1}", flux.getName(), flux.getId());
             MM.handle(flux);
-        }
-    }
-
-    private void manageDeadlineDate(F flux) {
-        if (flux.getFirstProcessingDate() == null) {
-            flux.setFirstProcessingDate(Instant.now());
-        }
-        if (flux.getMessageType() != null && flux.getMessageType().getRecyclingDeadline() != null) {
-            Instant deadlineDate = flux.getFirstProcessingDate().plus(flux.getMessageType().getRecyclingDeadline(), ChronoUnit.MINUTES);
-            flux.setDeadlineDate(deadlineDate);
-        }
-        // check deadline_date, only if it's not a new message
-        if (flux.getFile() == null && flux.getDeadlineDate() != null && flux.getDeadlineDate().isBefore(Instant.now())) {
-            flux.setMessageStatus(MessageStatus.REJECTED);
-            getLogService().warn(() -> "Message {0} has reached its deadline, it has been rejected", flux.getId());
         }
     }
 
@@ -186,7 +167,7 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
         protected void handleFlux(UnderlyingImportFlux underlyingFlux, String engineUuid) {
             F flux = getMessage(underlyingFlux);
             flux.init(engineUuid);
-            flux.setMessageStatus(MessageStatus.TO_BE_INTEGRATED);
+            flux.setMessageStatus(MessageStatus.TO_BE_PROCESSED);
             flux.setFile(underlyingFlux.getFile());
 
             AbstractMMImportAgent.this.injectMessage(flux);

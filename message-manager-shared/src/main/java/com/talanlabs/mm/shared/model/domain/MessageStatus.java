@@ -6,13 +6,9 @@ package com.talanlabs.mm.shared.model.domain;
 public enum MessageStatus {
 
 	/**
-	 * The message has to be integrated (either it's its first time, either it's asked from an user who asked the message to be recycled).
+	 * The message has to be processed, ie integrated or sent (either it's its first time, either it's asked from an user who asked the message to be recycled).
 	 */
-	TO_BE_INTEGRATED(0),
-	/**
-	 * The message has to be sent (either it's its first time, either it's asked from an user who asked the message to be recycled)
-	 */
-	TO_SEND(0),
+	TO_BE_PROCESSED(0),
 	/**
 	 * The message is currently in progress.
 	 * Transient status

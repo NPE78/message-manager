@@ -21,7 +21,7 @@ public class MessageTest {
         MyMessage message = new MyMessage();
         message.setId("id");
         message.setMessageType(IMessageType.of("test", MessageWay.IN));
-        message.setMessageStatus(MessageStatus.TO_BE_INTEGRATED);
+        message.setMessageStatus(MessageStatus.TO_BE_PROCESSED);
         message.setNextProcessingDate(next);
         message.setDeadlineDate(deadline);
         message.setFirstProcessingDate(now);
