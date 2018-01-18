@@ -71,4 +71,4 @@ Rajoute jetty, ainsi que les dépendances *test-jar* du serveur et du moteur. A 
 
 # Faire une release
 
-Faire simplement un tag, GitLab-CI fera une release automatiqument avec le nom du tag
+Faire simplement un tag, GitLab-CI fera une release automatiquement avec le nom du tag

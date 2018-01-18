@@ -3,21 +3,22 @@ package com.talanlabs.mm.server;
 import com.talanlabs.mm.engine.factory.IProcessErrorFactory;
 import com.talanlabs.mm.server.addon.MMEngineAddon;
 import com.talanlabs.mm.server.model.AbstractMMFlux;
-import com.talanlabs.processmanager.engine.ProcessManager;
+import com.talanlabs.processmanager.engine.PM;
 import com.talanlabs.processmanager.engine.ProcessingChannel;
 import com.talanlabs.processmanager.shared.Engine;
 import com.talanlabs.processmanager.shared.exceptions.BaseEngineCreationException;
 import com.talanlabs.processmanager.shared.logging.LogManager;
 import com.talanlabs.processmanager.shared.logging.LogService;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.VFS;
+import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
+
 import java.io.File;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.VFS;
-import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 
 /**
  * Launches an instance of the message manager server
@@ -46,7 +47,7 @@ public class MM implements IServer {
 
         setBaseDir(integFolder);
 
-        this.engine = ProcessManager.getInstance().createEngine(engineUuid, errorPath);
+        this.engine = PM.get().createEngine(engineUuid, errorPath);
 
         this.timeoutSeconds = 2 * 60;
 
@@ -202,6 +203,6 @@ public class MM implements IServer {
      * @param <F> type of message to send to an agent which manages this type of message
      */
     public static <F extends AbstractMMFlux> void handle(F message) {
-        ProcessManager.handle(message.getEngineUuid(), message.getName(), message);
+        PM.handle(message.getEngineUuid(), message.getName(), message);
     }
 }

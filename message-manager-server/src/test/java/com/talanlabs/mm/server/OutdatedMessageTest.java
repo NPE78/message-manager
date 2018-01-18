@@ -5,13 +5,14 @@ import com.talanlabs.mm.server.model.AbstractMMImportFlux;
 import com.talanlabs.mm.shared.model.IProcessError;
 import com.talanlabs.mm.shared.model.domain.ErrorImpact;
 import com.talanlabs.mm.shared.model.domain.MessageStatus;
-import com.talanlabs.processmanager.engine.ProcessManager;
+import com.talanlabs.processmanager.engine.PM;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
+
 import java.io.File;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
 
 public class OutdatedMessageTest extends AbstractMMTest {
 
@@ -29,7 +30,7 @@ public class OutdatedMessageTest extends AbstractMMTest {
         agent.manageDeadlineDate(myFlux);
         Assertions.assertThat(myFlux.getMessageStatus()).isEqualTo(MessageStatus.REJECTED);
 
-        ProcessManager.getInstance().shutdownEngine("test");
+        PM.get().shutdownEngine("test");
     }
 
     private class MyMMAgent extends AbstractMMImportAgent<MyFlux> {

@@ -8,10 +8,11 @@ import com.talanlabs.mm.shared.model.domain.ErrorImpact;
 import com.talanlabs.mm.shared.model.domain.ErrorRecyclingKind;
 import com.talanlabs.mm.shared.model.domain.MessageStatus;
 import com.talanlabs.mm.shared.model.domain.MessageWay;
-import com.talanlabs.processmanager.messages.agent.AbstractFileAgent;
+import com.talanlabs.processmanager.messages.agent.AbstractImportAgent;
 import com.talanlabs.processmanager.messages.flux.AbstractImportFlux;
 import com.talanlabs.processmanager.shared.Agent;
 import com.talanlabs.processmanager.shared.exceptions.AgentException;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Map;
@@ -37,7 +38,7 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
     }
 
     @Override
-    public MessageWay getMessageWay() {
+    public final MessageWay getMessageWay() {
         return MessageWay.IN;
     }
 
@@ -62,7 +63,6 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
 
     @Override
     public final void accept(Map<IProcessError, ErrorImpact> errorMap) {
-        // we don't move the file anymore, its done by the injector
         saveErrors(errorMap);
         F message = getMessage();
         if (message != null) {
@@ -73,7 +73,6 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
 
     @Override
     public final void reject(Map<IProcessError, ErrorImpact> errorMap) {
-        // we don't move the file anymore, its done by the injector
         saveErrors(errorMap);
         F message = getMessage();
         if (message != null) {
@@ -150,7 +149,7 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
     /**
      * Agent which manages files coming from the file system and redirects them to the parent agent
      */
-    private class UnderlyingAgent extends AbstractFileAgent<UnderlyingImportFlux> {
+    private class UnderlyingAgent extends AbstractImportAgent<UnderlyingImportFlux> {
 
         UnderlyingAgent() {
             super(UnderlyingImportFlux.class, AbstractMMImportAgent.this.getName());
