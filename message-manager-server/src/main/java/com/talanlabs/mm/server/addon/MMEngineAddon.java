@@ -9,7 +9,8 @@ import com.talanlabs.mm.server.delegate.FluxContentManager;
 import com.talanlabs.mm.server.exception.MMEngineException;
 import com.talanlabs.mm.shared.model.IMessageType;
 import com.talanlabs.processmanager.engine.EngineAddon;
-import com.talanlabs.processmanager.engine.ProcessManager;
+import com.talanlabs.processmanager.engine.PM;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -66,7 +67,7 @@ public class MMEngineAddon extends EngineAddon<MMEngineAddon> {
     }
 
     private static Optional<MMEngineAddon> getAddon(String engineUuid) {
-        return ProcessManager.getEngine(engineUuid).getAddon(MMEngineAddon.class);
+        return PM.getEngine(engineUuid).getAddon(MMEngineAddon.class);
     }
 
     public MMEngine getEngine() {

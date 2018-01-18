@@ -1,11 +1,12 @@
 package com.talanlabs.mm.supervision.utils;
 
 import com.talanlabs.mm.supervision.model.AgentInfoDto;
-import com.talanlabs.processmanager.engine.ProcessManager;
+import com.talanlabs.processmanager.engine.PM;
 import com.talanlabs.processmanager.engine.ProcessingChannel;
 import com.talanlabs.processmanager.shared.ChannelSlot;
 import com.talanlabs.processmanager.shared.Engine;
 import com.talanlabs.processmanager.shared.PluggableChannel;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -29,7 +30,7 @@ public final class SupervisionUtils {
      */
     public static List<AgentInfoDto> getAgentInfo(String engineUuid, String agentName) {
         List<AgentInfoDto> agentInfoDtos = new ArrayList<>();
-        Engine engine = ProcessManager.getEngine(engineUuid);
+        Engine engine = PM.getEngine(engineUuid);
         Collection<ChannelSlot> channels = engine.getChannelSlots();
         channels.stream().filter(channelSlot -> (agentName == null) || (agentName.isEmpty()) || (agentName.equals(channelSlot.getName()))).forEach(channelSlot -> {
             AgentInfoDto agentInfoDto = new AgentInfoDto();

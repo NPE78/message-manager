@@ -5,14 +5,15 @@ import com.talanlabs.mm.server.AbstractMMTest;
 import com.talanlabs.mm.server.MM;
 import com.talanlabs.mm.server.addon.MMEngineAddon;
 import com.talanlabs.processmanager.engine.AbstractAgent;
-import com.talanlabs.processmanager.engine.ProcessManager;
+import com.talanlabs.processmanager.engine.PM;
+import org.assertj.core.api.Assertions;
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.io.Serializable;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * Created by NicolasP on 21/10/2015.
@@ -39,7 +40,7 @@ public class MMTest extends AbstractMMTest {
 
 		//test timeout
 		((MM) getServer()).setTimeoutSeconds(2);
-		ProcessManager.handle("test", SlowAgentTest.class.getSimpleName(), "message");
+		PM.handle("test", SlowAgentTest.class.getSimpleName(), "message");
 
 		getServer().stop(); // will be stopped anyway, but this is to test the double stop
 	}
@@ -50,7 +51,7 @@ public class MMTest extends AbstractMMTest {
         getServer().setProcessErrorFactory(processErrorFactory);
         Assertions.assertThat(MMEngineAddon.getProcessErrorFactory("test") == processErrorFactory).isTrue();
 
-        ProcessManager.getInstance().shutdownEngine("test");
+        PM.get().shutdownEngine("test");
     }
 
 	private class AgentTest extends AbstractAgent {

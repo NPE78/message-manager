@@ -2,12 +2,17 @@ package com.talanlabs.mm.server.agent;
 
 import com.talanlabs.mm.server.exception.BatchArchiveException;
 import com.talanlabs.mm.shared.model.IIntegConfig;
-import com.talanlabs.processmanager.engine.ProcessManager;
+import com.talanlabs.processmanager.engine.PM;
 import com.talanlabs.processmanager.messages.gate.Gate;
 import com.talanlabs.processmanager.messages.gate.GateFactory;
 import com.talanlabs.processmanager.shared.Agent;
 import com.talanlabs.processmanager.shared.logging.LogManager;
 import com.talanlabs.processmanager.shared.logging.LogService;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemManager;
+import org.apache.commons.vfs2.VFS;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -19,10 +24,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.stream.Collectors;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemManager;
-import org.apache.commons.vfs2.VFS;
 
 /**
  * An agent which goal is to archive files
@@ -56,7 +57,7 @@ public class BatchArchiveAgent implements Agent {
             if (message instanceof String && !"Cron".equals(message)) {
                 archiveAll(scriptPath, (String) message);
             } else {
-                ProcessManager.getEngine(engineUuid).getAddon(GateFactory.class).ifPresent(gateFactory -> archiveGate(gateFactory, scriptPath));
+                PM.getEngine(engineUuid).getAddon(GateFactory.class).ifPresent(gateFactory -> archiveGate(gateFactory, scriptPath));
             }
         }
     }

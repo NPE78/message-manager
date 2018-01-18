@@ -14,16 +14,17 @@ import com.talanlabs.mm.shared.model.IProcessError;
 import com.talanlabs.mm.shared.model.domain.ErrorImpact;
 import com.talanlabs.mm.shared.model.domain.ErrorRecyclingKind;
 import com.talanlabs.mm.shared.model.domain.MessageStatus;
-import com.talanlabs.processmanager.engine.ProcessManager;
+import com.talanlabs.processmanager.engine.PM;
 import com.talanlabs.processmanager.shared.exceptions.AgentException;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
 
 public class SimpleAgentMMTest extends AbstractMMTest {
 
@@ -67,7 +68,7 @@ public class SimpleAgentMMTest extends AbstractMMTest {
             MyMMAgent agent = new MyMMAgent();
             agent.register("test", 5);
         } finally {
-            ProcessManager.getInstance().shutdownEngine("test");
+            PM.get().shutdownEngine("test");
         }
     }
 

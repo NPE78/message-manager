@@ -6,12 +6,13 @@ import com.talanlabs.mm.server.helper.TestUtils;
 import com.talanlabs.mm.server.implem.DefaultMMAgent;
 import com.talanlabs.mm.server.model.AbstractMMFlux;
 import com.talanlabs.mm.supervision.model.AgentInfoDto;
-import com.talanlabs.processmanager.engine.ProcessManager;
+import com.talanlabs.processmanager.engine.PM;
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * Created by NicolasP on 29/10/2015.
@@ -35,8 +36,8 @@ public class SupervisionUtilsTest extends AbstractMMTest {
         myFlux1.init("test");
 
         MM.handle(myFlux1);
-        ProcessManager.handle("test", MySingletonMMAgent.class.getSimpleName(), new MyFlux2());
-        ProcessManager.handle("test", MySingletonMMAgent.class.getSimpleName(), new MyFlux2());
+        PM.handle("test", MySingletonMMAgent.class.getSimpleName(), new MyFlux2());
+        PM.handle("test", MySingletonMMAgent.class.getSimpleName(), new MyFlux2());
 
         TestUtils.sleep(2000);
     }
