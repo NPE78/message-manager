@@ -33,17 +33,19 @@ public class BatchArchiveAgent implements Agent {
     private final LogService logService;
 
     private final IIntegConfig config;
+    private final String engineUuid;
 
     private boolean initialized;
 
-    public BatchArchiveAgent(IIntegConfig config) {
+    public BatchArchiveAgent(IIntegConfig config, String engineUuid) {
         logService = LogManager.getLogService(getClass());
 
         this.config = config;
+        this.engineUuid = engineUuid;
     }
 
     @Override
-    public void work(Serializable message, String engineUuid) {
+    public void work(Serializable message) {
 
         URL script = getClass().getClassLoader().getResource("dirarch");
         if (script == null) {

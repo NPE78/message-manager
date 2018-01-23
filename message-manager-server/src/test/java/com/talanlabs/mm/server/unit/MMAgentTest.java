@@ -171,13 +171,13 @@ public class MMAgentTest extends AbstractMMTest {
 		}
 
 		{ // test foreign
-			myForeignAgent.work(null, "test");
+			myForeignAgent.work(null);
 		}
 
 		{ // test bug
 			MyObject obj = new MyObject();
 			try {
-				myBugguedAgent.work(obj, "test");
+				myBugguedAgent.work(obj);
 			} catch (Exception e) {
 				LOG.trace("", e);
 			}

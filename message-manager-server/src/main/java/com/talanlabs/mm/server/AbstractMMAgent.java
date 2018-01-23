@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * An agent is the main class of a process. It is used by the Process Manager and {@link com.talanlabs.processmanager.engine.ProcessManager#handle(String, String, Serializable)} method
+ * An agent is the main class of a process. It is used by the Process Manager and {@link com.talanlabs.processmanager.engine.PM#handle(String, String, Serializable)} method
  */
 public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends AbstractAgent implements IMMProcess<F> {
 
@@ -86,12 +86,12 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
     }
 
     @Override
-    public final void work(Serializable messageObject, String engineUuid) {
+    public final void work(Serializable messageObject) {
         try {
-            dispatchMessage(messageObject, engineUuid);
+            dispatchMessage(messageObject, getEngineUuid());
         } catch (Exception e) {
             getLogService().error(() -> messageTypeName, e);
-            Map<IProcessError, ErrorImpact> errorMap = getSingleUnknownErrorMap(engineUuid, ErrorRecyclingKind.MANUAL);
+            Map<IProcessError, ErrorImpact> errorMap = getSingleUnknownErrorMap(getEngineUuid(), ErrorRecyclingKind.MANUAL);
             reject(errorMap);
             notifyMessageStatus(MessageStatus.TO_RECYCLE_MANUALLY);
         }

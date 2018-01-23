@@ -31,7 +31,7 @@ public class ArchiveAgentTest extends AbstractMMTest {
 
         DefaultIntegConfig config = new DefaultIntegConfig("message-manager");
         config.setIntegPort(0);
-        BatchArchiveAgent agent = new BatchArchiveAgent(config);
+        BatchArchiveAgent agent = new BatchArchiveAgent(config, "test");
 
         URL script = getClass().getClassLoader().getResource("dirarch");
 
@@ -51,7 +51,7 @@ public class ArchiveAgentTest extends AbstractMMTest {
         archivePath.mkdirs();
         file.renameTo(new File(archivePath.getAbsolutePath() + "/" + file.getName()));
 
-        agent.work(archivePath.getAbsolutePath(), "test");
+        agent.work(archivePath.getAbsolutePath());
         if (SystemUtils.IS_OS_LINUX) { // windows can't play script
             System.out.println(file);
             Assert.assertFalse(file.exists());
@@ -59,7 +59,7 @@ public class ArchiveAgentTest extends AbstractMMTest {
 
         file = createFile();
         file.renameTo(new File(archivePath.getAbsolutePath() + "/" + file.getName()));
-        agent.work(null, "test");
+        agent.work(null);
         if (SystemUtils.IS_OS_LINUX) { // windows can't play script
             System.out.println(file);
             Assert.assertFalse(file.exists());
@@ -70,7 +70,7 @@ public class ArchiveAgentTest extends AbstractMMTest {
     public void testException() throws MalformedURLException {
         DefaultIntegConfig config = new DefaultIntegConfig("message-manager");
         config.setIntegPort(0);
-        BatchArchiveAgent agent = new BatchArchiveAgent(config);
+        BatchArchiveAgent agent = new BatchArchiveAgent(config, "test");
 
         startIntegrator();
 
