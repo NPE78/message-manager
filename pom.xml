@@ -300,6 +300,7 @@
                 <configuration>
                     <!-- property set by jacoco-maven-plugin -->
                     <argLine>${itCoverageAgent}</argLine>
+                    <encoding>${project.reporting.outputEncoding}</encoding>
                 </configuration>
                 <executions>
                     <execution>
@@ -333,14 +334,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${maven-source-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>${maven-failsafe-plugin.version}</version>
-                    <configuration>
-                        <encoding>${project.reporting.outputEncoding}</encoding>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
