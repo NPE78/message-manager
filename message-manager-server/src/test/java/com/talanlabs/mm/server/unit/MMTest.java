@@ -36,7 +36,7 @@ public class MMTest extends AbstractMMTest {
 
         startIntegrator();
 
-		agentTest.work(randomInt, "test");
+		agentTest.work(randomInt);
 
 		//test timeout
 		((MM) getServer()).setTimeoutSeconds(2);
@@ -61,7 +61,7 @@ public class MMTest extends AbstractMMTest {
         }
 
 		@Override
-		public void work(Serializable o, String engineUuid) {
+		public void work(Serializable o) {
 			Assert.assertEquals(randomInt, o);
 			System.out.println(o);
 		}
@@ -74,7 +74,7 @@ public class MMTest extends AbstractMMTest {
         }
 
         @Override
-		public void work(Serializable o, String engineUuid) {
+		public void work(Serializable o) {
 			boolean hasBeenStopped = false;
 			try {
 				CountDownLatch cdl = new CountDownLatch(1);

@@ -156,10 +156,10 @@ public abstract class AbstractMMImportAgent<F extends AbstractMMImportFlux> exte
         }
 
         @Override
-        public void doWork(UnderlyingImportFlux underlyingFlux, String engineUuid) {
+        public void doWork(UnderlyingImportFlux underlyingFlux) {
             // we shouldn't get there, but if we do, this is what we would do
             F flux = getMessage(underlyingFlux);
-            AbstractMMImportAgent.this.work(flux, engineUuid);
+            AbstractMMImportAgent.this.work(flux);
         }
 
         @Override
