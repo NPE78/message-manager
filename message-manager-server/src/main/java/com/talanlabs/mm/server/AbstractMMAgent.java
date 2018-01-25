@@ -1,5 +1,6 @@
 package com.talanlabs.mm.server;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.talanlabs.mm.engine.IMMProcess;
 import com.talanlabs.mm.engine.MMDictionary;
 import com.talanlabs.mm.engine.MMEngine;
@@ -105,6 +106,7 @@ public abstract class AbstractMMAgent<F extends AbstractMMFlux> extends Abstract
         saveOrUpdateMessage(flux);
     }
 
+    @VisibleForTesting
     void manageDeadlineDate(F flux) {
         if (flux.getFirstProcessingDate() == null) {
             flux.setFirstProcessingDate(Instant.now());
