@@ -47,7 +47,7 @@ public class MM implements IServer {
 
         setBaseDir(integFolder);
 
-        this.engine = PM.get().createEngine(engineUuid, errorPath);
+        this.engine = PM.createEngine(engineUuid, errorPath);
 
         this.timeoutSeconds = 2 * 60;
 

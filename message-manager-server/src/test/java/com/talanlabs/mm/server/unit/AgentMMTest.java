@@ -57,7 +57,7 @@ public class AgentMMTest extends AbstractMMTest {
             MyMMAgent agent = new MyMMAgent();
             agent.register("test", 5);
         } finally {
-            PM.get().shutdownEngine("test");
+            PM.shutdownEngine("test");
         }
     }
 

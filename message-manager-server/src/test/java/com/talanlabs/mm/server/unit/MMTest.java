@@ -51,7 +51,7 @@ public class MMTest extends AbstractMMTest {
         getServer().setProcessErrorFactory(processErrorFactory);
         Assertions.assertThat(MMEngineAddon.getProcessErrorFactory("test") == processErrorFactory).isTrue();
 
-        PM.get().shutdownEngine("test");
+        PM.shutdownEngine("test");
     }
 
 	private class AgentTest extends AbstractAgent {

@@ -30,7 +30,7 @@ public class OutdatedMessageTest extends AbstractMMTest {
         agent.manageDeadlineDate(myFlux);
         Assertions.assertThat(myFlux.getMessageStatus()).isEqualTo(MessageStatus.REJECTED);
 
-        PM.get().shutdownEngine("test");
+        PM.shutdownEngine("test");
     }
 
     private class MyMMAgent extends AbstractMMImportAgent<MyFlux> {
